@@ -6,7 +6,7 @@
 <hibernate-mapping package="org.openmrs.module.pacsintegration">
 
 <!--
-	<class name="ADTMessage"
+	<class name="ORMMessage"
 		table="${project.parent.artifactId}_ADTMessage">
 		<id name="id" type="int" column="id" unsaved-value="0">
 			<generator class="native" />
