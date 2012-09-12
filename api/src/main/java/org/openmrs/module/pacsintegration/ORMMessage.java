@@ -16,38 +16,53 @@ package org.openmrs.module.pacsintegration;
 import java.io.Serializable;
 import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.BaseOpenmrsMetadata;
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
 
 /**
  * Models a HL7 ORMMessage
  */
+
+@Root
 public class ORMMessage {
 
-	private static final long serialVersionUID = 1L;
-
+    @Element
     private String sendingFacility;
 
+    @Element
     private String patientId;
 
+    @Element
     private String familyName;
 
+    @Element
     private String givenName;
 
+    @Element
     private String dateOfBirth;            // YYYYMMDDHHMM
 
+    @Element
     private String patientSex;
 
+    @Element
     private String orderControl;
 
+    @Element
     private String accessionNumber;
 
+    @Element
     private String universalServiceID;
 
+    @Element
     private String universalServiceIDText;
 
+    @Element
     private String deviceLocation;
 
+    @Element
     private String modality;
 
+    @Element
     private String scheduledExamDatetime;    // YYYYMMDDHHMM
 
 

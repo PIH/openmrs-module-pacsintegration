@@ -3,8 +3,17 @@ package org.openmrs.module.pacsintegration;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Order;
 
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.load.Persister;
+
+import java.io.StringWriter;
+import java.io.Writer;
+
 public class ConversionUtils {
 
+    /**
+     * Given an order and an order control code, creates an ORMMessage object
+     */
     public static ORMMessage createORMMessage(Order order, String orderControl) {
 
         if (order == null) {
@@ -37,4 +46,23 @@ public class ConversionUtils {
         return ormMessage;
     }
 
+    public static String serialize(Object obj) {
+
+        if (obj == null) {
+            throw new PACSIntegrationException("Item to serialize cannot be null");
+        }
+
+        Writer stringWriter = new StringWriter();
+        Serializer serializer = new Persister();
+
+        try {
+            serializer.write(obj, stringWriter);
+        }
+        catch (Exception e) {
+            throw new PACSIntegrationException("Unable to serialize " + obj, e);
+        }
+
+        return stringWriter.toString();
+
+    }
 }

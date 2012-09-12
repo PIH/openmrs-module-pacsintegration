@@ -15,4 +15,8 @@ public class PACSIntegrationException extends RuntimeException {
         super(message);
     }
 
+    public PACSIntegrationException (String message, Throwable throwable) {
+        super(message, throwable);
+    }
+
 }
