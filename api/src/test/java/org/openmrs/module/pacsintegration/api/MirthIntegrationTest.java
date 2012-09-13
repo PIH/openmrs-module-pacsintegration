@@ -16,6 +16,7 @@ package org.openmrs.module.pacsintegration.api;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Order;
 import org.openmrs.api.context.Context;
@@ -30,6 +31,7 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+@Ignore
 public class MirthIntegrationTest extends BaseModuleContextSensitiveTest {
 
     protected final Log log = LogFactory.getLog(getClass());
@@ -43,6 +45,7 @@ public class MirthIntegrationTest extends BaseModuleContextSensitiveTest {
 
         executeDataSet(XML_DATASET);
     }
+
 
     @Test
     public void sendMessage_shouldSendMessageToMirth() throws Exception {
@@ -68,6 +71,7 @@ public class MirthIntegrationTest extends BaseModuleContextSensitiveTest {
         TestUtils.assertContains("OBR|||54321|B^C|||||||||||||||E^D|||||||||||||||||200808080000", result);
 
     }
+
 
     private String listenForResults() throws IOException {
 
