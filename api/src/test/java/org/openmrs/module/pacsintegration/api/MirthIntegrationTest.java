@@ -13,7 +13,6 @@
  */
 package org.openmrs.module.pacsintegration.api;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
@@ -21,15 +20,13 @@ import org.junit.Test;
 import org.openmrs.Order;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.pacsintegration.ConversionUtils;
-import org.openmrs.module.pacsintegration.ORMMessage;
+import org.openmrs.module.pacsintegration.OrmMessage;
 import org.openmrs.module.pacsintegration.TransmissionUtils;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -51,7 +48,7 @@ public class MirthIntegrationTest extends BaseModuleContextSensitiveTest {
     public void sendMessage_shouldSendMessageToMirth() throws Exception {
 
         Order order = Context.getOrderService().getOrder(1001);
-        ORMMessage ormMessage = ConversionUtils.createORMMessage(order, "SC");
+        OrmMessage ormMessage = ConversionUtils.createORMMessage(order, "SC");
 
         // TODO: these are to mock the fields we aren't current handling--these should eventually be removed so that we properly test these fields once we handle them
         ormMessage.setDeviceLocation("E");

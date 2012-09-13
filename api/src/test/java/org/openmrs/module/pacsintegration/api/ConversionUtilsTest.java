@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.openmrs.Order;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.pacsintegration.ConversionUtils;
-import org.openmrs.module.pacsintegration.ORMMessage;
+import org.openmrs.module.pacsintegration.OrmMessage;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 
 public class ConversionUtilsTest extends BaseModuleContextSensitiveTest {
@@ -36,11 +36,11 @@ public class ConversionUtilsTest extends BaseModuleContextSensitiveTest {
     }
 
     @Test
-    public void createORMMessage_shouldCreateORMMessageFromOrder() {
+    public void createORMMessage_shouldCreateOrmMessageFromOrder() {
 
         Order order = Context.getOrderService().getOrder(1001);
 
-        ORMMessage ormMessage = ConversionUtils.createORMMessage(order, "SC");
+        OrmMessage ormMessage = ConversionUtils.createORMMessage(order, "SC");
 
         Assert.assertEquals("54321", ormMessage.getAccessionNumber());
         Assert.assertEquals("197608250000", ormMessage.getDateOfBirth());
@@ -61,14 +61,14 @@ public class ConversionUtilsTest extends BaseModuleContextSensitiveTest {
 
 
     // TODO: add test to  make sure that is defaults to "NW"?
-    // TODO: add tests to make sure fails when required fields are missing
+    // TODO: add tests to make sure fails when required fields are missing ?
 
 
     @Test
-    public void serialize_shouldSerializeORMMessage() {
+    public void serialize_shouldSerializeOrmMessage() {
 
         Order order = Context.getOrderService().getOrder(1001);
-        ORMMessage ormMessage = ConversionUtils.createORMMessage(order, "SC");
+        OrmMessage ormMessage = ConversionUtils.createORMMessage(order, "SC");
 
         // TODO: these are to mock the fields we aren't current handling--these should eventually be removed so that we properly test these fields once we handle them
         ormMessage.setDeviceLocation("E");
@@ -79,7 +79,7 @@ public class ConversionUtilsTest extends BaseModuleContextSensitiveTest {
 
         String serializedORMMessage = ConversionUtils.serialize(ormMessage);
 
-        TestUtils.assertFuzzyContains("<ORMMessage>(.*)</ORMMessage>", serializedORMMessage);
+        TestUtils.assertFuzzyContains("<OrmMessage>(.*)</OrmMessage>", serializedORMMessage);
         TestUtils.assertContains("<accessionNumber>54321</accessionNumber>", serializedORMMessage);
         TestUtils.assertContains("<dateOfBirth>197608250000</dateOfBirth>", serializedORMMessage);
         TestUtils.assertContains("<deviceLocation>E</deviceLocation>", serializedORMMessage);

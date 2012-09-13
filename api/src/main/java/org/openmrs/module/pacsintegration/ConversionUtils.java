@@ -25,12 +25,12 @@ import java.io.Writer;
 public class ConversionUtils {
 
     /**
-     * Given an order and an order control code, creates an ORMMessage object
+     * Given an order and an order control code, creates an OrmMessage object
      */
-    public static ORMMessage createORMMessage(Order order, String orderControl) {
+    public static OrmMessage createORMMessage(Order order, String orderControl) {
 
         if (order == null) {
-            throw new PACSIntegrationException("Order cannot be null");
+            throw new PacsIntegrationException("Order cannot be null");
         }
 
         if (StringUtils.isEmpty(orderControl)) {
@@ -38,10 +38,10 @@ public class ConversionUtils {
             orderControl = "NW";
         }
 
-        ORMMessage ormMessage = new ORMMessage();
+        OrmMessage ormMessage = new OrmMessage();
 
         ormMessage.setAccessionNumber(order.getAccessionNumber());
-        ormMessage.setDateOfBirth(PACSIntegrationConstants.hl7DateFormat.format(order.getPatient().getBirthdate()));
+        ormMessage.setDateOfBirth(PacsIntegrationConstants.hl7DateFormat.format(order.getPatient().getBirthdate()));
         // TODO: ormMessage.setDeviceLocation();
         ormMessage.setFamilyName(order.getPatient().getFamilyName());
         ormMessage.setGivenName(order.getPatient().getGivenName());
@@ -51,7 +51,7 @@ public class ConversionUtils {
         ormMessage.setPatientId(order.getPatient().getPatientIdentifier().getIdentifier());
         ormMessage.setPatientSex(order.getPatient().getGender());
         // TODO: is the start date the order date?
-        ormMessage.setScheduledExamDatetime(PACSIntegrationConstants.hl7DateFormat.format(order.getStartDate()));
+        ormMessage.setScheduledExamDatetime(PacsIntegrationConstants.hl7DateFormat.format(order.getStartDate()));
         // TODO: ormMessage.setSendingFacility();
         // TODO: ormMessage.setUniversalServiceID();
         // TODO; ormMessage.setUniversalServiceIDText();
@@ -65,7 +65,7 @@ public class ConversionUtils {
     public static String serialize(Object obj) {
 
         if (obj == null) {
-            throw new PACSIntegrationException("Item to serialize cannot be null");
+            throw new PacsIntegrationException("Item to serialize cannot be null");
         }
 
         Writer stringWriter = new StringWriter();
@@ -75,7 +75,7 @@ public class ConversionUtils {
             serializer.write(obj, stringWriter);
         }
         catch (Exception e) {
-            throw new PACSIntegrationException("Unable to serialize " + obj, e);
+            throw new PacsIntegrationException("Unable to serialize " + obj, e);
         }
 
         return stringWriter.toString();

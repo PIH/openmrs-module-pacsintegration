@@ -21,7 +21,7 @@ import org.openmrs.test.BaseModuleContextSensitiveTest;
 /**
  * Tests {@link ${PACSIntegrationService}}.
  */
-public class  PACSIntegrationServiceTest extends BaseModuleContextSensitiveTest {
+public class PacsIntegrationServiceTest extends BaseModuleContextSensitiveTest {
 	
 	@Test
 	public void shouldSetupContext() {

@@ -20,11 +20,11 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
 /**
- * Models a HL7 ORMMessage
+ * Models a HL7 OrmMessage
  */
 
 @Root
-public class ORMMessage extends Message {
+public class OrmMessage extends Message {
 
     @Element
     private String sendingFacility;
