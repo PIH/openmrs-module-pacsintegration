@@ -34,7 +34,7 @@ public class TestUtils {
             Assert.fail(substring + " is not contained in " + actual);
         }
 
-        if (!Pattern.compile(substring, Pattern.DOTALL).matcher(actual).find()) {
+        if (!actual.contains(substring)) {
             Assert.fail(substring + " is not contained in " + actual);
         }
     }

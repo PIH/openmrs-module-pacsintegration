@@ -57,7 +57,7 @@ public class ConversionUtilsTest extends BaseModuleContextSensitiveTest {
         Order order = Context.getOrderService().getOrder(1001);
         ORMMessage ormMessage = ConversionUtils.createORMMessage(order, "SC");
 
-        // TODO: these are to mock the fields we aren't current handling--these should eventually be removed
+        // TODO: these are to mock the fields we aren't current handling--these should eventually be removed so that we properly test these fields once we handle them
         ormMessage.setDeviceLocation("E");
         ormMessage.setSendingFacility("A");
         ormMessage.setUniversalServiceID("B");
@@ -66,7 +66,7 @@ public class ConversionUtilsTest extends BaseModuleContextSensitiveTest {
 
         String serializedORMMessage = ConversionUtils.serialize(ormMessage);
 
-        TestUtils.assertContains("<ORMMessage>(.*)</ORMMessage>", serializedORMMessage);
+        TestUtils.assertFuzzyContains("<ORMMessage>(.*)</ORMMessage>", serializedORMMessage);
         TestUtils.assertContains("<accessionNumber>54321</accessionNumber>", serializedORMMessage);
         TestUtils.assertContains("<dateOfBirth>197608250000</dateOfBirth>", serializedORMMessage);
         TestUtils.assertContains("<deviceLocation>E</deviceLocation>", serializedORMMessage);

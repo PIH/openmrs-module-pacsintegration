@@ -24,7 +24,7 @@ import org.simpleframework.xml.Root;
  */
 
 @Root
-public class ORMMessage {
+public class ORMMessage extends Message {
 
     @Element
     private String sendingFacility;

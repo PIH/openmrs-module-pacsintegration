@@ -46,6 +46,9 @@ public class ConversionUtils {
         return ormMessage;
     }
 
+    /**
+     * Performs basic serialization using Simple library
+     */
     public static String serialize(Object obj) {
 
         if (obj == null) {

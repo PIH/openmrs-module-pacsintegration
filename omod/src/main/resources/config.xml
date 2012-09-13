@@ -21,11 +21,7 @@
 	
 	
 	<!-- Maps hibernate file's, if present -->
-	<mappingFiles>
-				
-		ADTMessage.hbm.xml
-				
-	</mappingFiles>
+
 
 	<!-- Internationalization -->
 	<!-- All message codes should start with ${project.parent.artifactId}. -->
@@ -42,6 +38,24 @@
 		<file>messages_es.properties</file>
 	</messages>
 	<!-- /Internationalization -->
+
+    <!-- Global Properties -->
+    <globalProperty>
+        <property>pacsintegration.mirthIpAddress</property>
+        <defaultValue>127.0.0.1</defaultValue>
+        <description>
+            IP address of the Mirth server to communication with
+        </description>
+    </globalProperty>
+
+    <globalProperty>
+        <property>pacsintegration.mirthInputPort</property>
+        <defaultValue>6661</defaultValue>
+        <description>
+            Port the Mirth server uses to receive incoming communications
+        </description>
+    </globalProperty>
+
 
 </module>
 
