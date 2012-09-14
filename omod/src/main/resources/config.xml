@@ -17,7 +17,7 @@
 
 	
 	<!-- Module Activator -->
-	<activator>${project.parent.groupId}.${project.parent.artifactId}.PACSIntegrationActivator</activator>
+	<activator>${project.parent.groupId}.${project.parent.artifactId}.PacsIntegrationActivator</activator>
 	
 	
 	<!-- Maps hibernate file's, if present -->
