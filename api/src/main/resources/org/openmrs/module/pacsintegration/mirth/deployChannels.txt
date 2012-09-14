@@ -1,0 +1,6 @@
+
+import "openMRSToPacs.xml" force
+channel deploy "OpenMRS To Pacs"
+
+
+
