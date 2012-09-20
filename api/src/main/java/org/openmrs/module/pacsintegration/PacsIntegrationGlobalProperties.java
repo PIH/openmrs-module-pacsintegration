@@ -17,6 +17,8 @@ import org.openmrs.api.context.Context;
 
 public class PacsIntegrationGlobalProperties {
 
-
+    public static final String RADIOLOGY_ORDER_TYPE_UUID() {
+        return Context.getAdministrationService().getGlobalProperty("pacsintegration.radiologyOrderTypeUuid");
+    }
 
 }

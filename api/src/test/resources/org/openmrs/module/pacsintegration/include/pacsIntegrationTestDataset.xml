@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
+    <global_property property="pacsintegration.radiologyOrderTypeUuid" property_value="84ce45a8-5e7c-48f7-a581-bb1d17d63a62" uuid="7abcc666-7777-45e1-8c99-2b4f0c4f888a"/>
+
     <order_type order_type_id="1001" name="Radiology Order" description="Ordering a radiology exam" creator="1" date_created="2008-08-15 13:49:47.0" retired="false" uuid="84ce45a8-5e7c-48f7-a581-bb1d17d63a62"/>
     <orders order_id="1001" order_type_id="1001" concept_id="88" orderer="1" accession_number="54321" start_date="2008-08-08 00:00:00.0" creator="1" discontinued="false" date_created="2008-08-19 12:20:22.0" voided="false" patient_id="7" uuid="921de0bb-05c4-444a-be03-e01b4c4b9142"/>
 </dataset>

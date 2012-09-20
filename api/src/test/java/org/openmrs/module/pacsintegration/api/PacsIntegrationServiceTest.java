@@ -19,12 +19,12 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 
 /**
- * Tests {@link ${PACSIntegrationService}}.
+ * Tests {@link ${PacsIntegrationService}}.
  */
 public class PacsIntegrationServiceTest extends BaseModuleContextSensitiveTest {
 	
 	@Test
 	public void shouldSetupContext() {
-		assertNotNull(Context.getService(PACSIntegrationService.class));
+		assertNotNull(Context.getService(PacsIntegrationService.class));
 	}
 }

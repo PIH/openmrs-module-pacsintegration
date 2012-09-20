@@ -20,10 +20,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Order;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.emr.TestUtils;
 import org.openmrs.module.pacsintegration.ConversionUtils;
 import org.openmrs.module.pacsintegration.OrmMessage;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
-import org.openmrs.module.emr.TestUtils;
 
 public class ConversionUtilsTest extends BaseModuleContextSensitiveTest {
 

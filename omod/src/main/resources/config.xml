@@ -15,12 +15,19 @@
 	<require_version>${openMRSVersion}</require_version>
 	<!-- / Module Properties -->
 
-	
+	<!-- Required modules -->
+    <require_modules>
+        <require_module version="1.0">
+            org.openmrs.event
+        </require_module>
+    </require_modules>
+
 	<!-- Module Activator -->
 	<activator>${project.parent.groupId}.${project.parent.artifactId}.PacsIntegrationActivator</activator>
 	
 	
 	<!-- Maps hibernate file's, if present -->
+
 
 
 	<!-- Internationalization -->
@@ -39,22 +46,7 @@
 	</messages>
 	<!-- /Internationalization -->
 
-    <!-- Global Properties -->
-    <globalProperty>
-        <property>pacsintegration.mirthIpAddress</property>
-        <defaultValue>127.0.0.1</defaultValue>
-        <description>
-            IP address of the Mirth server to communication with
-        </description>
-    </globalProperty>
 
-    <globalProperty>
-        <property>pacsintegration.mirthInputPort</property>
-        <defaultValue>6661</defaultValue>
-        <description>
-            Port the Mirth server uses to receive incoming communications
-        </description>
-    </globalProperty>
 
 
 </module>

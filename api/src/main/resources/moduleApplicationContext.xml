@@ -24,14 +24,14 @@
 	<bean parent="serviceContext">
 		<property name="moduleService">
 			<list>
-				<value>${project.parent.groupId}.${project.parent.artifactId}.api.PACSIntegrationService</value>
+				<value>${project.parent.groupId}.${project.parent.artifactId}.api.PacsIntegrationService</value>
 				<bean
 					class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 					<property name="transactionManager">
 						<ref bean="transactionManager" />
 					</property>
 					<property name="target">
-						<bean class="${project.parent.groupId}.${project.parent.artifactId}.api.impl.PACSIntegrationServiceImpl">
+						<bean class="${project.parent.groupId}.${project.parent.artifactId}.api.impl.PacsIntegrationServiceImpl">
 							<property name="dao">
 								<bean class="${project.parent.groupId}.${project.parent.artifactId}.api.db.hibernate.HibernatePACSIntegrationDAO">
 									<property name="sessionFactory">
@@ -51,5 +51,10 @@
 			</list>
 		</property>
 	</bean>
-	
+
+    <!-- register event listeners -->
+    <bean class="org.openmrs.event.Event">
+        <property name="subscription"><bean class="org.openmrs.module.pacsintegration.listener.OrderEventListener"></bean></property>
+    </bean>
+
 </beans>

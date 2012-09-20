@@ -13,10 +13,8 @@
  */
 package org.openmrs.module.pacsintegration.api.db;
 
-import org.openmrs.module.pacsintegration.api.PACSIntegrationService;
-
 /**
- *  Database methods for {@link PACSIntegrationService}.
+ *  Database methods for {@link org.openmrs.module.pacsintegration.api.PacsIntegrationService}.
  */
 public interface PACSIntegrationDAO {
 	
