@@ -21,5 +21,11 @@ public class PacsIntegrationGlobalProperties {
         return Context.getAdministrationService().getGlobalProperty("pacsintegration.radiologyOrderTypeUuid");
     }
 
+    public static final String LISTENER_USERNAME() {
+        return Context.getAdministrationService().getGlobalProperty("pacsintegration.listenerUsername");
+    }
 
+    public static final String LISTENER_PASSWORD() {
+        return Context.getAdministrationService().getGlobalProperty("pacsintegration.listenerPassword");
+    }
 }

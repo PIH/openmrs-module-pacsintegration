@@ -86,7 +86,7 @@ public class PlaceOrderTest extends BaseModuleContextSensitiveTest {
         // wait for a few seconds to give the test time to propogate
         Thread.sleep(5000);
 
-        Mockito.verify(mockPacsIntegrationService).sendMessageToPacs(ConversionUtils.serialize(ConversionUtils.createORMMessage(order, null)));
+        Mockito.verify(mockPacsIntegrationService).sendMessageToPacs(ConversionUtils.serialize(ConversionUtils.createORMMessage(order, "NW")));
 
         // TODO: since this is not transactional does it pollute our test database?
     }

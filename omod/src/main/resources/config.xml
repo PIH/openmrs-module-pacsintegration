@@ -47,6 +47,32 @@
 	<!-- /Internationalization -->
 
 
+    <!-- Global properties -->
+    <globalProperty>
+        <property>pacsintegration.radiologyOrderTypeUuid</property>
+        <defaultValue>84ce45a8-5e7c-48f7-a581-bb1d17d63a62</defaultValue>
+        <description>
+            UUID of the order type that represents a radiology order
+        </description>
+    </globalProperty>
+
+    <globalProperty>
+        <property>pacsintegration.listenerUsername</property>
+        <defaultValue>admin</defaultValue>
+        <description>
+            Username the listener uses for authentication
+        </description>
+    </globalProperty>
+
+    <globalProperty>
+        <property>mirebalais.mirthPassword</property>
+        <defaultValue>test</defaultValue>
+        <description>
+            Password the listener users for authentication
+        </description>
+    </globalProperty>
+
+
 
 
 </module>

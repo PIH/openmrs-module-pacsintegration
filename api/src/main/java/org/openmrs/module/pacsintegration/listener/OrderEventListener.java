@@ -38,8 +38,7 @@ public class OrderEventListener implements SubscribableEventListener {
     public void onMessage(Message message)  {
     	Context.openSession();
         try {
-        	// TODO: use GPs for this or something
-        	Context.authenticate("admin", "test");
+        	Context.authenticate(PacsIntegrationGlobalProperties.LISTENER_USERNAME(), PacsIntegrationGlobalProperties.LISTENER_PASSWORD());
         	
             MapMessage mapMessage = (MapMessage) message;
             String action = mapMessage.getString("action");
