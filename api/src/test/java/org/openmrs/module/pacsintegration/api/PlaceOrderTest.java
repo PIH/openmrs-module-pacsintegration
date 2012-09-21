@@ -14,6 +14,7 @@
 
 package org.openmrs.module.pacsintegration.api;
 
+import java.util.Date;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
@@ -30,6 +31,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ServiceContext;
 import org.openmrs.module.event.advice.GeneralEventAdvice;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
+import org.springframework.test.annotation.NotTransactional;
 
 /**
  * This test fails because when our listener receives an order created message, that order doesn't seem to be in the DB.
@@ -64,6 +66,7 @@ public class PlaceOrderTest extends BaseModuleContextSensitiveTest {
     }
 
     @Test
+    @NotTransactional
     public void testPlacingRadiologyOrderShouldTriggerOutgoingMessage() throws Exception {
     	// we want to mock PacsIntegrationService but not other services, so we cannot use powermock to mock Context
         PacsIntegrationService mockPacsIntegrationService = Mockito.mock(PacsIntegrationService.class);
@@ -77,6 +80,7 @@ public class PlaceOrderTest extends BaseModuleContextSensitiveTest {
         order.setOrderType(Context.getOrderService().getOrderType(1001));
         order.setPatient(Context.getPatientService().getPatient(7));
         order.setConcept(Context.getConceptService().getConcept(18));
+        order.setStartDate(new Date());
 
         // everything but the the saveOrder line is because I'm trying to figure out why things aren't working 
         int before = Context.getOrderService().getOrders().size();
@@ -90,6 +94,7 @@ public class PlaceOrderTest extends BaseModuleContextSensitiveTest {
         // At some point I thought this was necessary, but it doesn't seem to be 
         // wait for the message to be delivered before doing the test below
         //Thread.sleep(600000);
+        Thread.sleep(5000);
 
         Mockito.verify(mockPacsIntegrationService).sendMessageToPacs("TEST");
     }

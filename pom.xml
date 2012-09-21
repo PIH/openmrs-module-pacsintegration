@@ -33,6 +33,7 @@
 	</modules>
 	
 	<properties>
+		<springVersion>3.0.5.RELEASE</springVersion>
 		<openMRSVersion>1.9.1</openMRSVersion>
         <emrVersion>0.1.0-SNAPSHOT</emrVersion>
         <eventVersion>1.1</eventVersion>
@@ -111,7 +112,13 @@
             <scope>provided</scope>
         </dependency>
 
-    </dependencies>
+        <dependency>
+        	<groupId>org.springframework</groupId>
+        	<artifactId>spring-tx</artifactId>
+        	<version>${springVersion}</version>
+        	<scope>test</scope>
+        </dependency>
+	</dependencies>
 
 
 	<build>

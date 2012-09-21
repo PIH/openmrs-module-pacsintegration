@@ -19,6 +19,8 @@ import org.openmrs.Order;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.load.Persister;
 
+import com.thoughtworks.xstream.XStream;
+
 import java.io.StringWriter;
 import java.io.Writer;
 
@@ -63,11 +65,12 @@ public class ConversionUtils {
      * Performs basic serialization using Simple library
      */
     public static String serialize(Object obj) {
-
         if (obj == null) {
             throw new PacsIntegrationException("Item to serialize cannot be null");
         }
+        return new XStream().toXML(obj);
 
+        /*
         Writer stringWriter = new StringWriter();
         Serializer serializer = new Persister();
 
@@ -79,6 +82,6 @@ public class ConversionUtils {
         }
 
         return stringWriter.toString();
-
+         */
     }
 }
