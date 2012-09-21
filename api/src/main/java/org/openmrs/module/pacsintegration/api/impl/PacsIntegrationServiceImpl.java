@@ -17,7 +17,7 @@ import org.openmrs.api.impl.BaseOpenmrsService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
-import org.openmrs.module.pacsintegration.api.db.PACSIntegrationDAO;
+import org.openmrs.module.pacsintegration.api.db.PacsIntegrationDAO;
 
 /**
  * It is a default implementation of {@link org.openmrs.module.pacsintegration.api.PacsIntegrationService}.
@@ -26,19 +26,19 @@ public class PacsIntegrationServiceImpl extends BaseOpenmrsService implements Pa
 	
 	protected final Log log = LogFactory.getLog(this.getClass());
 	
-	private PACSIntegrationDAO dao;
+	private PacsIntegrationDAO dao;
 	
 	/**
      * @param dao the dao to set
      */
-    public void setDao(PACSIntegrationDAO dao) {
+    public void setDao(PacsIntegrationDAO dao) {
 	    this.dao = dao;
     }
     
     /**
      * @return the dao
      */
-    public PACSIntegrationDAO getDao() {
+    public PacsIntegrationDAO getDao() {
 	    return dao;
     }
 

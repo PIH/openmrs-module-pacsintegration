@@ -33,7 +33,7 @@
 					<property name="target">
 						<bean class="${project.parent.groupId}.${project.parent.artifactId}.api.impl.PacsIntegrationServiceImpl">
 							<property name="dao">
-								<bean class="${project.parent.groupId}.${project.parent.artifactId}.api.db.hibernate.HibernatePACSIntegrationDAO">
+								<bean class="${project.parent.groupId}.${project.parent.artifactId}.api.db.hibernate.HibernatePacsIntegrationDAO">
 									<property name="sessionFactory">
 										<ref bean="sessionFactory" />
 									</property>

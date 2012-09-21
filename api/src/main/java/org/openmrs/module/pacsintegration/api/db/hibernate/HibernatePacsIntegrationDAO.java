@@ -16,12 +16,12 @@ package org.openmrs.module.pacsintegration.api.db.hibernate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.SessionFactory;
-import org.openmrs.module.pacsintegration.api.db.PACSIntegrationDAO;
+import org.openmrs.module.pacsintegration.api.db.PacsIntegrationDAO;
 
 /**
- * It is a default implementation of  {@link PACSIntegrationDAO}.
+ * It is a default implementation of  {@link org.openmrs.module.pacsintegration.api.db.PacsIntegrationDAO}.
  */
-public class HibernatePACSIntegrationDAO implements PACSIntegrationDAO {
+public class HibernatePacsIntegrationDAO implements PacsIntegrationDAO {
 	protected final Log log = LogFactory.getLog(this.getClass());
 	
 	private SessionFactory sessionFactory;

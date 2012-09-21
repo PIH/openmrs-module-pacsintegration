@@ -16,7 +16,7 @@ package org.openmrs.module.pacsintegration.api.db;
 /**
  *  Database methods for {@link org.openmrs.module.pacsintegration.api.PacsIntegrationService}.
  */
-public interface PACSIntegrationDAO {
+public interface PacsIntegrationDAO {
 	
 	/*
 	 * Add DAO methods here
