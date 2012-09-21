@@ -21,4 +21,5 @@ public class PacsIntegrationGlobalProperties {
         return Context.getAdministrationService().getGlobalProperty("pacsintegration.radiologyOrderTypeUuid");
     }
 
+
 }

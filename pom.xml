@@ -109,7 +109,7 @@
         	<groupId>org.springframework</groupId>
         	<artifactId>spring-tx</artifactId>
         	<version>${springVersion}</version>
-        	<scope>test</scope>
+        	<scope>provided</scope>
         </dependency>
 	</dependencies>
 
