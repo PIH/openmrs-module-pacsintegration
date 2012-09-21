@@ -14,11 +14,9 @@
 package org.openmrs.module.pacsintegration;
 
 
-import org.apache.commons.logging.Log; 
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.event.Event;
 import org.openmrs.module.ModuleActivator;
-import org.openmrs.module.pacsintegration.listener.OrderEventListener;
 
 /**
  * This class contains the logic that is run every time this module is either started or stopped.

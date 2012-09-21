@@ -36,12 +36,21 @@ public class OrderEventListener implements SubscribableEventListener {
 
     @Override
     public void onMessage(Message message)  {
-
+    	Context.openSession();
         try {
+        	// TODO: use GPs for this or something
+        	Context.authenticate("admin", "test");
+        	
             MapMessage mapMessage = (MapMessage) message;
+            String action = mapMessage.getString("action");
+            String classname = mapMessage.getString("classname");
 
-            if (Event.Action.CREATED.equals(mapMessage.getString("action")) && Order.class.equals(mapMessage.getString("classname"))) {
-                Order order = Context.getOrderService().getOrderByUuid(mapMessage.getString("uuid"));
+            if (Event.Action.CREATED.toString().equals(action) && Order.class.getName().equals(classname)) {
+            	String uuid = mapMessage.getString("uuid");
+                Order order = Context.getOrderService().getOrderByUuid(uuid);
+                if (order == null) {
+                	throw new RuntimeException("Could not find the order this event tells us about! uuid=" + uuid);
+                }
 
                 if (PacsIntegrationGlobalProperties.RADIOLOGY_ORDER_TYPE_UUID().equals(order.getOrderType().getUuid())) {
                     OrmMessage ormMessage = ConversionUtils.createORMMessage(order, "NW");
@@ -54,7 +63,9 @@ public class OrderEventListener implements SubscribableEventListener {
             //TODO: do something better
             throw new RuntimeException(e);
         }
-
+        finally {
+        	Context.closeSession();
+        }
     }
 
     @Override
