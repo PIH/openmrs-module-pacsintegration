@@ -23,46 +23,32 @@ import org.simpleframework.xml.Root;
  * Models a HL7 OrmMessage
  */
 
-@Root
 public class OrmMessage extends Message {
 
-    @Element
     private String sendingFacility;
 
-    @Element
     private String patientId;
 
-    @Element
     private String familyName;
 
-    @Element
     private String givenName;
 
-    @Element
     private String dateOfBirth;            // YYYYMMDDHHMM
 
-    @Element
     private String patientSex;
 
-    @Element
     private String orderControl;
 
-    @Element
     private String accessionNumber;
 
-    @Element
     private String universalServiceID;
 
-    @Element
     private String universalServiceIDText;
 
-    @Element
     private String deviceLocation;
 
-    @Element
     private String modality;
 
-    @Element
     private String scheduledExamDatetime;    // YYYYMMDDHHMM
 
 

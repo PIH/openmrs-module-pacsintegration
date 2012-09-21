@@ -31,6 +31,8 @@ public class ConversionUtils {
      */
     public static OrmMessage createORMMessage(Order order, String orderControl) {
 
+        // TODO: better handle the missing values that would cause NPE
+
         if (order == null) {
             throw new PacsIntegrationException("Order cannot be null");
         }
@@ -62,26 +64,18 @@ public class ConversionUtils {
     }
 
     /**
-     * Performs basic serialization using Simple library
+     * Performs basic serialization using Xstream
      */
     public static String serialize(Object obj) {
+
         if (obj == null) {
             throw new PacsIntegrationException("Item to serialize cannot be null");
         }
-        return new XStream().toXML(obj);
 
-        /*
-        Writer stringWriter = new StringWriter();
-        Serializer serializer = new Persister();
+        // set up aliases for our classes so we don't get the whole package names
+        XStream xstream = new XStream();
+        xstream.alias("OrmMessage", OrmMessage.class);
 
-        try {
-            serializer.write(obj, stringWriter);
-        }
-        catch (Exception e) {
-            throw new PacsIntegrationException("Unable to serialize " + obj, e);
-        }
-
-        return stringWriter.toString();
-         */
+        return xstream.toXML(obj);
     }
 }

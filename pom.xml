@@ -106,13 +106,6 @@
         <!-- End OpenMRS modules -->
 
         <dependency>
-            <groupId>org.simpleframework</groupId>
-            <artifactId>simple-xml</artifactId>
-            <version>2.6.6</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
         	<groupId>org.springframework</groupId>
         	<artifactId>spring-tx</artifactId>
         	<version>${springVersion}</version>

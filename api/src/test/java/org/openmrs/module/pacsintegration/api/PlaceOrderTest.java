@@ -30,6 +30,7 @@ import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ServiceContext;
 import org.openmrs.module.event.advice.GeneralEventAdvice;
+import org.openmrs.module.pacsintegration.ConversionUtils;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.test.annotation.NotTransactional;
 
@@ -37,7 +38,6 @@ import org.springframework.test.annotation.NotTransactional;
  * This test fails because when our listener receives an order created message, that order doesn't seem to be in the DB.
  * I don't know if this is an artifact of the test framework (particularly the MVCC hack) or a real bug.
  */
-@Ignore
 public class PlaceOrderTest extends BaseModuleContextSensitiveTest {
 
     protected final Log log = LogFactory.getLog(getClass());
@@ -81,22 +81,14 @@ public class PlaceOrderTest extends BaseModuleContextSensitiveTest {
         order.setPatient(Context.getPatientService().getPatient(7));
         order.setConcept(Context.getConceptService().getConcept(18));
         order.setStartDate(new Date());
+        Context.getOrderService().saveOrder(order);
 
-        // everything but the the saveOrder line is because I'm trying to figure out why things aren't working 
-        int before = Context.getOrderService().getOrders().size();
-        Order saved = Context.getOrderService().saveOrder(order);
-        System.out.println("Created " + saved.getUuid());
-        Assert.assertNotNull(saved.getUuid());
-        Assert.assertNotNull(Context.getOrderService().getOrderByUuid(saved.getUuid()));
-        Assert.assertEquals(before + 1, Context.getOrderService().getOrders().size());
-        Context.flushSession();
-        
-        // At some point I thought this was necessary, but it doesn't seem to be 
-        // wait for the message to be delivered before doing the test below
-        //Thread.sleep(600000);
+        // wait for a few seconds to give the test time to propogate
         Thread.sleep(5000);
 
-        Mockito.verify(mockPacsIntegrationService).sendMessageToPacs("TEST");
+        Mockito.verify(mockPacsIntegrationService).sendMessageToPacs(ConversionUtils.serialize(ConversionUtils.createORMMessage(order, null)));
+
+        // TODO: since this is not transactional does it pollute our test database?
     }
 
 
