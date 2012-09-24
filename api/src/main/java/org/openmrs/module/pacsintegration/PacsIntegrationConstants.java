@@ -16,8 +16,9 @@ package org.openmrs.module.pacsintegration;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
+
 public class PacsIntegrationConstants {
-
-    public static DateFormat hl7DateFormat = new SimpleDateFormat("yyyyMMddHHmm");
-
+	
+	public static DateFormat hl7DateFormat = new SimpleDateFormat("yyyyMMddHHmm");
+	
 }

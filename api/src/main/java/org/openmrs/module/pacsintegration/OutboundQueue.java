@@ -14,76 +14,76 @@
 
 package org.openmrs.module.pacsintegration;
 
-import org.openmrs.BaseOpenmrsObject;
-
 import java.util.Date;
 
+import org.openmrs.BaseOpenmrsObject;
+
 public class OutboundQueue extends BaseOpenmrsObject {
-
-    private Integer outboundQueueId;
-
-    private String message;
-
-    private Date dateCreated;
-
-    private Boolean processed = false;
-
-    /**
-     * Constructor
-     */
-    public OutboundQueue() {
-
-    }
-
-    public OutboundQueue(String message) {
-        this.message = message;
-        this.dateCreated = new Date();
-        processed = false;
-    }
-
-    /**
-     * Getters and Setters
-     */
-
-    @Override
-    public Integer getId() {
-        return getOutboundQueueId();
-    }
-
-    @Override
-    public void setId(Integer id) {
-        setOutboundQueueId(id);
-    }
-
-    public Integer getOutboundQueueId() {
-        return outboundQueueId;
-    }
-
-    public void setOutboundQueueId(Integer outboundQueueId) {
-        this.outboundQueueId = outboundQueueId;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public Date getDateCreated() {
-        return dateCreated;
-    }
-
-    public void setDateCreated(Date dateCreated) {
-        this.dateCreated = dateCreated;
-    }
-
-    public Boolean getProcessed() {
-        return processed;
-    }
-
-    public void setProcessed(Boolean processed) {
-        this.processed = processed;
-    }
+	
+	private Integer outboundQueueId;
+	
+	private String message;
+	
+	private Date dateCreated;
+	
+	private Boolean processed = false;
+	
+	/**
+	 * Constructor
+	 */
+	public OutboundQueue() {
+		
+	}
+	
+	public OutboundQueue(String message) {
+		this.message = message;
+		this.dateCreated = new Date();
+		processed = false;
+	}
+	
+	/**
+	 * Getters and Setters
+	 */
+	
+	@Override
+	public Integer getId() {
+		return getOutboundQueueId();
+	}
+	
+	@Override
+	public void setId(Integer id) {
+		setOutboundQueueId(id);
+	}
+	
+	public Integer getOutboundQueueId() {
+		return outboundQueueId;
+	}
+	
+	public void setOutboundQueueId(Integer outboundQueueId) {
+		this.outboundQueueId = outboundQueueId;
+	}
+	
+	public String getMessage() {
+		return message;
+	}
+	
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	
+	public Date getDateCreated() {
+		return dateCreated;
+	}
+	
+	public void setDateCreated(Date dateCreated) {
+		this.dateCreated = dateCreated;
+	}
+	
+	public Boolean getProcessed() {
+		return processed;
+	}
+	
+	public void setProcessed(Boolean processed) {
+		this.processed = processed;
+	}
 }

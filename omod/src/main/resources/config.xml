@@ -2,51 +2,51 @@
 
 <module configVersion="1.2">
 
-	<!-- Module Properties -->
-	<id>${project.parent.artifactId}</id>
-	<name>${project.parent.name}</name>
-	<version>${project.parent.version}</version>
-	<package>${project.parent.groupId}.${project.parent.artifactId}</package>
-	<author>PIH</author>
-	<description>
-		${project.parent.description}
-	</description>
-	<updateURL>https://dev.openmrs.org/modules/download/${project.parent.artifactId}/update.rdf</updateURL>
-	<require_version>${openMRSVersion}</require_version>
-	<!-- / Module Properties -->
+    <!-- Module Properties -->
+    <id>${project.parent.artifactId}</id>
+    <name>${project.parent.name}</name>
+    <version>${project.parent.version}</version>
+    <package>${project.parent.groupId}.${project.parent.artifactId}</package>
+    <author>PIH</author>
+    <description>
+        ${project.parent.description}
+    </description>
+    <updateURL>https://dev.openmrs.org/modules/download/${project.parent.artifactId}/update.rdf</updateURL>
+    <require_version>${openMRSVersion}</require_version>
+    <!-- / Module Properties -->
 
-	<!-- Required modules -->
+    <!-- Required modules -->
     <require_modules>
         <require_module version="${eventVersion}">
             org.openmrs.event
         </require_module>
     </require_modules>
 
-	<!-- Module Activator -->
-	<activator>${project.parent.groupId}.${project.parent.artifactId}.PacsIntegrationActivator</activator>
-	
-	
-	<!-- Maps hibernate file's, if present -->
+    <!-- Module Activator -->
+    <activator>${project.parent.groupId}.${project.parent.artifactId}.PacsIntegrationActivator</activator>
+
+
+    <!-- Maps hibernate file's, if present -->
     <mappingFiles>
         OutboundQueue.hbm.xml
     </mappingFiles>
 
 
-	<!-- Internationalization -->
-	<!-- All message codes should start with ${project.parent.artifactId}. -->
-	<messages>
-		<lang>en</lang>
-		<file>messages.properties</file>
-	</messages>
-	<messages>
-		<lang>fr</lang>
-		<file>messages_fr.properties</file>
-	</messages>
-	<messages>
-		<lang>es</lang>
-		<file>messages_es.properties</file>
-	</messages>
-	<!-- /Internationalization -->
+    <!-- Internationalization -->
+    <!-- All message codes should start with ${project.parent.artifactId}. -->
+    <messages>
+        <lang>en</lang>
+        <file>messages.properties</file>
+    </messages>
+    <messages>
+        <lang>fr</lang>
+        <file>messages_fr.properties</file>
+    </messages>
+    <messages>
+        <lang>es</lang>
+        <file>messages_es.properties</file>
+    </messages>
+    <!-- /Internationalization -->
 
 
     <!-- Global properties -->
@@ -73,8 +73,6 @@
             Password the listener users for authentication
         </description>
     </globalProperty>
-
-
 
 
 </module>

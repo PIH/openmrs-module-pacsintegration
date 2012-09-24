@@ -16,10 +16,10 @@ package org.openmrs.module.pacsintegration.api.db;
 import org.openmrs.module.pacsintegration.OutboundQueue;
 
 /**
- *  Database methods for {@link org.openmrs.module.pacsintegration.api.PacsIntegrationService}.
+ * Database methods for {@link org.openmrs.module.pacsintegration.api.PacsIntegrationService}.
  */
 public interface PacsIntegrationDAO {
-
-    public void saveOutboundQueue(OutboundQueue outbound);
-
+	
+	public void saveOutboundQueue(OutboundQueue outbound);
+	
 }

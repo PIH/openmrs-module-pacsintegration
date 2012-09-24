@@ -20,29 +20,31 @@ import org.openmrs.module.pacsintegration.OutboundQueue;
 import org.openmrs.module.pacsintegration.api.db.PacsIntegrationDAO;
 
 /**
- * It is a default implementation of  {@link org.openmrs.module.pacsintegration.api.db.PacsIntegrationDAO}.
+ * It is a default implementation of
+ * {@link org.openmrs.module.pacsintegration.api.db.PacsIntegrationDAO}.
  */
 public class HibernatePacsIntegrationDAO implements PacsIntegrationDAO {
+	
 	protected final Log log = LogFactory.getLog(this.getClass());
 	
 	private SessionFactory sessionFactory;
 	
 	/**
-     * @param sessionFactory the sessionFactory to set
-     */
-    public void setSessionFactory(SessionFactory sessionFactory) {
-	    this.sessionFactory = sessionFactory;
-    }
-    
+	 * @param sessionFactory the sessionFactory to set
+	 */
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
+	
 	/**
-     * @return the sessionFactory
-     */
-    public SessionFactory getSessionFactory() {
-	    return sessionFactory;
-    }
-
-    @Override
-    public void saveOutboundQueue(OutboundQueue outbound) {
-        sessionFactory.getCurrentSession().saveOrUpdate(outbound);
-    }
+	 * @return the sessionFactory
+	 */
+	public SessionFactory getSessionFactory() {
+		return sessionFactory;
+	}
+	
+	@Override
+	public void saveOutboundQueue(OutboundQueue outbound) {
+		sessionFactory.getCurrentSession().saveOrUpdate(outbound);
+	}
 }

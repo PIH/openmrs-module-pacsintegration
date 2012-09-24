@@ -16,66 +16,60 @@ package org.openmrs.module.pacsintegration;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Order;
 
-import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.load.Persister;
-
 import com.thoughtworks.xstream.XStream;
 
-import java.io.StringWriter;
-import java.io.Writer;
-
 public class ConversionUtils {
-
-    /**
-     * Given an order and an order control code, creates an OrmMessage object
-     */
-    public static OrmMessage createORMMessage(Order order, String orderControl) {
-
-        // TODO: better handle the missing values that would cause NPE
-
-        if (order == null) {
-            throw new PacsIntegrationException("Order cannot be null");
-        }
-
-        if (StringUtils.isEmpty(orderControl)) {
-            // default to a new order
-            orderControl = "NW";
-        }
-
-        OrmMessage ormMessage = new OrmMessage();
-
-        ormMessage.setAccessionNumber(order.getAccessionNumber());
-        ormMessage.setDateOfBirth(PacsIntegrationConstants.hl7DateFormat.format(order.getPatient().getBirthdate()));
-        // TODO: ormMessage.setDeviceLocation();
-        ormMessage.setFamilyName(order.getPatient().getFamilyName());
-        ormMessage.setGivenName(order.getPatient().getGivenName());
-        // TODO: ormMessage.setModality();
-        ormMessage.setOrderControl(orderControl);
-        // TODO: we should set this to specific identifier that is configured, not just the preferred one?
-        ormMessage.setPatientId(order.getPatient().getPatientIdentifier().getIdentifier());
-        ormMessage.setPatientSex(order.getPatient().getGender());
-        // TODO: is the start date the order date?
-        ormMessage.setScheduledExamDatetime(PacsIntegrationConstants.hl7DateFormat.format(order.getStartDate()));
-        // TODO: ormMessage.setSendingFacility();
-        // TODO: ormMessage.setUniversalServiceID();
-        // TODO; ormMessage.setUniversalServiceIDText();
-
-        return ormMessage;
-    }
-
-    /**
-     * Performs basic serialization using Xstream
-     */
-    public static String serialize(Object obj) {
-
-        if (obj == null) {
-            throw new PacsIntegrationException("Item to serialize cannot be null");
-        }
-
-        // set up aliases for our classes so we don't get the whole package names
-        XStream xstream = new XStream();
-        xstream.alias("OrmMessage", OrmMessage.class);
-
-        return xstream.toXML(obj);
-    }
+	
+	/**
+	 * Given an order and an order control code, creates an OrmMessage object
+	 */
+	public static OrmMessage createORMMessage(Order order, String orderControl) {
+		
+		// TODO: better handle the missing values that would cause NPE
+		
+		if (order == null) {
+			throw new PacsIntegrationException("Order cannot be null");
+		}
+		
+		if (StringUtils.isEmpty(orderControl)) {
+			// default to a new order
+			orderControl = "NW";
+		}
+		
+		OrmMessage ormMessage = new OrmMessage();
+		
+		ormMessage.setAccessionNumber(order.getAccessionNumber());
+		ormMessage.setDateOfBirth(PacsIntegrationConstants.hl7DateFormat.format(order.getPatient().getBirthdate()));
+		// TODO: ormMessage.setDeviceLocation();
+		ormMessage.setFamilyName(order.getPatient().getFamilyName());
+		ormMessage.setGivenName(order.getPatient().getGivenName());
+		// TODO: ormMessage.setModality();
+		ormMessage.setOrderControl(orderControl);
+		// TODO: we should set this to specific identifier that is configured, not just the preferred one?
+		ormMessage.setPatientId(order.getPatient().getPatientIdentifier().getIdentifier());
+		ormMessage.setPatientSex(order.getPatient().getGender());
+		// TODO: is the start date the order date?
+		ormMessage.setScheduledExamDatetime(PacsIntegrationConstants.hl7DateFormat.format(order.getStartDate()));
+		// TODO: ormMessage.setSendingFacility();
+		// TODO: ormMessage.setUniversalServiceID();
+		// TODO; ormMessage.setUniversalServiceIDText();
+		
+		return ormMessage;
+	}
+	
+	/**
+	 * Performs basic serialization using Xstream
+	 */
+	public static String serialize(Object obj) {
+		
+		if (obj == null) {
+			throw new PacsIntegrationException("Item to serialize cannot be null");
+		}
+		
+		// set up aliases for our classes so we don't get the whole package names
+		XStream xstream = new XStream();
+		xstream.alias("OrmMessage", OrmMessage.class);
+		
+		return xstream.toXML(obj);
+	}
 }

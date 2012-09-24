@@ -13,7 +13,6 @@
  */
 package org.openmrs.module.pacsintegration;
 
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.module.ModuleActivator;
@@ -24,7 +23,7 @@ import org.openmrs.module.ModuleActivator;
 public class PacsIntegrationActivator implements ModuleActivator {
 	
 	protected Log log = LogFactory.getLog(getClass());
-		
+	
 	/**
 	 * @see ModuleActivator#willRefreshContext()
 	 */
@@ -66,5 +65,5 @@ public class PacsIntegrationActivator implements ModuleActivator {
 	public void stopped() {
 		log.info("PACS Integration Module stopped");
 	}
-		
+	
 }

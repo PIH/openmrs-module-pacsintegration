@@ -13,15 +13,16 @@
  */
 package org.openmrs.module.pacsintegration.api.impl;
 
-import org.openmrs.api.impl.BaseOpenmrsService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.pacsintegration.OutboundQueue;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.api.db.PacsIntegrationDAO;
 
 /**
- * It is a default implementation of {@link org.openmrs.module.pacsintegration.api.PacsIntegrationService}.
+ * It is a default implementation of
+ * {@link org.openmrs.module.pacsintegration.api.PacsIntegrationService}.
  */
 public class PacsIntegrationServiceImpl extends BaseOpenmrsService implements PacsIntegrationService {
 	
@@ -30,22 +31,22 @@ public class PacsIntegrationServiceImpl extends BaseOpenmrsService implements Pa
 	private PacsIntegrationDAO dao;
 	
 	/**
-     * @param dao the dao to set
-     */
-    public void setDao(PacsIntegrationDAO dao) {
-	    this.dao = dao;
-    }
-    
-    /**
-     * @return the dao
-     */
-    public PacsIntegrationDAO getDao() {
-	    return dao;
-    }
-
-    @Override
-    public void sendMessageToPacs(String message) {
-        OutboundQueue outbound = new OutboundQueue(message);
-        dao.saveOutboundQueue(outbound);
-    }
+	 * @param dao the dao to set
+	 */
+	public void setDao(PacsIntegrationDAO dao) {
+		this.dao = dao;
+	}
+	
+	/**
+	 * @return the dao
+	 */
+	public PacsIntegrationDAO getDao() {
+		return dao;
+	}
+	
+	@Override
+	public void sendMessageToPacs(String message) {
+		OutboundQueue outbound = new OutboundQueue(message);
+		dao.saveOutboundQueue(outbound);
+	}
 }

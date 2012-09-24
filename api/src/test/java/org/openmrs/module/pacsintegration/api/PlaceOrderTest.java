@@ -16,10 +16,7 @@ package org.openmrs.module.pacsintegration.api;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.cfg.Environment;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.openmrs.Order;
@@ -32,59 +29,56 @@ import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.test.annotation.NotTransactional;
 
 import java.util.Date;
-import java.util.List;
-import java.util.Properties;
 
 public class PlaceOrderTest extends BaseModuleContextSensitiveTest {
-
-    protected final Log log = LogFactory.getLog(getClass());
-
-    protected static final String XML_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset.xml";
-
-    /**
-     * See http://listarchives.openmrs.org/Limitations-of-H2-for-unit-tests-td7560958.html .
-     * This avoids: org.h2.jdbc.JdbcSQLException: Timeout trying to lock table "ORDERS"; SQL statement:
-     * 
-     * @see org.openmrs.test.BaseContextSensitiveTest#getRuntimeProperties()
-     */
-
-    
-    @Before
-    public void setupDatabase() throws Exception {
-        executeDataSet(XML_DATASET);
-    }
-
-    @Test
-    @NotTransactional
-    public void testPlacingRadiologyOrderShouldTriggerOutgoingMessage() throws Exception {
-
-        PacsIntegrationService pacsIntegrationService = Context.getService(PacsIntegrationService.class);
-
-    	// we want to mock PacsIntegrationService but not other services, so we cannot use powermock to mock Context
-        PacsIntegrationService mockPacsIntegrationService = Mockito.mock(PacsIntegrationService.class);
-        ServiceContext.getInstance().setService(PacsIntegrationService.class, mockPacsIntegrationService);
-
-        // the @StartModule annotation leads to classloader issues, so we manually register this advice for the Event module
-        // originally we had this class-level annotation: @StartModule({ "org/openmrs/module/pacsintegration/include/event-1.0.omod" })
-        Context.addAdvice(OrderService.class, new GeneralEventAdvice());
-
-        Order order = new Order();
-        order.setOrderType(Context.getOrderService().getOrderType(1001));
-        order.setPatient(Context.getPatientService().getPatient(7));
-        order.setConcept(Context.getConceptService().getConcept(18));
-        order.setStartDate(new Date());
-        Context.getOrderService().saveOrder(order);
-
-        // wait for a few seconds to give the test time to propogate
-        Thread.sleep(5000);
-
-        Mockito.verify(mockPacsIntegrationService).sendMessageToPacs(ConversionUtils.serialize(ConversionUtils.createORMMessage(order, "NW")));
-
-        // tear down and set the service back to the real service
-        ServiceContext.getInstance().setService(PacsIntegrationService.class, pacsIntegrationService);
-
-        // TODO: since this is not transactional does it pollute our test database?
-    }
-
-
+	
+	protected final Log log = LogFactory.getLog(getClass());
+	
+	protected static final String XML_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset.xml";
+	
+	/**
+	 * See http://listarchives.openmrs.org/Limitations-of-H2-for-unit-tests-td7560958.html . This
+	 * avoids: org.h2.jdbc.JdbcSQLException: Timeout trying to lock table "ORDERS"; SQL statement:
+	 * 
+	 * @see org.openmrs.test.BaseContextSensitiveTest#getRuntimeProperties()
+	 */
+	
+	@Before
+	public void setupDatabase() throws Exception {
+		executeDataSet(XML_DATASET);
+	}
+	
+	@Test
+	@NotTransactional
+	public void testPlacingRadiologyOrderShouldTriggerOutgoingMessage() throws Exception {
+		
+		PacsIntegrationService pacsIntegrationService = Context.getService(PacsIntegrationService.class);
+		
+		// we want to mock PacsIntegrationService but not other services, so we cannot use powermock to mock Context
+		PacsIntegrationService mockPacsIntegrationService = Mockito.mock(PacsIntegrationService.class);
+		ServiceContext.getInstance().setService(PacsIntegrationService.class, mockPacsIntegrationService);
+		
+		// the @StartModule annotation leads to classloader issues, so we manually register this advice for the Event module
+		// originally we had this class-level annotation: @StartModule({ "org/openmrs/module/pacsintegration/include/event-1.0.omod" })
+		Context.addAdvice(OrderService.class, new GeneralEventAdvice());
+		
+		Order order = new Order();
+		order.setOrderType(Context.getOrderService().getOrderType(1001));
+		order.setPatient(Context.getPatientService().getPatient(7));
+		order.setConcept(Context.getConceptService().getConcept(18));
+		order.setStartDate(new Date());
+		Context.getOrderService().saveOrder(order);
+		
+		// wait for a few seconds to give the test time to propogate
+		Thread.sleep(5000);
+		
+		Mockito.verify(mockPacsIntegrationService).sendMessageToPacs(
+		    ConversionUtils.serialize(ConversionUtils.createORMMessage(order, "NW")));
+		
+		// tear down and set the service back to the real service
+		ServiceContext.getInstance().setService(PacsIntegrationService.class, pacsIntegrationService);
+		
+		// TODO: since this is not transactional does it pollute our test database?
+	}
+	
 }

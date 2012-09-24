@@ -17,19 +17,19 @@ package org.openmrs.module.pacsintegration;
  * Generic exception thrown by PACS Integration module
  */
 public class PacsIntegrationException extends RuntimeException {
-
-    private static final long serialVersionUID = 1L;
-
-    public PacsIntegrationException() {
-        super();
-    }
-
-    public PacsIntegrationException(String message) {
-        super(message);
-    }
-
-    public PacsIntegrationException(String message, Throwable throwable) {
-        super(message, throwable);
-    }
-
+	
+	private static final long serialVersionUID = 1L;
+	
+	public PacsIntegrationException() {
+		super();
+	}
+	
+	public PacsIntegrationException(String message) {
+		super(message);
+	}
+	
+	public PacsIntegrationException(String message, Throwable throwable) {
+		super(message, throwable);
+	}
+	
 }
