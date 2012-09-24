@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping package="org.openmrs.module.pacsintegration">
+
+
+    <class name="OutboundQueue" table="pacsintegration_outbound_queue">
+
+        <id name="outboundQueueId" type="int" column="outbound_queue_id" unsaved-value="0">
+            <generator class="native" />
+        </id>
+        <discriminator column="outbound_queue_id" insert="false" />
+        <property name="uuid" type="java.lang.String" column="uuid"
+                  length="38" unique="true" />
+
+        <property name="message" type="java.lang.String" column="message"
+                  not-null="true" length="16777215" />
+
+        <property name="dateCreated" type="java.util.Date" column="date_created"
+                  not-null="true" />
+
+        <property name="processed" type="java.lang.Boolean" column="processed"
+                  not-null="true"/>
+
+    </class>
+
+
+</hibernate-mapping>
+

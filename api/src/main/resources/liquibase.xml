@@ -8,5 +8,26 @@
         See http://www.liquibase.org/manual/home#available_database_refactorings
         for a list of supported elements and attributes
     -->
-    
+
+    <changeSet id="201209241424" author="mgoodrich">
+        <comment>Adds outbound queue table</comment>
+        <createTable tableName="pacsintegration_outbound_queue">
+            <column name="pacsintegration_outbound_queue_id" type="int">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="message" type="mediumtext">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processed" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uuid" type="char(38)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>

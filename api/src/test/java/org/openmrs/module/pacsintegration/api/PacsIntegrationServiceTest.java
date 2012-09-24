@@ -14,17 +14,58 @@
 package org.openmrs.module.pacsintegration.api;
 
 import static org.junit.Assert.*;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.openmrs.Order;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.pacsintegration.ConversionUtils;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * Tests {@link ${PacsIntegrationService}}.
  */
 public class PacsIntegrationServiceTest extends BaseModuleContextSensitiveTest {
-	
-	@Test
+
+    protected final Log log = LogFactory.getLog(getClass());
+
+    protected static final String XML_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset.xml";
+
+    @Before
+    public void setupDatabase() throws Exception {
+        executeDataSet(XML_DATASET);
+    }
+
+
+    @Test
 	public void shouldSetupContext() {
 		assertNotNull(Context.getService(PacsIntegrationService.class));
 	}
+
+    @Test
+    public void testSendingOrderMessageShouldWriteEntryToOutboundQueue() throws Exception {
+
+        // create a sample order message
+        Order order = new Order();
+        order.setOrderType(Context.getOrderService().getOrderType(1001));
+        order.setPatient(Context.getPatientService().getPatient(7));
+        order.setConcept(Context.getConceptService().getConcept(18));
+        order.setStartDate(new Date());
+        String message = ConversionUtils.serialize(ConversionUtils.createORMMessage(order, "NW"));
+
+        // send the message
+        Context.getService(PacsIntegrationService.class).sendMessageToPacs(message);
+
+        // confirm that it has been stored in the outbound queue
+        List<List<Object>> results = Context.getAdministrationService().executeSQL("SELECT message FROM pacsintegration_outbound_queue ORDER BY date_created DESC", true);
+        String messageInQueue = (String) results.get(0).get(0);
+        Assert.assertEquals(message, messageInQueue);
+    }
+
 }

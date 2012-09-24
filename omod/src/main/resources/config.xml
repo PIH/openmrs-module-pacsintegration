@@ -27,7 +27,9 @@
 	
 	
 	<!-- Maps hibernate file's, if present -->
-
+    <mappingFiles>
+        OutboundQueue.hbm.xml
+    </mappingFiles>
 
 
 	<!-- Internationalization -->

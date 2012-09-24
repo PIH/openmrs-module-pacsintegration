@@ -16,6 +16,7 @@ package org.openmrs.module.pacsintegration.api.impl;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.module.pacsintegration.OutboundQueue;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.api.db.PacsIntegrationDAO;
 
@@ -44,6 +45,7 @@ public class PacsIntegrationServiceImpl extends BaseOpenmrsService implements Pa
 
     @Override
     public void sendMessageToPacs(String message) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        OutboundQueue outbound = new OutboundQueue(message);
+        dao.saveOutboundQueue(outbound);
     }
 }

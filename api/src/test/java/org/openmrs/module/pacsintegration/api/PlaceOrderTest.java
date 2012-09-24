@@ -14,9 +14,6 @@
 
 package org.openmrs.module.pacsintegration.api;
 
-import java.util.Date;
-import java.util.Properties;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.cfg.Environment;
@@ -34,10 +31,10 @@ import org.openmrs.module.pacsintegration.ConversionUtils;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.test.annotation.NotTransactional;
 
-/**
- * This test fails because when our listener receives an order created message, that order doesn't seem to be in the DB.
- * I don't know if this is an artifact of the test framework (particularly the MVCC hack) or a real bug.
- */
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
+
 public class PlaceOrderTest extends BaseModuleContextSensitiveTest {
 
     protected final Log log = LogFactory.getLog(getClass());
@@ -50,15 +47,7 @@ public class PlaceOrderTest extends BaseModuleContextSensitiveTest {
      * 
      * @see org.openmrs.test.BaseContextSensitiveTest#getRuntimeProperties()
      */
-    @Override
-    public Properties getRuntimeProperties() {
-        Properties props = super.getRuntimeProperties();
-        String url = props.getProperty(Environment.URL);
-        if (url.contains("jdbc:h2:") && !url.contains(";MVCC=TRUE")) {
-            props.setProperty(Environment.URL, url + ";MVCC=true");
-        }
-        return props;
-    }
+
     
     @Before
     public void setupDatabase() throws Exception {
@@ -68,10 +57,13 @@ public class PlaceOrderTest extends BaseModuleContextSensitiveTest {
     @Test
     @NotTransactional
     public void testPlacingRadiologyOrderShouldTriggerOutgoingMessage() throws Exception {
+
+        PacsIntegrationService pacsIntegrationService = Context.getService(PacsIntegrationService.class);
+
     	// we want to mock PacsIntegrationService but not other services, so we cannot use powermock to mock Context
         PacsIntegrationService mockPacsIntegrationService = Mockito.mock(PacsIntegrationService.class);
         ServiceContext.getInstance().setService(PacsIntegrationService.class, mockPacsIntegrationService);
-        
+
         // the @StartModule annotation leads to classloader issues, so we manually register this advice for the Event module
         // originally we had this class-level annotation: @StartModule({ "org/openmrs/module/pacsintegration/include/event-1.0.omod" })
         Context.addAdvice(OrderService.class, new GeneralEventAdvice());
@@ -87,6 +79,9 @@ public class PlaceOrderTest extends BaseModuleContextSensitiveTest {
         Thread.sleep(5000);
 
         Mockito.verify(mockPacsIntegrationService).sendMessageToPacs(ConversionUtils.serialize(ConversionUtils.createORMMessage(order, "NW")));
+
+        // tear down and set the service back to the real service
+        ServiceContext.getInstance().setService(PacsIntegrationService.class, pacsIntegrationService);
 
         // TODO: since this is not transactional does it pollute our test database?
     }

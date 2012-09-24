@@ -16,6 +16,7 @@ package org.openmrs.module.pacsintegration.api.db.hibernate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.SessionFactory;
+import org.openmrs.module.pacsintegration.OutboundQueue;
 import org.openmrs.module.pacsintegration.api.db.PacsIntegrationDAO;
 
 /**
@@ -38,5 +39,10 @@ public class HibernatePacsIntegrationDAO implements PacsIntegrationDAO {
      */
     public SessionFactory getSessionFactory() {
 	    return sessionFactory;
+    }
+
+    @Override
+    public void saveOutboundQueue(OutboundQueue outbound) {
+        sessionFactory.getCurrentSession().saveOrUpdate(outbound);
     }
 }

@@ -28,13 +28,11 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional
 public interface PacsIntegrationService extends OpenmrsService {
-     
-	/*
-	 * Add service methods here
-	 * 
-	 */
 
 
+    /**
+     * Adds a message to the outgoing queue for PACS
+     */
     public void sendMessageToPacs(String message);
 
 }
