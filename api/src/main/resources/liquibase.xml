@@ -30,4 +30,11 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="201209241720" author="mgoodrich">
+        <comment>Rename key column in pacsintegration_outbound_queue table</comment>
+        <renameColumn tableName="pacsintegration_outbound_queue" oldColumnName="pacsintegration_outbound_queue_id"
+                      newColumnName="outbound_queue_id" columnDataType="int"/>
+    </changeSet>
+
+
 </databaseChangeLog>
