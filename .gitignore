@@ -10,3 +10,6 @@
 /omod/.settings
 /omod/.classpath
 /omod/target
+
+/.idea
+*.iml
