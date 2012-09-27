@@ -67,7 +67,7 @@
     </globalProperty>
 
     <globalProperty>
-        <property>mirebalais.mirthPassword</property>
+        <property>pacsintegration.listenerPassword</property>
         <defaultValue>test</defaultValue>
         <description>
             Password the listener users for authentication
