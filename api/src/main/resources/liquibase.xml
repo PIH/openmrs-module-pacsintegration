@@ -36,5 +36,12 @@
                       newColumnName="outbound_queue_id" columnDataType="int"/>
     </changeSet>
 
+    <changeSet id="201209281223" author="mgoodrich">
+        <comment>Add auto increment to key column of outboud_queue table</comment>
+        <addAutoIncrement tableName="pacsintegration_outbound_queue" columnName="outbound_queue_id" columnDataType="int"/>
+    </changeSet>
+
+
+
 
 </databaseChangeLog>
