@@ -41,7 +41,13 @@
         <addAutoIncrement tableName="pacsintegration_outbound_queue" columnName="outbound_queue_id" columnDataType="int"/>
     </changeSet>
 
-
-
+    <changeSet id="201209301216" author="mgoodrich">
+        <comment>Changed datatype of date_created from date to datetime</comment>
+        <modifyColumn tableName="pacsintegration_outbound_queue">
+            <column name="date_created" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </modifyColumn>
+    </changeSet>
 
 </databaseChangeLog>
