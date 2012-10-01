@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Patient;
 import org.openmrs.api.PatientService;
-import org.openmrs.event.Event;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.api.PatientToPacsConverter;
 
@@ -13,6 +12,7 @@ import javax.jms.Message;
 
 import static org.mockito.Mockito.*;
 import static org.openmrs.event.Event.Action.CREATED;
+import static org.openmrs.event.Event.Action.UPDATED;
 
 
 public class PatientEventListenerTest {
@@ -37,9 +37,9 @@ public class PatientEventListenerTest {
     @Test
     public void shouldSendCreatedPatientToPacs() throws JMSException {
         Message message = new PatientMessage(){{
-            setStringProperty("uuid", UID);
-            setStringProperty("classname", Patient.class.getName());
-            setStringProperty("action", CREATED.toString());
+            setString("uuid", UID);
+            setString("classname", Patient.class.getName());
+            setString("action", CREATED.toString());
         }};
 
         Patient patient = new Patient();
@@ -56,9 +56,9 @@ public class PatientEventListenerTest {
     @Test
     public void shouldSendUpdatedPatientToPacs() throws JMSException {
         Message message = new PatientMessage(){{
-            setStringProperty("uuid", UID);
-            setStringProperty("classname", Patient.class.getName());
-            setStringProperty("action", Event.Action.UPDATED.toString());
+            setString("uuid", UID);
+            setString("classname", Patient.class.getName());
+            setString("action", UPDATED.toString());
         }};
 
         Patient patient = new Patient();
