@@ -37,10 +37,28 @@ public class PatientEventListenerTest {
     @Test
     public void shouldSendCreatedPatientToPacs() throws JMSException {
         Message message = new PatientMessage(){{
-            setStringProperty("sendingFacility", SENDING_FACILITY);
             setStringProperty("uuid", UID);
             setStringProperty("classname", Patient.class.getName());
             setStringProperty("action", CREATED.toString());
+        }};
+
+        Patient patient = new Patient();
+        String xml = "";
+
+        when(patientService.getPatientByUuid(UID)).thenReturn(patient);
+        when(converter.convertToPacsFormat(patient, SENDING_FACILITY)).thenReturn(xml);
+
+        patientEventListener.onMessage(message);
+
+        verify(pis).sendMessageToPacs(xml);
+    }
+
+    @Test
+    public void shouldSendUpdatedPatientToPacs() throws JMSException {
+        Message message = new PatientMessage(){{
+            setStringProperty("uuid", UID);
+            setStringProperty("classname", Patient.class.getName());
+            setStringProperty("action", Event.Action.UPDATED.toString());
         }};
 
         Patient patient = new Patient();

@@ -49,8 +49,9 @@ public class PatientEventListener implements SubscribableEventListener {
 
             boolean isPatient = Patient.class.getName().equals(classname);
             boolean isCreated = CREATED.toString().equals(action);
+            boolean isUpdated = Event.Action.UPDATED.toString().equals(action);
 
-            if(isCreated && isPatient)
+            if((isCreated || isUpdated) && isPatient)
                 sendToPacs(mapMessage);
 
         } catch (JMSException e) {
@@ -60,7 +61,7 @@ public class PatientEventListener implements SubscribableEventListener {
 
     private void sendToPacs(MapMessage mapMessage) throws JMSException {
         String uuid = mapMessage.getStringProperty("uuid");
-        String sendingFacility = mapMessage.getStringProperty("sendingFacility");
+        String sendingFacility = "";  //TODO We need to determine how the sending facility will be retrieved
 
         Patient patient = patientService.getPatientByUuid(uuid);
         String pacsXML = pacsConverter.convertToPacsFormat(patient, sendingFacility);
