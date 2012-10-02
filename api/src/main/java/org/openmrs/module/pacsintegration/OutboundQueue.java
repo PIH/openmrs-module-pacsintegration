@@ -14,9 +14,9 @@
 
 package org.openmrs.module.pacsintegration;
 
-import java.util.Date;
-
 import org.openmrs.BaseOpenmrsObject;
+
+import java.util.Date;
 
 public class OutboundQueue extends BaseOpenmrsObject {
 	

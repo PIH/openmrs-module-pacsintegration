@@ -11,6 +11,6 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.pacsintegration;
+package org.openmrs.module.pacsintegration.api.messages;
 
 public class Message {}

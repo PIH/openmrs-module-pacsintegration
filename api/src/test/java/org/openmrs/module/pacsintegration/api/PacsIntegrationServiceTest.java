@@ -13,26 +13,33 @@
  */
 package org.openmrs.module.pacsintegration.api;
 
-import static org.junit.Assert.assertNotNull;
-
-import java.util.Date;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.openmrs.Order;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.pacsintegration.ConversionUtils;
+import org.openmrs.module.pacsintegration.api.converter.OrderToPacsConverter;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.Assert.assertNotNull;
 
 /**
- * Tests {@link $ PacsIntegrationService}}.
+ * Tests {@link PacsIntegrationService}}.
  */
+@RunWith(SpringJUnit4ClassRunner.class)
 public class PacsIntegrationServiceTest extends BaseModuleContextSensitiveTest {
-	
+
+    @Autowired
+    private OrderToPacsConverter orderConverter;
+
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	protected static final String XML_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset.xml";
@@ -56,7 +63,7 @@ public class PacsIntegrationServiceTest extends BaseModuleContextSensitiveTest {
 		order.setPatient(Context.getPatientService().getPatient(7));
 		order.setConcept(Context.getConceptService().getConcept(18));
 		order.setStartDate(new Date());
-		String message = ConversionUtils.serialize(ConversionUtils.createORMMessage(order, "NW"));
+		String message = orderConverter.convertToPacsFormat(order, "NW");
 		
 		// send the message
 		Context.getService(PacsIntegrationService.class).sendMessageToPacs(message);

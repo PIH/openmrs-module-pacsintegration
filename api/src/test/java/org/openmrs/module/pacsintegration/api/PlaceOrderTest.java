@@ -18,20 +18,27 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.openmrs.Order;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ServiceContext;
 import org.openmrs.module.event.advice.GeneralEventAdvice;
-import org.openmrs.module.pacsintegration.ConversionUtils;
+import org.openmrs.module.pacsintegration.api.converter.OrderToPacsConverter;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.NotTransactional;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Date;
 
+@RunWith(SpringJUnit4ClassRunner.class)
 public class PlaceOrderTest extends BaseModuleContextSensitiveTest {
-	
+
+    @Autowired
+    private OrderToPacsConverter orderToPacsConverter;
+
 	protected final Log log = LogFactory.getLog(getClass());
 	
 	protected static final String XML_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset.xml";
@@ -72,8 +79,7 @@ public class PlaceOrderTest extends BaseModuleContextSensitiveTest {
 		// wait for a few seconds to give the test time to propogate
 		Thread.sleep(5000);
 		
-		Mockito.verify(mockPacsIntegrationService).sendMessageToPacs(
-		    ConversionUtils.serialize(ConversionUtils.createORMMessage(order, "NW")));
+		Mockito.verify(mockPacsIntegrationService).sendMessageToPacs(orderToPacsConverter.convertToPacsFormat(order, "NW"));
 		
 		// tear down and set the service back to the real service
 		ServiceContext.getInstance().setService(PacsIntegrationService.class, pacsIntegrationService);

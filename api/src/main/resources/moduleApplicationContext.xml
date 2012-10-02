@@ -15,7 +15,7 @@
         </property>
     </bean>
     <bean id="patientToPacsConverter" class="org.openmrs.module.pacsintegration.api.converter.PatientToPacsConverter" />
-
+    <bean id="orderToPacsConverter" class="org.openmrs.module.pacsintegration.api.converter.OrderToPacsConverter" />
 
     <!-- Services accessible via Context.getService() -->
     <bean parent="serviceContext">
@@ -53,10 +53,15 @@
             <ref bean="pacsIntegrationService"/>
         </constructor-arg>
     </bean>
+    <bean id="orderEventListener" class="org.openmrs.module.pacsintegration.listener.OrderEventListener">
+        <constructor-arg index="0">
+            <ref bean="orderToPacsConverter" />
+        </constructor-arg>
+    </bean>
 
     <bean class="org.openmrs.event.Event">
         <property name="subscription">
-            <bean class="org.openmrs.module.pacsintegration.listener.OrderEventListener"></bean>
+            <ref bean="orderEventListener" />
         </property>
     </bean>
     <bean class="org.openmrs.event.Event">

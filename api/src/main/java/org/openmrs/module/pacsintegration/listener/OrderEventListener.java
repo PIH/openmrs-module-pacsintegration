@@ -14,23 +14,27 @@
 
 package org.openmrs.module.pacsintegration.listener;
 
-import java.util.Arrays;
-import java.util.List;
-
-import javax.jms.MapMessage;
-import javax.jms.Message;
-
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Order;
 import org.openmrs.api.context.Context;
 import org.openmrs.event.Event;
 import org.openmrs.event.SubscribableEventListener;
-import org.openmrs.module.pacsintegration.ConversionUtils;
-import org.openmrs.module.pacsintegration.OrmMessage;
 import org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
+import org.openmrs.module.pacsintegration.api.converter.OrderToPacsConverter;
+
+import javax.jms.MapMessage;
+import javax.jms.Message;
+import java.util.Arrays;
+import java.util.List;
 
 public class OrderEventListener implements SubscribableEventListener {
+
+    private OrderToPacsConverter converter;
+
+    public OrderEventListener(OrderToPacsConverter converter) {
+        this.converter = converter;
+    }
 	
 	@Override
 	public void onMessage(Message message) {
@@ -51,9 +55,8 @@ public class OrderEventListener implements SubscribableEventListener {
 				}
 				
 				if (PacsIntegrationGlobalProperties.RADIOLOGY_ORDER_TYPE_UUID().equals(order.getOrderType().getUuid())) {
-					OrmMessage ormMessage = ConversionUtils.createORMMessage(order, "NW");
 					Context.getService(PacsIntegrationService.class)
-					        .sendMessageToPacs(ConversionUtils.serialize(ormMessage));
+					        .sendMessageToPacs(converter.convertToPacsFormat(order, "NW"));
 				}
 				
 			}
