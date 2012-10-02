@@ -10,7 +10,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.event.Event;
 import org.openmrs.event.SubscribableEventListener;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
-import org.openmrs.module.pacsintegration.api.PatientToPacsConverter;
+import org.openmrs.module.pacsintegration.api.converter.PatientToPacsConverter;
 
 import javax.jms.JMSException;
 import javax.jms.MapMessage;

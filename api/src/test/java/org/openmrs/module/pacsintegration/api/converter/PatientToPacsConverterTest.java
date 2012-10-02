@@ -1,4 +1,4 @@
-package org.openmrs.module.pacsintegration.api;
+package org.openmrs.module.pacsintegration.api.converter;
 
 import ca.uhn.hl7v2.HL7Exception;
 import org.junit.Before;

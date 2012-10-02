@@ -14,7 +14,7 @@
             </bean>
         </property>
     </bean>
-    <bean id="patientToPacsConverter" class="org.openmrs.module.pacsintegration.api.PatientToPacsConverter" />
+    <bean id="patientToPacsConverter" class="org.openmrs.module.pacsintegration.api.converter.PatientToPacsConverter" />
 
 
     <!-- Services accessible via Context.getService() -->
