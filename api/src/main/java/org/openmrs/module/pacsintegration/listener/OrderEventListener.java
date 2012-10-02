@@ -16,6 +16,7 @@ package org.openmrs.module.pacsintegration.listener;
 
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Order;
+import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.event.Event;
 import org.openmrs.event.SubscribableEventListener;
@@ -31,17 +32,20 @@ import java.util.List;
 public class OrderEventListener implements SubscribableEventListener {
 
     private OrderToPacsConverter converter;
+    private OrderService orderService;
+    private PacsIntegrationService pacsIntegrationService;
 
-    public OrderEventListener(OrderToPacsConverter converter) {
+    public OrderEventListener(OrderService orderService, OrderToPacsConverter converter, PacsIntegrationService pacsIntegrationService) {
         this.converter = converter;
+        this.orderService = orderService;
+        this.pacsIntegrationService = pacsIntegrationService;
     }
 	
 	@Override
 	public void onMessage(Message message) {
 		Context.openSession();
 		try {
-			Context.authenticate(PacsIntegrationGlobalProperties.LISTENER_USERNAME(),
-			    PacsIntegrationGlobalProperties.LISTENER_PASSWORD());
+			Context.authenticate(PacsIntegrationGlobalProperties.LISTENER_USERNAME(),PacsIntegrationGlobalProperties.LISTENER_PASSWORD());
 			
 			MapMessage mapMessage = (MapMessage) message;
 			String action = mapMessage.getString("action");
@@ -49,16 +53,14 @@ public class OrderEventListener implements SubscribableEventListener {
 			
 			if (Event.Action.CREATED.toString().equals(action) && Order.class.getName().equals(classname)) {
 				String uuid = mapMessage.getString("uuid");
-				Order order = Context.getOrderService().getOrderByUuid(uuid);
+				Order order = orderService.getOrderByUuid(uuid);
 				if (order == null) {
 					throw new RuntimeException("Could not find the order this event tells us about! uuid=" + uuid);
 				}
 				
 				if (PacsIntegrationGlobalProperties.RADIOLOGY_ORDER_TYPE_UUID().equals(order.getOrderType().getUuid())) {
-					Context.getService(PacsIntegrationService.class)
-					        .sendMessageToPacs(converter.convertToPacsFormat(order, "NW"));
+					pacsIntegrationService.sendMessageToPacs(converter.convertToPacsFormat(order, "NW"));
 				}
-				
 			}
 		}
 		catch (Exception e) {

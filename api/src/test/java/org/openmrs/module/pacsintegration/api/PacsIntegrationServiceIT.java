@@ -15,35 +15,32 @@ package org.openmrs.module.pacsintegration.api;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openmrs.Order;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.pacsintegration.api.converter.OrderToPacsConverter;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Date;
 import java.util.List;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests {@link PacsIntegrationService}}.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-public class PacsIntegrationServiceTest extends BaseModuleContextSensitiveTest {
+public class PacsIntegrationServiceIT extends BaseModuleContextSensitiveTest {
 
     @Autowired
-    private OrderToPacsConverter orderConverter;
+    private PacsIntegrationService pacsIntegrationService;
 
 	protected final Log log = LogFactory.getLog(getClass());
-	
 	protected static final String XML_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset.xml";
-	
+
 	@Before
 	public void setupDatabase() throws Exception {
 		executeDataSet(XML_DATASET);
@@ -56,23 +53,15 @@ public class PacsIntegrationServiceTest extends BaseModuleContextSensitiveTest {
 	
 	@Test
 	public void testSendingOrderMessageShouldWriteEntryToOutboundQueue() throws Exception {
-		
-		// create a sample order message
-		Order order = new Order();
-		order.setOrderType(Context.getOrderService().getOrderType(1001));
-		order.setPatient(Context.getPatientService().getPatient(7));
-		order.setConcept(Context.getConceptService().getConcept(18));
-		order.setStartDate(new Date());
-		String message = orderConverter.convertToPacsFormat(order, "NW");
-		
 		// send the message
-		Context.getService(PacsIntegrationService.class).sendMessageToPacs(message);
+        String message = "TEST MESSAGE";
+        pacsIntegrationService.sendMessageToPacs(message);
 		
 		// confirm that it has been stored in the outbound queue
 		List<List<Object>> results = Context.getAdministrationService().executeSQL(
-		    "SELECT message FROM pacsintegration_outbound_queue ORDER BY date_created DESC", true);
+                "SELECT message FROM pacsintegration_outbound_queue ORDER BY date_created DESC", true);
 		String messageInQueue = (String) results.get(0).get(0);
-		Assert.assertEquals(message, messageInQueue);
+        assertThat(message, is(messageInQueue));
 	}
 	
 }
