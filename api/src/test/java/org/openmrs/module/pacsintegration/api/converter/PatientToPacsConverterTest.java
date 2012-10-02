@@ -40,10 +40,10 @@ public class PatientToPacsConverterTest {
         patient.setBirthdate(birthDate);
         patient.setGender("M");
 
-        String xml = converter.convertToAdmitMessage(patient);
+        String hl7Message = converter.convertToAdmitMessage(patient);
 
-        assertThat(xml, startsWith("MSH|^~\\&|||||||ADT^A01||P|2.3\r"));
-        assertThat(xml, endsWith("PID|||PATIENT_IDENTIFIER||Doe^John||197908270000|M\r"));
+        assertThat(hl7Message, startsWith("MSH|^~\\&|||||||ADT^A01||P|2.3\r"));
+        assertThat(hl7Message, endsWith("PID|||PATIENT_IDENTIFIER||Doe^John||197908270000|M\r"));
 
     }
 
@@ -63,10 +63,10 @@ public class PatientToPacsConverterTest {
         patient.setBirthdate(birthDate);
         patient.setGender("M");
 
-        String xml = converter.convertToUpdateMessage(patient);
+        String hl7Message = converter.convertToUpdateMessage(patient);
 
-        assertThat(xml, startsWith("MSH|^~\\&|||||||ADT^A08||P|2.3\r"));
-        assertThat(xml, endsWith("PID|||PATIENT_IDENTIFIER||Doe^John||197908270000|M\r"));
+        assertThat(hl7Message, startsWith("MSH|^~\\&|||||||ADT^A08||P|2.3\r"));
+        assertThat(hl7Message, endsWith("PID|||PATIENT_IDENTIFIER||Doe^John||197908270000|M\r"));
 
     }
 }

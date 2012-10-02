@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat;
 
 public class PatientToPacsConverter {
 
-    private final SimpleDateFormat pacsDateFormat = new SimpleDateFormat("yyyyMMddHHmm");;
+    private final SimpleDateFormat pacsDateFormat = new SimpleDateFormat("yyyyMMddHHmm");
 
     private Parser parser = new PipeParser();
 
