@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -41,15 +42,24 @@ public class PatientToPacsIT extends BaseModuleContextSensitiveTest {
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
         executeDataSet(XML_DATASET);
+        Context.addAdvice(PatientService.class, new GeneralEventAdvice());
     }
 
 
     @Test
     @NotTransactional
     public void sendsCreatedPatientsToPacs() throws Exception {
-        Context.addAdvice(PatientService.class, new GeneralEventAdvice());
-
         Patient patient = createPatient();
+        patientService.savePatient(patient);
+
+        verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs(any(String.class));
+    }
+
+    @Test
+    @NotTransactional
+    public void sendsUpdatedPatientsToPacs() throws Exception {
+        Patient patient = patientService.getPatient(2);
+        patient.setBirthdate(new Date());
         patientService.savePatient(patient);
 
         verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs(any(String.class));
