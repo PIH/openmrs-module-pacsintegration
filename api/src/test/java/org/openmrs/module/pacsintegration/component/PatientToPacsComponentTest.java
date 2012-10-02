@@ -11,6 +11,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.event.advice.GeneralEventAdvice;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
+import org.openmrs.module.pacsintegration.api.converter.PatientToPacsConverter;
 import org.openmrs.module.pacsintegration.listener.PatientEventListener;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +22,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.timeout;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class PatientToPacsComponentTest extends BaseModuleContextSensitiveTest {
@@ -37,6 +36,8 @@ public class PatientToPacsComponentTest extends BaseModuleContextSensitiveTest {
     private PatientEventListener patientEventListener;
     @Mock
     private PacsIntegrationService pacsIntegrationService;
+    @Mock
+    private PatientToPacsConverter pacsConverter;
 
     @Before
     public void setup() throws Exception {
@@ -50,9 +51,12 @@ public class PatientToPacsComponentTest extends BaseModuleContextSensitiveTest {
     @NotTransactional
     public void sendsCreatedPatientsToPacs() throws Exception {
         Patient patient = createPatient();
+        String hl7Message = "ADT_01";
+        when(pacsConverter.convertToAdmitMessage(patient)).thenReturn(hl7Message);
+
         patientService.savePatient(patient);
 
-        verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs(any(String.class));
+        verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs(hl7Message);
     }
 
     @Test
@@ -60,9 +64,13 @@ public class PatientToPacsComponentTest extends BaseModuleContextSensitiveTest {
     public void sendsUpdatedPatientsToPacs() throws Exception {
         Patient patient = patientService.getPatient(2);
         patient.setBirthdate(new Date());
+
+        String hl7Message = "ADT_08";
+        when(pacsConverter.convertToUpdateMessage(patient)).thenReturn(hl7Message);
+
         patientService.savePatient(patient);
 
-        verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs(any(String.class));
+        verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs(hl7Message);
     }
 
 

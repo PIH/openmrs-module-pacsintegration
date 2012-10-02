@@ -1,12 +1,11 @@
 package org.openmrs.module.pacsintegration.api.converter;
 
 import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.model.AbstractMessage;
+import ca.uhn.hl7v2.model.DataTypeException;
 import ca.uhn.hl7v2.model.v23.message.ADT_A01;
 import ca.uhn.hl7v2.model.v23.message.ADT_A08;
 import ca.uhn.hl7v2.model.v23.segment.MSH;
 import ca.uhn.hl7v2.model.v23.segment.PID;
-import ca.uhn.hl7v2.model.v23.segment.PV1;
 import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.parser.PipeParser;
 import org.openmrs.Patient;
@@ -22,30 +21,32 @@ public class PatientToPacsConverter {
     public PatientToPacsConverter() {
     }
 
-    public String convertToPacsFormat(Patient patient, String messageType) throws HL7Exception {
+    public String convertToAdmitMessage(Patient patient) throws HL7Exception {
+        ADT_A01 message = new ADT_A01();
+        populateMSHSegment(message.getMSH(), "A01");
+        populatePIDSegment(message.getPID(), patient);
 
-        AbstractMessage adtMessage;
-        MSH mshSegment;
-        PID pidSegment;
-        PV1 pv1Segment;
+        // Populate the PV1 Segment
+        // TODO: add patient class
+        // TODO: add assigned patient location
 
-        if (messageType.equals("A01")) {
-            adtMessage = new ADT_A01();
-            mshSegment = ((ADT_A01) adtMessage).getMSH();
-            pidSegment = ((ADT_A01) adtMessage).getPID();
-            pv1Segment = ((ADT_A01) adtMessage).getPV1();
-        }
-        else if (messageType.equals("A08")) {
-            adtMessage = new ADT_A08();
-            mshSegment = ((ADT_A08) adtMessage).getMSH();
-            pidSegment = ((ADT_A08) adtMessage).getPID();
-            pv1Segment = ((ADT_A08) adtMessage).getPV1();
-        }
-        else {
-            throw new RuntimeException("Unsupported ADT Message type");
-        }
+        return parser.encode(message);  //To change body of created methods use File | Settings | File Templates.
+    }
 
-        // Populate the MSH Segment
+    public String convertToUpdateMessage(Patient patient) throws HL7Exception {
+        ADT_A08 message = new ADT_A08();
+        populateMSHSegment(message.getMSH(), "A08");
+        populatePIDSegment(message.getPID(), patient);
+
+        // Populate the PV1 Segment
+        // TODO: add patient class
+        // TODO: add assigned patient location
+
+        return parser.encode(message);
+    }
+
+
+    private void populateMSHSegment(MSH mshSegment, String messageType) throws DataTypeException {
         mshSegment.getFieldSeparator().setValue("|");
         mshSegment.getEncodingCharacters().setValue("^~\\&");
         mshSegment.getMessageType().getMessageType().setValue("ADT");
@@ -53,19 +54,15 @@ public class PatientToPacsConverter {
         mshSegment.getProcessingID().getProcessingID().setValue("P");  // stands for production (?)
         mshSegment.getVersionID().setValue("2.3");
         // TODO: add sending facility
+    }
 
+    private void populatePIDSegment(PID pidSegment, Patient patient) throws HL7Exception {
         // Populate the PID Segment
         pidSegment.getPatientIDInternalID(0).getID().setValue(patient.getPatientIdentifier().getIdentifier());
         pidSegment.getPatientName().getFamilyName().setValue(patient.getFamilyName());
         pidSegment.getPatientName().getGivenName().setValue(patient.getGivenName());
         pidSegment.getDateOfBirth().getTimeOfAnEvent().setValue(pacsDateFormat.format(patient.getBirthdate()));
         pidSegment.getSex().setValue(patient.getGender());
-
-        // Populate the PV1 Segment
-        // TODO: add patient class
-        // TODO: add assigned patient location
-
-        return parser.encode(adtMessage);
     }
 
 }

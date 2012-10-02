@@ -61,16 +61,10 @@ public class PatientEventListener implements SubscribableEventListener {
             String classname = mapMessage.getString("classname");
 
             boolean isPatient = Patient.class.getName().equals(classname);
-            boolean isCreated = CREATED.toString().equals(action);
-            boolean isUpdated = UPDATED.toString().equals(action);
-
             if (isPatient) {
-                if (isCreated) {
-                    sendToPacs(mapMessage, "A01");
-                }
-                else if (isUpdated) {
-                    sendToPacs(mapMessage, "A08");
-                }
+                String hl7Message = generateHL7Message(mapMessage, action);
+                if(hl7Message != null)
+                    pacsIntegrationService.sendMessageToPacs(hl7Message);
             }
 
         } catch (JMSException e) {
@@ -83,11 +77,20 @@ public class PatientEventListener implements SubscribableEventListener {
         }
     }
 
-    private void sendToPacs(MapMessage mapMessage, String messageType) throws JMSException, HL7Exception {
+    private String generateHL7Message(MapMessage mapMessage, String action) throws JMSException, HL7Exception {
+        String pacsHL7 = null;
         String uuid = mapMessage.getString("uuid");
-
         Patient patient = patientService.getPatientByUuid(uuid);
-        String pacsHL7 = pacsConverter.convertToPacsFormat(patient, messageType);
-        pacsIntegrationService.sendMessageToPacs(pacsHL7);
+
+        boolean isCreated = CREATED.toString().equals(action);
+        boolean isUpdated = UPDATED.toString().equals(action);
+
+        if(isCreated) {
+             pacsHL7 = pacsConverter.convertToAdmitMessage(patient);
+        } else if(isUpdated) {
+            pacsHL7 = pacsConverter.convertToUpdateMessage(patient);
+        }
+
+        return pacsHL7;
     }
 }
