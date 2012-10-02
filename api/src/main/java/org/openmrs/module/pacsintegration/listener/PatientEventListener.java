@@ -1,5 +1,8 @@
 package org.openmrs.module.pacsintegration.listener;
 
+import ca.uhn.hl7v2.HL7Exception;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Patient;
 import org.openmrs.api.PatientService;
@@ -22,6 +25,8 @@ import static org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties
 
 
 public class PatientEventListener implements SubscribableEventListener {
+
+    protected final Log log = LogFactory.getLog(this.getClass());
 
     private PatientService patientService;
     private PatientToPacsConverter pacsConverter;
@@ -47,7 +52,7 @@ public class PatientEventListener implements SubscribableEventListener {
     }
 
     @Override
-    public void onMessage(Message message) {
+    public void onMessage(Message message)  {
         Context.openSession();
         try {
             Context.authenticate(LISTENER_USERNAME(), LISTENER_PASSWORD());
@@ -59,22 +64,30 @@ public class PatientEventListener implements SubscribableEventListener {
             boolean isCreated = CREATED.toString().equals(action);
             boolean isUpdated = UPDATED.toString().equals(action);
 
-            if((isCreated || isUpdated) && isPatient)
-                sendToPacs(mapMessage);
+            if (isPatient) {
+                if (isCreated) {
+                    sendToPacs(mapMessage, "A01");
+                }
+                else if (isUpdated) {
+                    sendToPacs(mapMessage, "A08");
+                }
+            }
 
         } catch (JMSException e) {
-            e.printStackTrace();
-        } finally {
+            log.error("Unable to send ADT message to PACS for patient " + message, e);
+        } catch (HL7Exception e) {
+            log.error("Unable to send ADT message to PACS for patient " + message, e);
+        }
+        finally {
             Context.closeSession();
         }
     }
 
-    private void sendToPacs(MapMessage mapMessage) throws JMSException {
+    private void sendToPacs(MapMessage mapMessage, String messageType) throws JMSException, HL7Exception {
         String uuid = mapMessage.getString("uuid");
-        String sendingFacility = "";  //TODO We need to determine how the sending facility will be retrieved
 
         Patient patient = patientService.getPatientByUuid(uuid);
-        String pacsXML = pacsConverter.convertToPacsFormat(patient, sendingFacility);
-        pacsIntegrationService.sendMessageToPacs(pacsXML);
+        String pacsHL7 = pacsConverter.convertToPacsFormat(patient, messageType);
+        pacsIntegrationService.sendMessageToPacs(pacsHL7);
     }
 }

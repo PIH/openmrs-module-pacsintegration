@@ -1,42 +1,71 @@
 package org.openmrs.module.pacsintegration.api;
 
-import com.thoughtworks.xstream.XStream;
+import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.model.AbstractMessage;
+import ca.uhn.hl7v2.model.v23.message.ADT_A01;
+import ca.uhn.hl7v2.model.v23.message.ADT_A08;
+import ca.uhn.hl7v2.model.v23.segment.MSH;
+import ca.uhn.hl7v2.model.v23.segment.PID;
+import ca.uhn.hl7v2.model.v23.segment.PV1;
+import ca.uhn.hl7v2.parser.Parser;
+import ca.uhn.hl7v2.parser.PipeParser;
 import org.openmrs.Patient;
 
 import java.text.SimpleDateFormat;
 
 public class PatientToPacsConverter {
 
-    private XStream xStream = new XStream();
+    private final SimpleDateFormat pacsDateFormat = new SimpleDateFormat("yyyyMMddHHmm");;
+
+    private Parser parser = new PipeParser();
 
     public PatientToPacsConverter() {
-        xStream.omitField(PatientToPacsConverter.class, "xStream");  // hack to avoid XStream error - Cannot marshal the XStream instance in action
-        xStream.alias("ADTMessage", ADTMessage.class);
     }
 
-    public String convertToPacsFormat(Patient patient, String sendingFacility) {
-        ADTMessage adtMessage = new ADTMessage(patient, sendingFacility);
-        return xStream.toXML(adtMessage);
-    }
+    public String convertToPacsFormat(Patient patient, String messageType) throws HL7Exception {
 
+        AbstractMessage adtMessage;
+        MSH mshSegment;
+        PID pidSegment;
+        PV1 pv1Segment;
 
-    private class ADTMessage {
-        private final SimpleDateFormat pacsDateFormat = new SimpleDateFormat("yyyyMMddHHmm");;
-
-        private String sendingFacility;
-        private String patientIdentifier;
-        private String familyName;
-        private String givenName;
-        private String dateOfBirth;
-        private String patientSex;
-
-        public ADTMessage(Patient patient, String sendingFacility) {
-            this.sendingFacility = sendingFacility;
-            this.patientIdentifier = patient.getPatientIdentifier().getIdentifier();
-            this.familyName = patient.getFamilyName();
-            this.givenName = patient.getGivenName();
-            this.dateOfBirth = pacsDateFormat.format(patient.getBirthdate());
-            this.patientSex = patient.getGender();
+        if (messageType.equals("A01")) {
+            adtMessage = new ADT_A01();
+            mshSegment = ((ADT_A01) adtMessage).getMSH();
+            pidSegment = ((ADT_A01) adtMessage).getPID();
+            pv1Segment = ((ADT_A01) adtMessage).getPV1();
         }
+        else if (messageType.equals("A08")) {
+            adtMessage = new ADT_A08();
+            mshSegment = ((ADT_A08) adtMessage).getMSH();
+            pidSegment = ((ADT_A08) adtMessage).getPID();
+            pv1Segment = ((ADT_A08) adtMessage).getPV1();
+        }
+        else {
+            throw new RuntimeException("Unsupported ADT Message type");
+        }
+
+        // Populate the MSH Segment
+        mshSegment.getFieldSeparator().setValue("|");
+        mshSegment.getEncodingCharacters().setValue("^~\\&");
+        mshSegment.getMessageType().getMessageType().setValue("ADT");
+        mshSegment.getMessageType().getTriggerEvent().setValue(messageType);
+        mshSegment.getProcessingID().getProcessingID().setValue("P");  // stands for production (?)
+        mshSegment.getVersionID().setValue("2.3");
+        // TODO: add sending facility
+
+        // Populate the PID Segment
+        pidSegment.getPatientIDInternalID(0).getID().setValue(patient.getPatientIdentifier().getIdentifier());
+        pidSegment.getPatientName().getFamilyName().setValue(patient.getFamilyName());
+        pidSegment.getPatientName().getGivenName().setValue(patient.getGivenName());
+        pidSegment.getDateOfBirth().getTimeOfAnEvent().setValue(pacsDateFormat.format(patient.getBirthdate()));
+        pidSegment.getSex().setValue(patient.getGender());
+
+        // Populate the PV1 Segment
+        // TODO: add patient class
+        // TODO: add assigned patient location
+
+        return parser.encode(adtMessage);
     }
+
 }
