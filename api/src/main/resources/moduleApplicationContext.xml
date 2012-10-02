@@ -5,6 +5,16 @@
   		    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
     <!-- Add here beans related to the API context -->
+    <bean id="pacsIntegrationService" class="${project.parent.groupId}.${project.parent.artifactId}.api.impl.PacsIntegrationServiceImpl">
+        <property name="dao">
+            <bean class="${project.parent.groupId}.${project.parent.artifactId}.api.db.hibernate.HibernatePacsIntegrationDAO">
+                <property name="sessionFactory">
+                    <ref bean="sessionFactory"/>
+                </property>
+            </bean>
+        </property>
+    </bean>
+    <bean id="patientToPacsConverter" class="org.openmrs.module.pacsintegration.api.PatientToPacsConverter" />
 
 
     <!-- Services accessible via Context.getService() -->
@@ -18,15 +28,7 @@
                         <ref bean="transactionManager"/>
                     </property>
                     <property name="target">
-                        <bean class="${project.parent.groupId}.${project.parent.artifactId}.api.impl.PacsIntegrationServiceImpl">
-                            <property name="dao">
-                                <bean class="${project.parent.groupId}.${project.parent.artifactId}.api.db.hibernate.HibernatePacsIntegrationDAO">
-                                    <property name="sessionFactory">
-                                        <ref bean="sessionFactory"/>
-                                    </property>
-                                </bean>
-                            </property>
-                        </bean>
+                        <ref bean="pacsIntegrationService" />
                     </property>
                     <property name="preInterceptors">
                         <ref bean="serviceInterceptors"/>
@@ -40,9 +42,26 @@
     </bean>
 
     <!-- register event listeners -->
+    <bean id="patientEventListener" class="org.openmrs.module.pacsintegration.listener.PatientEventListener">
+        <constructor-arg index="0">
+            <ref bean="patientService" />
+        </constructor-arg>
+        <constructor-arg index="1">
+            <ref bean="patientToPacsConverter" />
+        </constructor-arg>
+        <constructor-arg index="2">
+            <ref bean="pacsIntegrationService"/>
+        </constructor-arg>
+    </bean>
+
     <bean class="org.openmrs.event.Event">
         <property name="subscription">
             <bean class="org.openmrs.module.pacsintegration.listener.OrderEventListener"></bean>
+        </property>
+    </bean>
+    <bean class="org.openmrs.event.Event">
+        <property name="subscription">
+            <ref bean="patientEventListener" />
         </property>
     </bean>
 
