@@ -13,3 +13,4 @@
 
 /.idea
 *.iml
+/activemq-data
