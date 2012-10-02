@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.pacsintegration.api;
+package org.openmrs.module.pacsintegration.component;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,6 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -33,7 +34,7 @@ import static org.junit.Assert.assertThat;
  * Tests {@link PacsIntegrationService}}.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-public class PacsIntegrationServiceIT extends BaseModuleContextSensitiveTest {
+public class PacsIntegrationServiceComponentTest extends BaseModuleContextSensitiveTest {
 
     @Autowired
     private PacsIntegrationService pacsIntegrationService;
