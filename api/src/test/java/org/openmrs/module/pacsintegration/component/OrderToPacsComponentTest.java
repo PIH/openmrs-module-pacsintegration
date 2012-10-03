@@ -12,7 +12,7 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package org.openmrs.module.pacsintegration.api;
+package org.openmrs.module.pacsintegration.component;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,6 +27,7 @@ import org.openmrs.Order;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.event.advice.GeneralEventAdvice;
+import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.listener.OrderEventListener;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.timeout;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-public class OrderToPacsIT extends BaseModuleContextSensitiveTest {
+public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 
     @Autowired
     private OrderService orderService;

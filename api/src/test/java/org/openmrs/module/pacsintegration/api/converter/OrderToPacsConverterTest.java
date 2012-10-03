@@ -36,36 +36,20 @@ public class OrderToPacsConverterTest {
         converter = new OrderToPacsConverter();
     }
 
-	@Test
-    public void shouldGeneratePacsMessageFromOrder() throws Exception {
+    @Test
+    public void shouldGenerateMessageFromAnOrder() throws Exception {
         Order order = new Order();
         order.setAccessionNumber("54321");
         order.setStartDate(new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2008"));
         order.setPatient(createPatient());
 
+        String hl7Message = converter.convertToPacsFormat(order, "SC");
 
-        String message = converter.convertToPacsFormat(order, "SC");
+        assertThat(hl7Message, startsWith("MSH|^~\\&|||||||ORM^O01||P|2.3\r"));
+        assertThat(hl7Message, containsString("PID|||6TS-4||Chebaskwony^Collet||197608250000|F\r"));
+        assertThat(hl7Message, endsWith("ORC|SC|123|54321\r"));
+    }
 
-        assertThat(message, startsWith("<OrmMessage>"));
-        assertThat(message, containsString("<accessionNumber>54321</accessionNumber>"));
-		assertThat(message, containsString("<accessionNumber>54321</accessionNumber>"));
-		assertThat(message, containsString("<dateOfBirth>197608250000</dateOfBirth>"));
-		assertThat(message, containsString("<familyName>Chebaskwony</familyName>"));
-		assertThat(message, containsString("<givenName>Collet</givenName>"));
-		assertThat(message, containsString("<orderControl>SC</orderControl>"));
-		assertThat(message, containsString("<patientId>6TS-4</patientId>"));
-		assertThat(message, containsString("<patientSex>F</patientSex>"));
-		assertThat(message, containsString("<scheduledExamDatetime>200808080000</scheduledExamDatetime>"));
-
-		/* assertThat(message, containsString("<deviceLocation>E</deviceLocation>"));
-		assertThat(message, containsString("<modality>D</modality>"));
-		assertThat(message, containsString("<sendingFacility>A</sendingFacility>"));
-		assertThat(message, containsString("<universalServiceID>B</universalServiceID>"));
-		assertThat(message, containsString("<universalServiceIDText>C</universalServiceIDText>")); */
-
-        assertThat(message, endsWith("</OrmMessage>"));
-
-	}
 
     private Patient createPatient() throws ParseException {
         PatientIdentifier patientIdentifier = new PatientIdentifier();
