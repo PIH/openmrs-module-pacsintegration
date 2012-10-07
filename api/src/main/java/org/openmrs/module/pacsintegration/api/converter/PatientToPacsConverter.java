@@ -9,6 +9,10 @@ import ca.uhn.hl7v2.model.v23.segment.PID;
 import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.parser.PipeParser;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifierType;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.PatientService;
+import org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties;
 
 import java.text.SimpleDateFormat;
 
@@ -18,7 +22,12 @@ public class PatientToPacsConverter {
 
     private Parser parser = new PipeParser();
 
-    public PatientToPacsConverter() {
+    private PatientService patientService;
+    private AdministrationService adminService;
+
+    public PatientToPacsConverter(PatientService patientService, AdministrationService adminService) {
+        this.patientService = patientService;
+        this.adminService = adminService;
     }
 
     public String convertToAdmitMessage(Patient patient) throws HL7Exception {
@@ -58,11 +67,21 @@ public class PatientToPacsConverter {
 
     private void populatePIDSegment(PID pidSegment, Patient patient) throws HL7Exception {
         // Populate the PID Segment
-        pidSegment.getPatientIDInternalID(0).getID().setValue(patient.getPatientIdentifier().getIdentifier());
+        pidSegment.getPatientIDInternalID(0).getID().setValue(patient.getPatientIdentifier(getPatientIdentifierType()).getIdentifier());
         pidSegment.getPatientName().getFamilyName().setValue(patient.getFamilyName());
         pidSegment.getPatientName().getGivenName().setValue(patient.getGivenName());
         pidSegment.getDateOfBirth().getTimeOfAnEvent().setValue(pacsDateFormat.format(patient.getBirthdate()));
         pidSegment.getSex().setValue(patient.getGender());
+    }
+
+    private PatientIdentifierType getPatientIdentifierType() {
+        PatientIdentifierType patientIdentifierType = patientService.getPatientIdentifierTypeByUuid(adminService.getGlobalProperty(PacsIntegrationGlobalProperties.PATIENT_IDENTIFIER_TYPE_UUID));
+        if (patientIdentifierType == null) {
+            throw new RuntimeException("No patient identifier type specified. Is pacsintegration.patientIdentifierTypeUuid properly set?");
+        }
+        else {
+            return patientIdentifierType;
+        }
     }
 
 }

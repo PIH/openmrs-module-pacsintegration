@@ -5,7 +5,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonName;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.PatientService;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,20 +17,31 @@ import java.util.Date;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 
 public class PatientToPacsConverterTest {
 
     private PatientToPacsConverter converter;
 
+    private PatientIdentifierType patientIdentifierType = new PatientIdentifierType();
+
     @Before
     public void setup() {
-        converter = new PatientToPacsConverter();
+        PatientService patientService = mock(PatientService.class);
+        AdministrationService administrationService = mock(AdministrationService.class);
+        when(patientService.getPatientIdentifierTypeByUuid(anyString())).thenReturn(patientIdentifierType);
+
+        converter = new PatientToPacsConverter(patientService, administrationService);
     }
 
     @Test
     public void shouldGeneratePacsAdmitMessageFromAPatient() throws HL7Exception, ParseException {
         PatientIdentifier patientIdentifier = new PatientIdentifier();
         patientIdentifier.setIdentifier("PATIENT_IDENTIFIER");
+        patientIdentifier.setIdentifierType(patientIdentifierType);
 
         PersonName patientName = new PersonName();
         patientName.setFamilyName("Doe");
@@ -51,6 +65,7 @@ public class PatientToPacsConverterTest {
     public void shouldGeneratePacsUpdateMessageFromAPatient() throws HL7Exception, ParseException {
         PatientIdentifier patientIdentifier = new PatientIdentifier();
         patientIdentifier.setIdentifier("PATIENT_IDENTIFIER");
+        patientIdentifier.setIdentifierType(patientIdentifierType);
 
         PersonName patientName = new PersonName();
         patientName.setFamilyName("Doe");

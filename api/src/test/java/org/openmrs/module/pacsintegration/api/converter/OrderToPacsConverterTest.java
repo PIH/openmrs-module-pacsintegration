@@ -15,10 +15,9 @@ package org.openmrs.module.pacsintegration.api.converter;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.openmrs.Order;
-import org.openmrs.Patient;
-import org.openmrs.PatientIdentifier;
-import org.openmrs.PersonName;
+import org.openmrs.*;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.PatientService;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,14 +25,24 @@ import java.util.Date;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class OrderToPacsConverterTest {
 
     private OrderToPacsConverter converter;
 
+    private PatientIdentifierType patientIdentifierType = new PatientIdentifierType();
+
+
     @Before
     public void setup() {
-        converter = new OrderToPacsConverter();
+        PatientService patientService = mock(PatientService.class);
+        AdministrationService administrationService = mock(AdministrationService.class);
+        when(patientService.getPatientIdentifierTypeByUuid(anyString())).thenReturn(patientIdentifierType);
+
+        converter = new OrderToPacsConverter(patientService, administrationService);
     }
 
     @Test
@@ -54,6 +63,7 @@ public class OrderToPacsConverterTest {
     private Patient createPatient() throws ParseException {
         PatientIdentifier patientIdentifier = new PatientIdentifier();
         patientIdentifier.setIdentifier("6TS-4");
+        patientIdentifier.setIdentifierType(patientIdentifierType);
 
         PersonName patientName = new PersonName();
         patientName.setFamilyName("Chebaskwony");
