@@ -13,19 +13,13 @@
  */
 package org.openmrs.module.pacsintegration;
 
-import org.openmrs.api.context.Context;
-
 public class PacsIntegrationGlobalProperties {
 	
-	public static final String RADIOLOGY_ORDER_TYPE_UUID() {
-		return Context.getAdministrationService().getGlobalProperty("pacsintegration.radiologyOrderTypeUuid");
-	}
-	
-	public static final String LISTENER_USERNAME() {
-		return Context.getAdministrationService().getGlobalProperty("pacsintegration.listenerUsername");
-	}
-	
-	public static final String LISTENER_PASSWORD() {
-		return Context.getAdministrationService().getGlobalProperty("pacsintegration.listenerPassword");
-	}
+	public static final String RADIOLOGY_ORDER_TYPE_UUID = "pacsintegration.radiologyOrderTypeUuid";
+
+    public static final String PATIENT_IDENTIFIER_TYPE_UUID = "pacsintegration.patientIdentifierTypeUuid";
+
+    public static final String LISTENER_USERNAME = "pacsintegration.listenerUsername";
+
+	public static final String LISTENER_PASSWORD = "pacsintegration.listenerPassword";
 }

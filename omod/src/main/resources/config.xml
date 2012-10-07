@@ -59,6 +59,14 @@
     </globalProperty>
 
     <globalProperty>
+        <property>pacsintegration.patientIdentifierTypeUuid</property>
+        <defaultValue></defaultValue>
+        <description>
+            UUID of the patient identifier type to use when picking an identifier to send to PACS
+        </description>
+    </globalProperty>
+
+    <globalProperty>
         <property>pacsintegration.listenerUsername</property>
         <defaultValue>admin</defaultValue>
         <description>

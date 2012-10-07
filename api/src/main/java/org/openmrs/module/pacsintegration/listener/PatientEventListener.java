@@ -5,6 +5,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Patient;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.event.Event;
@@ -31,12 +32,14 @@ public class PatientEventListener implements SubscribableEventListener {
     private PatientService patientService;
     private PatientToPacsConverter pacsConverter;
     private PacsIntegrationService pacsIntegrationService;
+    private AdministrationService admin;
 
 
-    public PatientEventListener(PatientService patientService, PatientToPacsConverter pacsConverter, PacsIntegrationService pacsIntegrationService) {
+    public PatientEventListener(PatientService patientService, PatientToPacsConverter pacsConverter, PacsIntegrationService pacsIntegrationService, AdministrationService admin) {
         this.patientService = patientService;
         this.pacsConverter = pacsConverter;
         this.pacsIntegrationService = pacsIntegrationService;
+        this.admin = admin;
     }
 
 
@@ -55,7 +58,7 @@ public class PatientEventListener implements SubscribableEventListener {
     public void onMessage(Message message)  {
         Context.openSession();
         try {
-            Context.authenticate(LISTENER_USERNAME(), LISTENER_PASSWORD());
+            Context.authenticate(admin.getGlobalProperty(LISTENER_USERNAME), admin.getGlobalProperty(LISTENER_PASSWORD));
             MapMessage mapMessage = (MapMessage) message;
             String action = mapMessage.getString("action");
             String classname = mapMessage.getString("classname");

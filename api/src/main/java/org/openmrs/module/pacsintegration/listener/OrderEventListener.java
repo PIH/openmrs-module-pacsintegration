@@ -16,11 +16,11 @@ package org.openmrs.module.pacsintegration.listener;
 
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Order;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.event.Event;
 import org.openmrs.event.SubscribableEventListener;
-import org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.api.converter.OrderToPacsConverter;
 
@@ -29,23 +29,27 @@ import javax.jms.Message;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties.*;
+
 public class OrderEventListener implements SubscribableEventListener {
 
     private OrderToPacsConverter converter;
     private OrderService orderService;
     private PacsIntegrationService pacsIntegrationService;
+    private AdministrationService adminService;
 
-    public OrderEventListener(OrderService orderService, OrderToPacsConverter converter, PacsIntegrationService pacsIntegrationService) {
+    public OrderEventListener(OrderService orderService, OrderToPacsConverter converter, PacsIntegrationService pacsIntegrationService, AdministrationService adminService) {
         this.converter = converter;
         this.orderService = orderService;
         this.pacsIntegrationService = pacsIntegrationService;
+        this.adminService = adminService;
     }
 	
 	@Override
 	public void onMessage(Message message) {
 		Context.openSession();
 		try {
-			Context.authenticate(PacsIntegrationGlobalProperties.LISTENER_USERNAME(),PacsIntegrationGlobalProperties.LISTENER_PASSWORD());
+            Context.authenticate(adminService.getGlobalProperty(LISTENER_USERNAME), adminService.getGlobalProperty(LISTENER_PASSWORD));
 			
 			MapMessage mapMessage = (MapMessage) message;
 			String action = mapMessage.getString("action");
@@ -58,7 +62,7 @@ public class OrderEventListener implements SubscribableEventListener {
 					throw new RuntimeException("Could not find the order this event tells us about! uuid=" + uuid);
 				}
 				
-				if (PacsIntegrationGlobalProperties.RADIOLOGY_ORDER_TYPE_UUID().equals(order.getOrderType().getUuid())) {
+				if (adminService.getGlobalProperty(RADIOLOGY_ORDER_TYPE_UUID).equals(order.getOrderType().getUuid())) {
 					pacsIntegrationService.sendMessageToPacs(converter.convertToPacsFormat(order, "NW"));
 				}
 			}
