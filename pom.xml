@@ -35,7 +35,7 @@
 
     <properties>
         <springVersion>3.0.5.RELEASE</springVersion>
-        <openMRSVersion>1.9.1</openMRSVersion>
+        <openMRSVersion>1.9.2-SNAPSHOT</openMRSVersion>
         <emrVersion>0.1.0-SNAPSHOT</emrVersion>
         <eventVersion>1.1</eventVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
