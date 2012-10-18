@@ -13,4 +13,5 @@
 
 /.idea
 *.iml
+*.DS_Store
 /activemq-data
