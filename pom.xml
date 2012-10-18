@@ -38,6 +38,7 @@
         <openMRSVersion>1.9.2-SNAPSHOT</openMRSVersion>
         <emrVersion>0.1.0-SNAPSHOT</emrVersion>
         <eventVersion>1.1</eventVersion>
+        <uiframeworkVersion>1.9</uiframeworkVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -108,6 +109,15 @@
             <groupId>org.openmrs</groupId>
             <artifactId>event-api</artifactId>
             <version>${eventVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- uiframework is a transitive dependency, required by the emr module. We don't direclty require it ourselves,
+             so it's not mentioned in config.xml -->
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>uiframework-api</artifactId>
+            <version>${uiframeworkVersion}</version>
             <scope>provided</scope>
         </dependency>
 
