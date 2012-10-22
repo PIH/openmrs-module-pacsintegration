@@ -23,7 +23,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.openmrs.Order;
+import org.openmrs.TestOrder;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.event.advice.GeneralEventAdvice;
@@ -71,7 +71,7 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 	@Test
 	@NotTransactional
 	public void testPlacingRadiologyOrderShouldTriggerOutgoingMessage() throws Exception {
-		Order order = new Order();
+		TestOrder order = new TestOrder();
 		order.setOrderType(Context.getOrderService().getOrderType(1001));
 		order.setPatient(Context.getPatientService().getPatient(7));
 		order.setConcept(Context.getConceptService().getConcept(18));

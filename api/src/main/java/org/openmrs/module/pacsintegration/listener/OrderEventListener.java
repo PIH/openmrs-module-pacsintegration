@@ -16,6 +16,7 @@ package org.openmrs.module.pacsintegration.listener;
 
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Order;
+import org.openmrs.TestOrder;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
@@ -50,20 +51,21 @@ public class OrderEventListener implements SubscribableEventListener {
 		Context.openSession();
 		try {
             Context.authenticate(adminService.getGlobalProperty(LISTENER_USERNAME), adminService.getGlobalProperty(LISTENER_PASSWORD));
-			
+
 			MapMessage mapMessage = (MapMessage) message;
 			String action = mapMessage.getString("action");
 			String classname = mapMessage.getString("classname");
 			
-			if (Event.Action.CREATED.toString().equals(action) && Order.class.getName().equals(classname)) {
+			if (Event.Action.CREATED.toString().equals(action) && TestOrder.class.getName().equals(classname)) {
 				String uuid = mapMessage.getString("uuid");
+
 				Order order = orderService.getOrderByUuid(uuid);
 				if (order == null) {
 					throw new RuntimeException("Could not find the order this event tells us about! uuid=" + uuid);
 				}
 				
 				if (adminService.getGlobalProperty(RADIOLOGY_ORDER_TYPE_UUID).equals(order.getOrderType().getUuid())) {
-					pacsIntegrationService.sendMessageToPacs(converter.convertToPacsFormat(order, "NW"));
+					pacsIntegrationService.sendMessageToPacs(converter.convertToPacsFormat((TestOrder) order, "NW"));
 				}
 			}
 		}
@@ -80,7 +82,7 @@ public class OrderEventListener implements SubscribableEventListener {
 	public List<Class<? extends OpenmrsObject>> subscribeToObjects() {
 		// admittedly a very strange way to use a convenience method, but java
 		// compilation wouldn't occur without this extra line
-		Object classes = Arrays.asList(Order.class);
+		Object classes = Arrays.asList(TestOrder.class);
 		return (List<Class<? extends OpenmrsObject>>) classes;
 	}
 	

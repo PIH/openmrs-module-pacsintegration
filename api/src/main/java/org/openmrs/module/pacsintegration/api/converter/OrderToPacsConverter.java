@@ -20,8 +20,8 @@ import ca.uhn.hl7v2.model.v23.segment.ORC;
 import ca.uhn.hl7v2.model.v23.segment.PID;
 import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.parser.PipeParser;
-import org.openmrs.Order;
 import org.openmrs.PatientIdentifierType;
+import org.openmrs.TestOrder;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties;
@@ -41,7 +41,7 @@ public class OrderToPacsConverter {
         this.adminService = adminService;
     }
 
-    public String convertToPacsFormat(Order order, String orderControl) throws HL7Exception {
+    public String convertToPacsFormat(TestOrder order, String orderControl) throws HL7Exception {
         ORM_O01 message = new ORM_O01();
 
         MSH msh = message.getMSH();

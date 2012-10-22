@@ -47,7 +47,7 @@ public class OrderToPacsConverterTest {
 
     @Test
     public void shouldGenerateMessageFromAnOrder() throws Exception {
-        Order order = new Order();
+        TestOrder order = new TestOrder();
         order.setAccessionNumber("54321");
         order.setStartDate(new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2008"));
         order.setPatient(createPatient());
