@@ -69,6 +69,32 @@
     </globalProperty>
 
     <globalProperty>
+        <property>pacsintegration.sendingFacility</property>
+        <defaultValue></defaultValue>
+        <description>
+            Text to send in the "Sending Facility" type in HL7 messages
+        </description>
+    </globalProperty>
+
+    <globalProperty>
+        <property>pacsintegration.procedureCodeConceptSourceUuid</property>
+        <defaultValue></defaultValue>
+        <description>
+            UUID of the concept reference source that stores the procedure codes we want to send to the PACS system
+        </description>
+    </globalProperty>
+
+
+    <globalProperty>
+        <property>pacsintegration.defaultLocale</property>
+        <defaultValue>en</defaultValue>
+        <description>
+            The locale to use when populating the procedure text (and any other localized text) in HL7 messages
+        </description>
+    </globalProperty>
+
+
+    <globalProperty>
         <property>pacsintegration.listenerUsername</property>
         <defaultValue>admin</defaultValue>
         <description>

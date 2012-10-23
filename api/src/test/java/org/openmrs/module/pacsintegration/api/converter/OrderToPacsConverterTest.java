@@ -17,11 +17,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.*;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.PatientService;
+import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
+import org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
+import java.util.UUID;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -35,28 +40,85 @@ public class OrderToPacsConverterTest {
 
     private PatientIdentifierType patientIdentifierType = new PatientIdentifierType();
 
+    private Concept testXrayConcept;
+
+    // TODO: test some error cases
 
     @Before
     public void setup() {
+        ConceptMapType sameAsConceptMapType = new ConceptMapType();
+        sameAsConceptMapType.setName("SAME-AS");
+        sameAsConceptMapType.setUuid(UUID.randomUUID().toString());
+
+        ConceptSource procedureCodeConceptSource = new ConceptSource();
+        procedureCodeConceptSource.setUuid(UUID.randomUUID().toString());
+
+        ConceptName testXrayConceptName = new ConceptName();
+        testXrayConceptName.setName("Left-hand x-ray");
+        testXrayConceptName.setLocale(new Locale("en"));
+
+        ConceptReferenceTerm testXrayConceptReferenceTerm = new ConceptReferenceTerm();
+        testXrayConceptReferenceTerm.setCode("123ABC");
+        testXrayConceptReferenceTerm.setConceptSource(procedureCodeConceptSource);
+
+        ConceptMap sameAsConceptMap = new ConceptMap();
+        sameAsConceptMap.setConceptMapType(sameAsConceptMapType);
+        sameAsConceptMap.setConceptReferenceTerm(testXrayConceptReferenceTerm);
+
+        testXrayConcept = new Concept();
+        testXrayConcept.addName(testXrayConceptName);
+        testXrayConcept.setUuid((UUID.randomUUID().toString()));
+        testXrayConcept.addConceptMapping(sameAsConceptMap);
+
         PatientService patientService = mock(PatientService.class);
         AdministrationService administrationService = mock(AdministrationService.class);
-        when(patientService.getPatientIdentifierTypeByUuid(anyString())).thenReturn(patientIdentifierType);
+        ConceptService conceptService = mock(ConceptService.class);
 
-        converter = new OrderToPacsConverter(patientService, administrationService);
+        when(patientService.getPatientIdentifierTypeByUuid(anyString())).thenReturn(patientIdentifierType);
+        when(administrationService.getGlobalProperty(PacsIntegrationGlobalProperties.SENDING_FACILITY)).thenReturn("openmrs_mirebalais");
+        when(administrationService.getGlobalProperty(PacsIntegrationGlobalProperties.PROCEDURE_CODE_CONCEPT_SOURCE_UUID)).thenReturn(procedureCodeConceptSource.getUuid());
+        when(conceptService.getConceptMapTypeByUuid(PacsIntegrationConstants.sameAsConceptMapTypeUuid)).thenReturn(sameAsConceptMapType);
+        when(conceptService.getConceptSourceByUuid(procedureCodeConceptSource.getUuid())).thenReturn(procedureCodeConceptSource);
+
+        converter = new OrderToPacsConverter(patientService, administrationService, conceptService);
     }
 
     @Test
     public void shouldGenerateMessageFromAnOrder() throws Exception {
         TestOrder order = new TestOrder();
-        order.setAccessionNumber("54321");
+        UUID uuid = UUID.randomUUID();
+        order.setAccessionNumber(uuid.toString());
         order.setStartDate(new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2008"));
         order.setPatient(createPatient());
+        order.setConcept(testXrayConcept);
+        order.setUrgency(Order.Urgency.STAT);
+        order.setClinicalHistory("Patient fell off horse");
 
         String hl7Message = converter.convertToPacsFormat(order, "SC");
 
-        assertThat(hl7Message, startsWith("MSH|^~\\&|||||||ORM^O01||P|2.3\r"));
+        assertThat(hl7Message, startsWith("MSH|^~\\&||openmrs_mirebalais|||||ORM^O01||P|2.3\r"));
         assertThat(hl7Message, containsString("PID|||6TS-4||Chebaskwony^Collet||197608250000|F\r"));
-        assertThat(hl7Message, endsWith("ORC|SC|123|54321\r"));
+        assertThat(hl7Message, containsString("ORC|SC\r"));
+        assertThat(hl7Message, endsWith("OBR|||" + uuid.toString() + "|123ABC^Left-hand x-ray|||||||||||||||||||||||^^^^^STAT||||^Patient fell off horse\r"));
+    }
+
+    @Test
+    public void shouldGenerateMessageForAnonymousPatient() throws Exception {
+        TestOrder order = new TestOrder();
+        UUID uuid = UUID.randomUUID();
+        order.setAccessionNumber(uuid.toString());
+        order.setStartDate(new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2008"));
+        order.setPatient(createAnonymousPatient());
+        order.setConcept(testXrayConcept);
+        order.setUrgency(Order.Urgency.ROUTINE);
+        order.setClinicalHistory("Patient fell off horse");
+
+        String hl7Message = converter.convertToPacsFormat(order, "SC");
+
+        assertThat(hl7Message, startsWith("MSH|^~\\&||openmrs_mirebalais|||||ORM^O01||P|2.3\r"));
+        assertThat(hl7Message, containsString("PID|||6TS-4||UNKNOWN^UNKNOWN|||F\r"));
+        assertThat(hl7Message, containsString("ORC|SC\r"));
+        assertThat(hl7Message, endsWith("OBR|||" + uuid.toString() + "|123ABC^Left-hand x-ray|||||||||||||||||||||||||||^Patient fell off horse\r"));
     }
 
 
@@ -74,6 +136,23 @@ public class OrderToPacsConverterTest {
         patient.addName(patientName);
         Date birthDate = new SimpleDateFormat("MM-dd-yyyy").parse("08-25-1976");
         patient.setBirthdate(birthDate);
+        patient.setGender("F");
+        return patient;
+    }
+
+    private Patient createAnonymousPatient() throws ParseException {
+        PatientIdentifier patientIdentifier = new PatientIdentifier();
+        patientIdentifier.setIdentifier("6TS-4");
+        patientIdentifier.setIdentifierType(patientIdentifierType);
+
+        PersonName patientName = new PersonName();
+        patientName.setFamilyName("UNKNOWN");
+        patientName.setGivenName("UNKNOWN");
+
+        Patient patient = new Patient();
+        patient.addIdentifier(patientIdentifier);
+        patient.addName(patientName);
+
         patient.setGender("F");
         return patient;
     }

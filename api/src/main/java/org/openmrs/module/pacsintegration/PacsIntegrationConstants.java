@@ -18,6 +18,8 @@ import java.text.SimpleDateFormat;
 
 
 public class PacsIntegrationConstants {
+
+    public static String sameAsConceptMapTypeUuid = "35543629-7d8c-11e1-909d-c80aa9edcf4e";
 	
 	public static DateFormat hl7DateFormat = new SimpleDateFormat("yyyyMMddHHmm");
 	

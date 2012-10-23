@@ -29,6 +29,9 @@
         <constructor-arg index="1">
             <ref bean="adminService" />
         </constructor-arg>
+        <constructor-arg index="2">
+            <ref bean="conceptService" />
+        </constructor-arg>
     </bean>
 
     <!-- Services accessible via Context.getService() -->

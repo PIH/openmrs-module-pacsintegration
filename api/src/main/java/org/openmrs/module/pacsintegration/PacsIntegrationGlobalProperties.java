@@ -22,4 +22,10 @@ public class PacsIntegrationGlobalProperties {
     public static final String LISTENER_USERNAME = "pacsintegration.listenerUsername";
 
 	public static final String LISTENER_PASSWORD = "pacsintegration.listenerPassword";
+
+    public static final String SENDING_FACILITY = "pacsintegration.sendingFacility";
+
+    public static final String PROCEDURE_CODE_CONCEPT_SOURCE_UUID = "pacsintegration.procedureCodeConceptSourceUuid";
+
+    public static final String DEFAULT_LOCALE = "pacsintegration.defaultLocale";
 }
