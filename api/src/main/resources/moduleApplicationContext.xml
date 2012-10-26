@@ -59,47 +59,9 @@
     </bean>
 
 
-
     <!-- register event listeners -->
 
-    <!-- currently not sending ADT messages, so don't need to listen for patient events
-    <bean id="patientEventListener" class="org.openmrs.module.pacsintegration.listener.PatientEventListener">
-        <constructor-arg index="0">
-            <ref bean="patientService" />
-        </constructor-arg>
-        <constructor-arg index="1">
-            <ref bean="patientToPacsConverter" />
-        </constructor-arg>
-        <constructor-arg index="2">
-            <ref bean="pacsIntegrationService"/>
-        </constructor-arg>
-        <constructor-arg index="3">
-            <ref bean="adminService"/>
-        </constructor-arg>
-    </bean>
-
-     <bean class="org.openmrs.event.Event">
-        <property name="subscription">
-            <ref bean="patientEventListener" />
-        </property>
-    </bean>
-
-    -->
-
-    <bean id="orderEventListener" class="org.openmrs.module.pacsintegration.listener.OrderEventListener">
-        <constructor-arg index="0">
-            <ref bean="orderService" />
-        </constructor-arg>
-        <constructor-arg index="1">
-            <ref bean="orderToPacsConverter" />
-        </constructor-arg>
-        <constructor-arg index="2">
-            <ref bean="pacsIntegrationService" />
-        </constructor-arg>
-        <constructor-arg index="3">
-            <ref bean="adminService"/>
-        </constructor-arg>
-    </bean>
+    <bean id="orderEventListener" class="org.openmrs.module.pacsintegration.listener.OrderEventListener"/>
 
     <bean class="org.openmrs.event.Event">
         <property name="subscription">

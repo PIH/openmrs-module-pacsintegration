@@ -22,30 +22,37 @@ import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.event.Event;
 import org.openmrs.event.SubscribableEventListener;
+import org.openmrs.module.emr.order.EmrOrderService;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.api.converter.OrderToPacsConverter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.jms.MapMessage;
 import javax.jms.Message;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties.*;
+import static org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties.LISTENER_PASSWORD;
+import static org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties.LISTENER_USERNAME;
+import static org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties.RADIOLOGY_ORDER_TYPE_UUID;
 
 public class OrderEventListener implements SubscribableEventListener {
 
+    @Autowired
     private OrderToPacsConverter converter;
+
+    @Autowired
     private OrderService orderService;
+
+    @Autowired
     private PacsIntegrationService pacsIntegrationService;
+
+    @Autowired
     private AdministrationService adminService;
 
-    public OrderEventListener(OrderService orderService, OrderToPacsConverter converter, PacsIntegrationService pacsIntegrationService, AdministrationService adminService) {
-        this.converter = converter;
-        this.orderService = orderService;
-        this.pacsIntegrationService = pacsIntegrationService;
-        this.adminService = adminService;
-    }
-	
+    @Autowired
+    private EmrOrderService emrOrderService;
+
 	@Override
 	public void onMessage(Message message) {
 		Context.openSession();
@@ -63,7 +70,9 @@ public class OrderEventListener implements SubscribableEventListener {
 				if (order == null) {
 					throw new RuntimeException("Could not find the order this event tells us about! uuid=" + uuid);
 				}
-				
+                emrOrderService.ensureAccessionNumberAssignedTo(order);
+                orderService.saveOrder(order);
+
 				if (adminService.getGlobalProperty(RADIOLOGY_ORDER_TYPE_UUID).equals(order.getOrderType().getUuid())) {
 					pacsIntegrationService.sendMessageToPacs(converter.convertToPacsFormat((TestOrder) order, "NW"));
 				}
@@ -91,5 +100,25 @@ public class OrderEventListener implements SubscribableEventListener {
 		return Arrays.asList(Event.Action.CREATED.name(), Event.Action.UPDATED.name(), Event.Action.VOIDED.name(),
 		    Event.Action.PURGED.name(), Event.Action.UNVOIDED.name());
 	}
-	
+
+    public void setConverter(OrderToPacsConverter converter) {
+        this.converter = converter;
+    }
+
+    public void setOrderService(OrderService orderService) {
+        this.orderService = orderService;
+    }
+
+    public void setPacsIntegrationService(PacsIntegrationService pacsIntegrationService) {
+        this.pacsIntegrationService = pacsIntegrationService;
+    }
+
+    public void setAdminService(AdministrationService adminService) {
+        this.adminService = adminService;
+    }
+
+    public void setEmrOrderService(EmrOrderService emrOrderService) {
+        this.emrOrderService = emrOrderService;
+    }
+
 }

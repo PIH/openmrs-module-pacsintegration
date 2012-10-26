@@ -28,6 +28,7 @@ import org.openmrs.TestOrder;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.emr.order.EmrOrderService;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.listener.OrderEventListener;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
@@ -45,19 +46,24 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 
     @Autowired
     private EncounterService encounterService;
+
     @Autowired
     private OrderService orderService;
-    @Autowired
+
     @InjectMocks
+    @Autowired
     private OrderEventListener orderEventListener;
+
     @Mock
     private PacsIntegrationService pacsIntegrationService;
 
+    @Mock
+    private EmrOrderService emrOrderService;
+
 	protected final Log log = LogFactory.getLog(getClass());
-	
-	protected static final String XML_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset.xml";
-	
-	/**
+    protected static final String XML_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset.xml";
+
+    /**
 	 * See http://listarchives.openmrs.org/Limitations-of-H2-for-unit-tests-td7560958.html . This
 	 * avoids: org.h2.jdbc.JdbcSQLException: Timeout trying to lock table "ORDERS"; SQL statement:
 	 * 
@@ -79,7 +85,8 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 		order.setConcept(Context.getConceptService().getConcept(18));
 		order.setStartDate(new Date());
         orderService.saveOrder(order);
-		
+
+        Mockito.verify(emrOrderService, timeout(5000)).ensureAccessionNumberAssignedTo(order);
 		Mockito.verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs(any(String.class));
 	}
 
@@ -98,6 +105,7 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
         encounter.addOrder(order);
         encounterService.saveEncounter(encounter);
 
+        Mockito.verify(emrOrderService, timeout(5000)).ensureAccessionNumberAssignedTo(order);
         Mockito.verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs(any(String.class));
     }
 
