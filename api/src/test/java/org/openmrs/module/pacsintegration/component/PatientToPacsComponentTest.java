@@ -1,6 +1,7 @@
 package org.openmrs.module.pacsintegration.component;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -24,6 +25,7 @@ import java.util.Date;
 import static org.mockito.Mockito.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
+@Ignore     // currently ignoring this test since we aren't supporting sending ADT messages at this point
 public class PatientToPacsComponentTest extends BaseModuleContextSensitiveTest {
 
     protected static final String XML_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset.xml";
