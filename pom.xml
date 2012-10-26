@@ -37,7 +37,7 @@
         <springVersion>3.0.5.RELEASE</springVersion>
         <openMRSVersion>1.9.2-SNAPSHOT</openMRSVersion>
         <emrVersion>0.1.0-SNAPSHOT</emrVersion>
-        <eventVersion>2.0</eventVersion>
+        <eventVersion>2.0.1</eventVersion>
         <uiframeworkVersion>1.9</uiframeworkVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
