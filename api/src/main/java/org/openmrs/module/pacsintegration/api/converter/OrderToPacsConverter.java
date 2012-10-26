@@ -67,6 +67,7 @@ public class OrderToPacsConverter {
         pid.getPatientName().getGivenName().setValue(order.getPatient().getGivenName());
         pid.getDateOfBirth().getTimeOfAnEvent().setValue(order.getPatient().getBirthdate() != null ? pacsDateFormat.format(order.getPatient().getBirthdate()) : "");
         pid.getSex().setValue(order.getPatient().getGender());
+        // TODO: do we need patietn admission ID / account number
 
         PV1 pv1 = message.getPATIENT().getPATIENT_VISIT().getPV1();
         // TODO: do we need patient class
