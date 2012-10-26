@@ -9,7 +9,6 @@ import org.mockito.MockitoAnnotations;
 import org.openmrs.*;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.event.advice.GeneralEventAdvice;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.api.converter.PatientToPacsConverter;
 import org.openmrs.module.pacsintegration.listener.PatientEventListener;
@@ -43,7 +42,6 @@ public class PatientToPacsComponentTest extends BaseModuleContextSensitiveTest {
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
         executeDataSet(XML_DATASET);
-        Context.addAdvice(PatientService.class, new GeneralEventAdvice());
     }
 
 

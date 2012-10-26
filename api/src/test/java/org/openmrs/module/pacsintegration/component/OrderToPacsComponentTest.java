@@ -23,10 +23,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.openmrs.Encounter;
 import org.openmrs.TestOrder;
+import org.openmrs.api.EncounterService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.event.advice.GeneralEventAdvice;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.listener.OrderEventListener;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
@@ -42,6 +43,8 @@ import static org.mockito.Mockito.timeout;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 
+    @Autowired
+    private EncounterService encounterService;
     @Autowired
     private OrderService orderService;
     @Autowired
@@ -65,7 +68,6 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 	public void setupDatabase() throws Exception {
         MockitoAnnotations.initMocks(this);
 		executeDataSet(XML_DATASET);
-		Context.addAdvice(OrderService.class, new GeneralEventAdvice());
 	}
 
 	@Test
@@ -76,10 +78,27 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 		order.setPatient(Context.getPatientService().getPatient(7));
 		order.setConcept(Context.getConceptService().getConcept(18));
 		order.setStartDate(new Date());
-
         orderService.saveOrder(order);
 		
 		Mockito.verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs(any(String.class));
 	}
-	
+
+    @Test
+    @NotTransactional
+    public void testSavingOrderWithEncounterShouldTriggerOutgoingMessage() throws Exception {
+        TestOrder order = new TestOrder();
+        order.setOrderType(Context.getOrderService().getOrderType(1001));
+        order.setPatient(Context.getPatientService().getPatient(7));
+        order.setConcept(Context.getConceptService().getConcept(18));
+        order.setStartDate(new Date());
+
+        Encounter encounter = new Encounter();
+        encounter.setPatient(Context.getPatientService().getPatient(7));
+        encounter.setEncounterDatetime(new Date());
+        encounter.addOrder(order);
+        encounterService.saveEncounter(encounter);
+
+        Mockito.verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs(any(String.class));
+    }
+
 }
