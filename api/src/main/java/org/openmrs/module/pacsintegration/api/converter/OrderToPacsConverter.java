@@ -79,7 +79,6 @@ public class OrderToPacsConverter {
         orc.getOrderControl().setValue(orderControl);
 
         OBR obr = message.getORDER().getORDER_DETAIL().getOBR();
-        // TODO: make sure accession number is actually set when order is created
         obr.getFillerOrderNumber().getEntityIdentifier().setValue(order.getAccessionNumber());
         obr.getUniversalServiceIdentifier().getIdentifier().setValue(getProcedureCode(order));
         obr.getUniversalServiceIdentifier().getText().setValue(order.getConcept().getFullySpecifiedName(getDefaultLocale()).getName());
