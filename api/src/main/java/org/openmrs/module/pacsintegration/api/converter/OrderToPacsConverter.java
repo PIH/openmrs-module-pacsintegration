@@ -23,26 +23,31 @@ import org.openmrs.*;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.PatientService;
+import org.openmrs.module.emr.EmrProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.Set;
 
 public class OrderToPacsConverter {
 
     private final SimpleDateFormat pacsDateFormat = new SimpleDateFormat("yyyyMMddHHmm");
     private Parser parser = new PipeParser();
 
+    @Autowired
     private PatientService patientService;
+
+    @Autowired
     private AdministrationService adminService;
+
+    @Autowired
     private ConceptService conceptService;
 
-    public OrderToPacsConverter(PatientService patientService, AdministrationService adminService, ConceptService conceptService) {
-        this.patientService = patientService;
-        this.adminService = adminService;
-        this.conceptService = conceptService;
-    }
+    @Autowired
+    EmrProperties properties;
 
     public String convertToPacsFormat(TestOrder order, String orderControl) throws HL7Exception {
 
@@ -67,13 +72,24 @@ public class OrderToPacsConverter {
         pid.getPatientName().getGivenName().setValue(order.getPatient().getGivenName());
         pid.getDateOfBirth().getTimeOfAnEvent().setValue(order.getPatient().getBirthdate() != null ? pacsDateFormat.format(order.getPatient().getBirthdate()) : "");
         pid.getSex().setValue(order.getPatient().getGender());
-        // TODO: do we need patietn admission ID / account number
+        // TODO: do we need patient admission ID / account number
 
         PV1 pv1 = message.getPATIENT().getPATIENT_VISIT().getPV1();
         // TODO: do we need patient class
         // TODO: do we need the assigned patient location
         //pv1.getAssignedPatientLocation().getPointOfCare().setValue();
-        // TODO: do we want to add the referring physican
+        if (order.getEncounter() != null) {
+        Set<Provider> referringProviders = order.getEncounter().getProvidersByRole(properties.getClinicianEncounterRole());
+            if (referringProviders != null && referringProviders.size() > 0) {
+                int i = 0;
+                for (Provider referringProvider : referringProviders) {
+                    // TODO: do we want to add other information here, like the doctor's id number?
+                    pv1.getReferringDoctor(i).getFamilyName().setValue(referringProvider.getPerson().getFamilyName());
+                    pv1.getReferringDoctor(i).getGivenName().setValue(referringProvider.getPerson().getGivenName());
+                    i++;
+                }
+            }
+        }
 
         ORC orc = message.getORDER().getORC();
         orc.getOrderControl().setValue(orderControl);
@@ -147,4 +163,19 @@ public class OrderToPacsConverter {
         return conceptService.getConceptMapTypeByUuid(PacsIntegrationConstants.sameAsConceptMapTypeUuid);
     }
 
+    public void setPatientService(PatientService patientService) {
+        this.patientService = patientService;
+    }
+
+    public void setAdminService(AdministrationService adminService) {
+        this.adminService = adminService;
+    }
+
+    public void setConceptService(ConceptService conceptService) {
+        this.conceptService = conceptService;
+    }
+
+    public void setProperties(EmrProperties properties) {
+        this.properties = properties;
+    }
 }

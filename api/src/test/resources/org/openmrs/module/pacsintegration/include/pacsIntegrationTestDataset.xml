@@ -12,6 +12,8 @@
                      uuid="7abcc666-7227-4581-8c99-2b4f0c4e988a"/>
     <global_property property="pacsintegration.procedureCodeConceptSourceUuid" property_value="j3nfjk33-639f-4cb4-961f-1e025b908433"
                      uuid="7abcc666-7227-4581-8c99-2b4aac4f888a"/>
+    <global_property property="emr.clinicianEncounterRole" property_value="a0b03050-c99b-11e0-9572-0800200c9a66"
+                     uuid="7abcc666-7227-4581-8c99-2b4bbb4f888a"/>
 
     <concept_reference_term concept_reference_term_id="1001" concept_source_id="2" code="127689" name="married term" description="married" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="f40666f0-49d5-11e0-8fed-18a905e044dc"/>
     <concept_reference_map concept_map_id="1001" concept_id="18" concept_reference_term_id="1001" concept_map_type_id="1001" creator="1" date_created="2004-08-12 00:00:00.0" uuid="23b6e712-49d8-11e0-8fed-18a111e044dc"/>

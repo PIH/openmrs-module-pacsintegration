@@ -29,6 +29,8 @@ public class PatientEventListener implements SubscribableEventListener {
 
     protected final Log log = LogFactory.getLog(this.getClass());
 
+    // TODO: autowire these instead
+
     private PatientService patientService;
     private PatientToPacsConverter pacsConverter;
     private PacsIntegrationService pacsIntegrationService;

@@ -14,25 +14,9 @@
             </bean>
         </property>
     </bean>
-    <bean id="patientToPacsConverter" class="org.openmrs.module.pacsintegration.api.converter.PatientToPacsConverter">
-        <constructor-arg index="0">
-            <ref bean="patientService" />
-        </constructor-arg>
-        <constructor-arg index="1">
-            <ref bean="adminService" />
-        </constructor-arg>
-    </bean>
-    <bean id="orderToPacsConverter" class="org.openmrs.module.pacsintegration.api.converter.OrderToPacsConverter">
-        <constructor-arg index="0">
-            <ref bean="patientService" />
-        </constructor-arg>
-        <constructor-arg index="1">
-            <ref bean="adminService" />
-        </constructor-arg>
-        <constructor-arg index="2">
-            <ref bean="conceptService" />
-        </constructor-arg>
-    </bean>
+
+
+    <bean id="orderToPacsConverter" class="org.openmrs.module.pacsintegration.api.converter.OrderToPacsConverter"/>
 
     <!-- Services accessible via Context.getService() -->
     <bean parent="serviceContext">
@@ -68,5 +52,6 @@
             <ref bean="orderEventListener" />
         </property>
     </bean>
+
 
 </beans>

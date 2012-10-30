@@ -34,7 +34,9 @@ public class PatientToPacsConverterTest {
         AdministrationService administrationService = mock(AdministrationService.class);
         when(patientService.getPatientIdentifierTypeByUuid(anyString())).thenReturn(patientIdentifierType);
 
-        converter = new PatientToPacsConverter(patientService, administrationService);
+        converter = new PatientToPacsConverter();
+        converter.setPatientService(patientService);
+        converter.setAdminService(administrationService);
     }
 
     @Test

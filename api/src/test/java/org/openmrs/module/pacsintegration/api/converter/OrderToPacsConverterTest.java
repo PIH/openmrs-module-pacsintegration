@@ -15,12 +15,17 @@ package org.openmrs.module.pacsintegration.api.converter;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.openmrs.*;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.emr.EmrProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,7 +38,10 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Context.class)
 public class OrderToPacsConverterTest {
 
     private OrderToPacsConverter converter;
@@ -42,7 +50,10 @@ public class OrderToPacsConverterTest {
 
     private Concept testXrayConcept;
 
+    private EncounterRole clinicialEncounterRole;
+
     // TODO: test some error cases
+    // TODO: test multiple referring providers
 
     @Before
     public void setup() {
@@ -70,17 +81,29 @@ public class OrderToPacsConverterTest {
         testXrayConcept.setUuid((UUID.randomUUID().toString()));
         testXrayConcept.addConceptMapping(sameAsConceptMap);
 
+        clinicialEncounterRole = new EncounterRole();
+
+        User authenticatedUser = new User();
+
+        mockStatic(Context.class);
         PatientService patientService = mock(PatientService.class);
         AdministrationService administrationService = mock(AdministrationService.class);
         ConceptService conceptService = mock(ConceptService.class);
+        EmrProperties properties = mock(EmrProperties.class);
 
+        when(Context.getAuthenticatedUser()).thenReturn(authenticatedUser);
         when(patientService.getPatientIdentifierTypeByUuid(anyString())).thenReturn(patientIdentifierType);
         when(administrationService.getGlobalProperty(PacsIntegrationGlobalProperties.SENDING_FACILITY)).thenReturn("openmrs_mirebalais");
         when(administrationService.getGlobalProperty(PacsIntegrationGlobalProperties.PROCEDURE_CODE_CONCEPT_SOURCE_UUID)).thenReturn(procedureCodeConceptSource.getUuid());
         when(conceptService.getConceptMapTypeByUuid(PacsIntegrationConstants.sameAsConceptMapTypeUuid)).thenReturn(sameAsConceptMapType);
         when(conceptService.getConceptSourceByUuid(procedureCodeConceptSource.getUuid())).thenReturn(procedureCodeConceptSource);
+        when(properties.getClinicianEncounterRole()).thenReturn(clinicialEncounterRole);
 
-        converter = new OrderToPacsConverter(patientService, administrationService, conceptService);
+        converter = new OrderToPacsConverter();
+        converter.setPatientService(patientService);
+        converter.setAdminService(administrationService);
+        converter.setConceptService(conceptService);
+        converter.setProperties(properties);
     }
 
     @Test
@@ -94,10 +117,15 @@ public class OrderToPacsConverterTest {
         order.setUrgency(Order.Urgency.STAT);
         order.setClinicalHistory("Patient fell off horse");
 
+        order.setEncounter(createEncounter());
+        order.getEncounter().addProvider(clinicialEncounterRole, createProvider());
+        order.getEncounter().addProvider(clinicialEncounterRole, createAnotherProvider());
+
         String hl7Message = converter.convertToPacsFormat(order, "SC");
 
         assertThat(hl7Message, startsWith("MSH|^~\\&||openmrs_mirebalais|||||ORM^O01||P|2.3\r"));
         assertThat(hl7Message, containsString("PID|||6TS-4||Chebaskwony^Collet||197608250000|F\r"));
+        assertThat(hl7Message, containsString("PV1||||||||^Joseph^Wayne~^Burke^Solomon"));
         assertThat(hl7Message, containsString("ORC|SC\r"));
         assertThat(hl7Message, endsWith("OBR|||" + uuid.toString() + "|123ABC^Left-hand x-ray|||||||||||||||||||||||^^^^^STAT||||^Patient fell off horse\r"));
     }
@@ -113,10 +141,15 @@ public class OrderToPacsConverterTest {
         order.setUrgency(Order.Urgency.ROUTINE);
         order.setClinicalHistory("Patient fell off horse");
 
+        order.setEncounter(createEncounter());
+        order.getEncounter().addProvider(clinicialEncounterRole, createProvider());
+        order.getEncounter().addProvider(clinicialEncounterRole, createAnotherProvider());
+
         String hl7Message = converter.convertToPacsFormat(order, "SC");
 
         assertThat(hl7Message, startsWith("MSH|^~\\&||openmrs_mirebalais|||||ORM^O01||P|2.3\r"));
         assertThat(hl7Message, containsString("PID|||6TS-4||UNKNOWN^UNKNOWN|||F\r"));
+        assertThat(hl7Message, containsString("PV1||||||||^Joseph^Wayne~^Burke^Solomon"));
         assertThat(hl7Message, containsString("ORC|SC\r"));
         assertThat(hl7Message, endsWith("OBR|||" + uuid.toString() + "|123ABC^Left-hand x-ray|||||||||||||||||||||||||||^Patient fell off horse\r"));
     }
@@ -155,6 +188,36 @@ public class OrderToPacsConverterTest {
 
         patient.setGender("F");
         return patient;
+    }
+
+    private Provider createProvider() {
+        Provider provider = new Provider();
+
+        Person person = new Person();
+        PersonName providerName = new PersonName();
+        providerName.setFamilyName("Joseph");
+        providerName.setGivenName("Wayne");
+        person.addName(providerName);
+
+        provider.setPerson(person);
+        return provider;
+    }
+
+    private Provider createAnotherProvider() {
+        Provider provider = new Provider();
+
+        Person person = new Person();
+        PersonName providerName = new PersonName();
+        providerName.setFamilyName("Burke");
+        providerName.setGivenName("Solomon");
+        person.addName(providerName);
+
+        provider.setPerson(person);
+        return provider;
+    }
+
+    private Encounter createEncounter() {
+        return new Encounter();
     }
 
 }
