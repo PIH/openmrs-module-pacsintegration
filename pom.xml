@@ -39,6 +39,7 @@
         <emrVersion>0.1.0-SNAPSHOT</emrVersion>
         <eventVersion>2.0.1</eventVersion>
         <uiframeworkVersion>1.9</uiframeworkVersion>
+        <idgenVersion>2.4-SNAPSHOT</idgenVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -68,6 +69,22 @@
             <version>${openMRSVersion}</version>
             <type>test-jar</type>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>idgen</artifactId>
+            <version>${idgenVersion}</version>
+            <type>pom</type>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>idgen-api</artifactId>
+            <version>${idgenVersion}</version>
+            <type>jar</type>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
