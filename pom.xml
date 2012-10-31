@@ -72,22 +72,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.openmrs.module</groupId>
-            <artifactId>idgen</artifactId>
-            <version>${idgenVersion}</version>
-            <type>pom</type>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.openmrs.module</groupId>
-            <artifactId>idgen-api</artifactId>
-            <version>${idgenVersion}</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.openmrs.web</groupId>
             <artifactId>openmrs-web</artifactId>
             <version>${openMRSVersion}</version>
@@ -129,13 +113,20 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- uiframework is a transitive dependency, required by the emr module. We don't direclty require it ourselves,
-             so it's not mentioned in config.xml -->
+        <!-- uiframework and idgen are a transitive dependency, required by the emr module. We don't directly require it ourselves,
+             so it's not mentioned in config.xml  We need to add them here so that we can properly fire up the application context during testing -->
         <dependency>
             <groupId>org.openmrs.module</groupId>
             <artifactId>uiframework-api</artifactId>
             <version>${uiframeworkVersion}</version>
-            <scope>provided</scope>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>idgen-api</artifactId>
+            <version>${idgenVersion}</version>
+            <scope>test</scope>
         </dependency>
 
         <!-- End OpenMRS modules -->
