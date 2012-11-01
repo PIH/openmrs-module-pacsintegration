@@ -47,7 +47,7 @@ public class OrderToPacsConverter {
     private ConceptService conceptService;
 
     @Autowired
-    EmrProperties properties;
+    private EmrProperties properties;
 
     public String convertToPacsFormat(TestOrder order, String orderControl) throws HL7Exception {
 
@@ -97,13 +97,15 @@ public class OrderToPacsConverter {
         OBR obr = message.getORDER().getORDER_DETAIL().getOBR();
         obr.getFillerOrderNumber().getEntityIdentifier().setValue(order.getAccessionNumber());
         obr.getUniversalServiceIdentifier().getIdentifier().setValue(getProcedureCode(order));
+
         obr.getUniversalServiceIdentifier().getText().setValue(order.getConcept().getFullySpecifiedName(getDefaultLocale()).getName());
-        // TODO: add device location
-        // TODO: add modality
+
+        // note that we are just sending modality here, not the device location
+        obr.getPlacerField2().setValue(getModalityCode(order));
         obr.getQuantityTiming().getPriority().setValue(order.getUrgency().equals(Order.Urgency.STAT) ? "STAT" : "");
-        // TODO: will this field handle a full clinical history
+        // TODO: will this field handle a full clinical history -- what this the max characters
         obr.getReasonForStudy(0).getText().setValue(order.getClinicalHistory());
-        // TODO: add scheduled date/time
+        obr.getScheduledDateTime().getTimeOfAnEvent().setValue(PacsIntegrationConstants.HL7_DATE_FORMAT.format(order.getStartDate()));
 
         return parser.encode(message);
     }
@@ -127,6 +129,22 @@ public class OrderToPacsConverter {
         }
 
         throw new RuntimeException("No valid procedure code found for concept " + order.getConcept());
+    }
+
+    private String getModalityCode(Order order) {
+
+        if (order.getConcept() == null) {
+            throw new RuntimeException("Concept must be specified on an order to send to PACS");
+        }
+
+        if (properties.getXrayOrderablesConcept().getSetMembers().contains(order.getConcept())) {
+            return PacsIntegrationConstants.XRAY_MODALITY_CODE;
+        }
+        else {
+            // TODO: double-check if McKesson PACS will have problem if no modality code is set
+            return "";
+        }
+
     }
 
     private PatientIdentifierType getPatientIdentifierType() {
@@ -160,7 +178,7 @@ public class OrderToPacsConverter {
     }
 
     private ConceptMapType getSameAsConceptMapType()  {
-        return conceptService.getConceptMapTypeByUuid(PacsIntegrationConstants.sameAsConceptMapTypeUuid);
+        return conceptService.getConceptMapTypeByUuid(PacsIntegrationConstants.SAME_AS_CONCEPT_MAP_TYPE_UUID);
     }
 
     public void setPatientService(PatientService patientService) {

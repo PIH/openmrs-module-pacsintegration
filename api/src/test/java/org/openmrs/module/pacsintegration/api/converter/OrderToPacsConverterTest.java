@@ -50,6 +50,8 @@ public class OrderToPacsConverterTest {
 
     private Concept testXrayConcept;
 
+    private Concept testXrayConceptSet;
+
     private EncounterRole clinicialEncounterRole;
 
     // TODO: test some error cases
@@ -78,8 +80,10 @@ public class OrderToPacsConverterTest {
 
         testXrayConcept = new Concept();
         testXrayConcept.addName(testXrayConceptName);
-        testXrayConcept.setUuid((UUID.randomUUID().toString()));
         testXrayConcept.addConceptMapping(sameAsConceptMap);
+
+        testXrayConceptSet = new Concept();
+        testXrayConceptSet.addSetMember(testXrayConcept);
 
         clinicialEncounterRole = new EncounterRole();
 
@@ -95,9 +99,10 @@ public class OrderToPacsConverterTest {
         when(patientService.getPatientIdentifierTypeByUuid(anyString())).thenReturn(patientIdentifierType);
         when(administrationService.getGlobalProperty(PacsIntegrationGlobalProperties.SENDING_FACILITY)).thenReturn("openmrs_mirebalais");
         when(administrationService.getGlobalProperty(PacsIntegrationGlobalProperties.PROCEDURE_CODE_CONCEPT_SOURCE_UUID)).thenReturn(procedureCodeConceptSource.getUuid());
-        when(conceptService.getConceptMapTypeByUuid(PacsIntegrationConstants.sameAsConceptMapTypeUuid)).thenReturn(sameAsConceptMapType);
+        when(conceptService.getConceptMapTypeByUuid(PacsIntegrationConstants.SAME_AS_CONCEPT_MAP_TYPE_UUID)).thenReturn(sameAsConceptMapType);
         when(conceptService.getConceptSourceByUuid(procedureCodeConceptSource.getUuid())).thenReturn(procedureCodeConceptSource);
         when(properties.getClinicianEncounterRole()).thenReturn(clinicialEncounterRole);
+        when(properties.getXrayOrderablesConcept()).thenReturn(testXrayConceptSet);
 
         converter = new OrderToPacsConverter();
         converter.setPatientService(patientService);
@@ -111,7 +116,7 @@ public class OrderToPacsConverterTest {
         TestOrder order = new TestOrder();
         UUID uuid = UUID.randomUUID();
         order.setAccessionNumber(uuid.toString());
-        order.setStartDate(new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2008"));
+        order.setStartDate(new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2012"));
         order.setPatient(createPatient());
         order.setConcept(testXrayConcept);
         order.setUrgency(Order.Urgency.STAT);
@@ -127,7 +132,7 @@ public class OrderToPacsConverterTest {
         assertThat(hl7Message, containsString("PID|||6TS-4||Chebaskwony^Collet||197608250000|F\r"));
         assertThat(hl7Message, containsString("PV1||||||||^Joseph^Wayne~^Burke^Solomon"));
         assertThat(hl7Message, containsString("ORC|SC\r"));
-        assertThat(hl7Message, endsWith("OBR|||" + uuid.toString() + "|123ABC^Left-hand x-ray|||||||||||||||||||||||^^^^^STAT||||^Patient fell off horse\r"));
+        assertThat(hl7Message, endsWith("OBR|||" + uuid.toString() + "|123ABC^Left-hand x-ray|||||||||||||||CR||||||||^^^^^STAT||||^Patient fell off horse|||||201208080000\r"));
     }
 
     @Test
@@ -135,7 +140,7 @@ public class OrderToPacsConverterTest {
         TestOrder order = new TestOrder();
         UUID uuid = UUID.randomUUID();
         order.setAccessionNumber(uuid.toString());
-        order.setStartDate(new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2008"));
+        order.setStartDate(new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2012"));
         order.setPatient(createAnonymousPatient());
         order.setConcept(testXrayConcept);
         order.setUrgency(Order.Urgency.ROUTINE);
@@ -151,7 +156,7 @@ public class OrderToPacsConverterTest {
         assertThat(hl7Message, containsString("PID|||6TS-4||UNKNOWN^UNKNOWN|||F\r"));
         assertThat(hl7Message, containsString("PV1||||||||^Joseph^Wayne~^Burke^Solomon"));
         assertThat(hl7Message, containsString("ORC|SC\r"));
-        assertThat(hl7Message, endsWith("OBR|||" + uuid.toString() + "|123ABC^Left-hand x-ray|||||||||||||||||||||||||||^Patient fell off horse\r"));
+        assertThat(hl7Message, endsWith("OBR|||" + uuid.toString() + "|123ABC^Left-hand x-ray|||||||||||||||CR||||||||||||^Patient fell off horse|||||201208080000\r"));
     }
 
 
