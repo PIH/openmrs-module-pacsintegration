@@ -23,6 +23,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.event.Event;
 import org.openmrs.event.SubscribableEventListener;
 import org.openmrs.module.emr.order.EmrOrderService;
+import org.openmrs.module.emr.radiology.RadiologyOrder;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.api.converter.OrderToPacsConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +33,7 @@ import javax.jms.Message;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties.LISTENER_PASSWORD;
-import static org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties.LISTENER_USERNAME;
-import static org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties.RADIOLOGY_ORDER_TYPE_UUID;
+import static org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties.*;
 
 public class OrderEventListener implements SubscribableEventListener {
 
@@ -61,9 +60,8 @@ public class OrderEventListener implements SubscribableEventListener {
 
 			MapMessage mapMessage = (MapMessage) message;
 			String action = mapMessage.getString("action");
-			String classname = mapMessage.getString("classname");
 			
-			if (Event.Action.CREATED.toString().equals(action) && TestOrder.class.getName().equals(classname)) {
+			if (Event.Action.CREATED.toString().equals(action)) {
 				String uuid = mapMessage.getString("uuid");
 
 				Order order = orderService.getOrderByUuid(uuid);
@@ -73,9 +71,7 @@ public class OrderEventListener implements SubscribableEventListener {
                 emrOrderService.ensureAccessionNumberAssignedTo(order);
                 orderService.saveOrder(order);
 
-				if (adminService.getGlobalProperty(RADIOLOGY_ORDER_TYPE_UUID).equals(order.getOrderType().getUuid())) {
-					pacsIntegrationService.sendMessageToPacs(converter.convertToPacsFormat((TestOrder) order, "NW"));
-				}
+			    pacsIntegrationService.sendMessageToPacs(converter.convertToPacsFormat((RadiologyOrder) order, "NW"));
 			}
 		}
 		catch (Exception e) {
@@ -91,7 +87,7 @@ public class OrderEventListener implements SubscribableEventListener {
 	public List<Class<? extends OpenmrsObject>> subscribeToObjects() {
 		// admittedly a very strange way to use a convenience method, but java
 		// compilation wouldn't occur without this extra line
-		Object classes = Arrays.asList(TestOrder.class);
+		Object classes = Arrays.asList(RadiologyOrder.class);
 		return (List<Class<? extends OpenmrsObject>>) classes;
 	}
 	

@@ -29,6 +29,7 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.emr.order.EmrOrderService;
+import org.openmrs.module.emr.radiology.RadiologyOrder;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.listener.OrderEventListener;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
@@ -79,7 +80,7 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 	@Test
 	@NotTransactional
 	public void testPlacingRadiologyOrderShouldTriggerOutgoingMessage() throws Exception {
-		TestOrder order = new TestOrder();
+        RadiologyOrder order = new RadiologyOrder();
 		order.setOrderType(Context.getOrderService().getOrderType(1001));
 		order.setPatient(Context.getPatientService().getPatient(7));
 		order.setConcept(Context.getConceptService().getConcept(18));
@@ -93,7 +94,7 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
     @Test
     @NotTransactional
     public void testSavingOrderWithEncounterShouldTriggerOutgoingMessage() throws Exception {
-        TestOrder order = new TestOrder();
+        RadiologyOrder order = new RadiologyOrder();
         order.setOrderType(Context.getOrderService().getOrderType(1001));
         order.setPatient(Context.getPatientService().getPatient(7));
         order.setConcept(Context.getConceptService().getConcept(18));
@@ -107,6 +108,20 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 
         Mockito.verify(emrOrderService, timeout(5000)).ensureAccessionNumberAssignedTo(order);
         Mockito.verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs(any(String.class));
+    }
+
+    @Test
+    public void testSendingTestOrderShouldNotTriggerOutgoingMessage() throws Exception {
+        TestOrder order = new TestOrder();
+        order.setOrderType(Context.getOrderService().getOrderType(1001));
+        order.setPatient(Context.getPatientService().getPatient(7));
+        order.setConcept(Context.getConceptService().getConcept(18));
+        order.setStartDate(new Date());
+
+        orderService.saveOrder(order);
+
+        Mockito.verify(emrOrderService, timeout(10000).never()).ensureAccessionNumberAssignedTo(order);
+        Mockito.verify(pacsIntegrationService, timeout(10000).never()).sendMessageToPacs(any(String.class));
     }
 
 }

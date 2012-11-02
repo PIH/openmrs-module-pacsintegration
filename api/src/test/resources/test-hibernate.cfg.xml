@@ -6,5 +6,6 @@
 <hibernate-configuration>
     <session-factory>
         <mapping resource="OutboundQueue.hbm.xml"/>
+        <mapping resource="RadiologyOrder.hbm.xml"/>
     </session-factory>
 </hibernate-configuration>

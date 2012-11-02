@@ -22,6 +22,7 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.emr.EmrProperties;
+import org.openmrs.module.emr.radiology.RadiologyOrder;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -53,6 +54,8 @@ public class OrderToPacsConverterTest {
     private Concept testXrayConceptSet;
 
     private EncounterRole clinicialEncounterRole;
+
+    private Location examLocation;
 
     // TODO: test some error cases
     // TODO: test multiple referring providers
@@ -86,6 +89,9 @@ public class OrderToPacsConverterTest {
         testXrayConceptSet.addSetMember(testXrayConcept);
 
         clinicialEncounterRole = new EncounterRole();
+        examLocation = new Location();
+        examLocation.setName("Radiology");
+
 
         User authenticatedUser = new User();
 
@@ -113,7 +119,7 @@ public class OrderToPacsConverterTest {
 
     @Test
     public void shouldGenerateMessageFromAnOrder() throws Exception {
-        TestOrder order = new TestOrder();
+        RadiologyOrder order = new RadiologyOrder();
         UUID uuid = UUID.randomUUID();
         order.setAccessionNumber(uuid.toString());
         order.setStartDate(new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2012"));
@@ -121,6 +127,7 @@ public class OrderToPacsConverterTest {
         order.setConcept(testXrayConcept);
         order.setUrgency(Order.Urgency.STAT);
         order.setClinicalHistory("Patient fell off horse");
+        order.setExamLocation(examLocation);
 
         order.setEncounter(createEncounter());
         order.getEncounter().addProvider(clinicialEncounterRole, createProvider());
@@ -130,14 +137,14 @@ public class OrderToPacsConverterTest {
 
         assertThat(hl7Message, startsWith("MSH|^~\\&||openmrs_mirebalais|||||ORM^O01||P|2.3\r"));
         assertThat(hl7Message, containsString("PID|||6TS-4||Chebaskwony^Collet||197608250000|F\r"));
-        assertThat(hl7Message, containsString("PV1||||||||^Joseph^Wayne~^Burke^Solomon"));
+        assertThat(hl7Message, containsString("PV1|||Radiology|||||^Joseph^Wayne~^Burke^Solomon"));
         assertThat(hl7Message, containsString("ORC|SC\r"));
         assertThat(hl7Message, endsWith("OBR|||" + uuid.toString() + "|123ABC^Left-hand x-ray|||||||||||||||CR||||||||^^^^^STAT||||^Patient fell off horse|||||201208080000\r"));
     }
 
     @Test
     public void shouldGenerateMessageForAnonymousPatient() throws Exception {
-        TestOrder order = new TestOrder();
+        RadiologyOrder order = new RadiologyOrder();
         UUID uuid = UUID.randomUUID();
         order.setAccessionNumber(uuid.toString());
         order.setStartDate(new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2012"));
@@ -147,14 +154,11 @@ public class OrderToPacsConverterTest {
         order.setClinicalHistory("Patient fell off horse");
 
         order.setEncounter(createEncounter());
-        order.getEncounter().addProvider(clinicialEncounterRole, createProvider());
-        order.getEncounter().addProvider(clinicialEncounterRole, createAnotherProvider());
 
         String hl7Message = converter.convertToPacsFormat(order, "SC");
 
         assertThat(hl7Message, startsWith("MSH|^~\\&||openmrs_mirebalais|||||ORM^O01||P|2.3\r"));
         assertThat(hl7Message, containsString("PID|||6TS-4||UNKNOWN^UNKNOWN|||F\r"));
-        assertThat(hl7Message, containsString("PV1||||||||^Joseph^Wayne~^Burke^Solomon"));
         assertThat(hl7Message, containsString("ORC|SC\r"));
         assertThat(hl7Message, endsWith("OBR|||" + uuid.toString() + "|123ABC^Left-hand x-ray|||||||||||||||CR||||||||||||^Patient fell off horse|||||201208080000\r"));
     }

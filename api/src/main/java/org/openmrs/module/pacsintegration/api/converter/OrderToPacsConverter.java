@@ -24,6 +24,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.PatientService;
 import org.openmrs.module.emr.EmrProperties;
+import org.openmrs.module.emr.radiology.RadiologyOrder;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,7 @@ public class OrderToPacsConverter {
     @Autowired
     private EmrProperties properties;
 
-    public String convertToPacsFormat(TestOrder order, String orderControl) throws HL7Exception {
+    public String convertToPacsFormat(RadiologyOrder order, String orderControl) throws HL7Exception {
 
         // TODO: some kind of null checking and checking for invalid values
 
@@ -76,8 +77,7 @@ public class OrderToPacsConverter {
 
         PV1 pv1 = message.getPATIENT().getPATIENT_VISIT().getPV1();
         // TODO: do we need patient class
-        // TODO: do we need the assigned patient location
-        //pv1.getAssignedPatientLocation().getPointOfCare().setValue();
+        pv1.getAssignedPatientLocation().getPointOfCare().setValue(order.getExamLocation() != null ? order.getExamLocation().getName() : "");
         if (order.getEncounter() != null) {
         Set<Provider> referringProviders = order.getEncounter().getProvidersByRole(properties.getClinicianEncounterRole());
             if (referringProviders != null && referringProviders.size() > 0) {
