@@ -25,7 +25,6 @@ import org.openmrs.module.emr.order.EmrOrderService;
 import org.openmrs.module.emr.radiology.RadiologyOrder;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.api.converter.OrderToPacsConverter;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.jms.MapMessage;
 import javax.jms.Message;
@@ -45,7 +44,6 @@ public class OrderEventListener implements SubscribableEventListener {
 
     private EmrOrderService emrOrderService;
 
-    @Autowired
     private OrderToPacsConverter converter;
 
     @Override

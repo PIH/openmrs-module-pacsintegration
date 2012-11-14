@@ -15,11 +15,20 @@ package org.openmrs.module.pacsintegration.api.converter;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.v23.message.ORM_O01;
-import ca.uhn.hl7v2.model.v23.segment.*;
+import ca.uhn.hl7v2.model.v23.segment.MSH;
+import ca.uhn.hl7v2.model.v23.segment.OBR;
+import ca.uhn.hl7v2.model.v23.segment.ORC;
+import ca.uhn.hl7v2.model.v23.segment.PID;
+import ca.uhn.hl7v2.model.v23.segment.PV1;
 import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.parser.PipeParser;
 import org.apache.commons.lang.StringUtils;
-import org.openmrs.*;
+import org.openmrs.ConceptMap;
+import org.openmrs.ConceptMapType;
+import org.openmrs.ConceptSource;
+import org.openmrs.Order;
+import org.openmrs.PatientIdentifierType;
+import org.openmrs.Provider;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.PatientService;
@@ -27,7 +36,6 @@ import org.openmrs.module.emr.EmrProperties;
 import org.openmrs.module.emr.radiology.RadiologyOrder;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -44,7 +52,6 @@ public class OrderToPacsConverter {
 
     private ConceptService conceptService;
 
-    @Autowired
     private EmrProperties properties;
 
     public String convertToPacsFormat(RadiologyOrder order, String orderControl) throws HL7Exception {
