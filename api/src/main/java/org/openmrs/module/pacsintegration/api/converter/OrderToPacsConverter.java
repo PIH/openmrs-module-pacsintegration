@@ -38,13 +38,10 @@ public class OrderToPacsConverter {
     private final SimpleDateFormat pacsDateFormat = new SimpleDateFormat("yyyyMMddHHmm");
     private Parser parser = new PipeParser();
 
-    @Autowired
     private PatientService patientService;
 
-    @Autowired
     private AdministrationService adminService;
 
-    @Autowired
     private ConceptService conceptService;
 
     @Autowired

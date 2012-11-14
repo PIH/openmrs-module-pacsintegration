@@ -13,7 +13,6 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.text.SimpleDateFormat;
 
@@ -23,10 +22,8 @@ public class PatientToPacsConverter {
 
     private Parser parser = new PipeParser();
 
-    @Autowired
     private PatientService patientService;
 
-    @Autowired
     private AdministrationService adminService;
 
     public String convertToAdmitMessage(Patient patient) throws HL7Exception {

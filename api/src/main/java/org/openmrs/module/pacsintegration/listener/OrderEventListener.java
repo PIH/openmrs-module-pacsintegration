@@ -16,7 +16,6 @@ package org.openmrs.module.pacsintegration.listener;
 
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Order;
-import org.openmrs.TestOrder;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
@@ -33,26 +32,23 @@ import javax.jms.Message;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties.*;
+import static org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties.LISTENER_PASSWORD;
+import static org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties.LISTENER_USERNAME;
 
 public class OrderEventListener implements SubscribableEventListener {
+
+    private OrderService orderService;
+
+    private PacsIntegrationService pacsIntegrationService;
+
+    private AdministrationService adminService;
+
+    private EmrOrderService emrOrderService;
 
     @Autowired
     private OrderToPacsConverter converter;
 
-    @Autowired
-    private OrderService orderService;
-
-    @Autowired
-    private PacsIntegrationService pacsIntegrationService;
-
-    @Autowired
-    private AdministrationService adminService;
-
-    @Autowired
-    private EmrOrderService emrOrderService;
-
-	@Override
+    @Override
 	public void onMessage(Message message) {
 		Context.openSession();
 		try {

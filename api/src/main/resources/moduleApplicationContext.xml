@@ -4,7 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
   		    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-    <!-- Add here beans related to the API context -->
+    <!-- Add services -->
     <bean id="pacsIntegrationService" class="${project.parent.groupId}.${project.parent.artifactId}.api.impl.PacsIntegrationServiceImpl">
         <property name="dao">
             <bean class="${project.parent.groupId}.${project.parent.artifactId}.api.db.hibernate.HibernatePacsIntegrationDAO">
@@ -15,10 +15,6 @@
         </property>
     </bean>
 
-
-    <bean id="orderToPacsConverter" class="org.openmrs.module.pacsintegration.api.converter.OrderToPacsConverter"/>
-
-    <!-- Services accessible via Context.getService() -->
     <bean parent="serviceContext">
         <property name="moduleService">
             <list>
@@ -42,10 +38,36 @@
         </property>
     </bean>
 
+    <!-- configure the OrderToPacs converter bean-->
+    <bean id="orderToPacsConverter" class="org.openmrs.module.pacsintegration.api.converter.OrderToPacsConverter">
+        <property name="patientService">
+            <ref bean="patientService"/>
+        </property>
+        <property name="adminService">
+            <ref bean="adminService"/>
+        </property>
+        <property name="conceptService">
+            <ref bean="conceptService"/>
+        </property>
+    </bean>
+
 
     <!-- register event listeners -->
 
-    <bean id="orderEventListener" class="org.openmrs.module.pacsintegration.listener.OrderEventListener"/>
+    <bean id="orderEventListener" class="org.openmrs.module.pacsintegration.listener.OrderEventListener">
+        <property name="orderService">
+            <ref bean="orderService"/>
+        </property>
+        <property name="emrOrderService">
+            <ref bean="emrOrderService"/>
+        </property>
+        <property name="pacsIntegrationService">
+            <ref bean="pacsIntegrationService"/>
+        </property>
+        <property name="adminService">
+            <ref bean="adminService"/>
+        </property>
+    </bean>
 
     <bean class="org.openmrs.event.Event">
         <property name="subscription">
