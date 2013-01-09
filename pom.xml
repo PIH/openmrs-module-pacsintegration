@@ -40,6 +40,7 @@
         <eventVersion>2.0.1</eventVersion>
         <uiframeworkVersion>1.9</uiframeworkVersion>
         <idgenVersion>2.4-SNAPSHOT</idgenVersion>
+        <htmlformentryVersion>2.0.3-SNAPSHOT</htmlformentryVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -126,6 +127,13 @@
             <groupId>org.openmrs.module</groupId>
             <artifactId>idgen-api</artifactId>
             <version>${idgenVersion}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>htmlformentry-api</artifactId>
+            <version>${htmlformentryVersion}</version>
             <scope>test</scope>
         </dependency>
 
