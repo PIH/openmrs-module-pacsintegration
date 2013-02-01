@@ -88,6 +88,7 @@ public class OrderToPacsConverter {
                 int i = 0;
                 for (Provider referringProvider : referringProviders) {
                     // TODO: do we want to add other information here, like the doctor's id number?
+                    pv1.getReferringDoctor(i).getIDNumber().setValue(referringProvider.getPerson().getUuid());
                     pv1.getReferringDoctor(i).getFamilyName().setValue(referringProvider.getPerson().getFamilyName());
                     pv1.getReferringDoctor(i).getGivenName().setValue(referringProvider.getPerson().getGivenName());
                     i++;

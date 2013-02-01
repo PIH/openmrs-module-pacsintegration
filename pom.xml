@@ -41,6 +41,7 @@
         <uiframeworkVersion>1.9</uiframeworkVersion>
         <idgenVersion>2.4-SNAPSHOT</idgenVersion>
         <htmlformentryVersion>2.0.3-SNAPSHOT</htmlformentryVersion>
+        <providerManagementVersion>1.1.2</providerManagementVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -111,6 +112,13 @@
             <groupId>org.openmrs</groupId>
             <artifactId>event-api</artifactId>
             <version>${eventVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>providermanagement-api</artifactId>
+            <version>${providerManagementVersion}</version>
             <scope>provided</scope>
         </dependency>
 
