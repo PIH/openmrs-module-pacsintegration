@@ -7,9 +7,12 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.openmrs.*;
+import org.openmrs.Location;
+import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
+import org.openmrs.PersonName;
 import org.openmrs.api.PatientService;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.api.converter.PatientToPacsConverter;
 import org.openmrs.module.pacsintegration.listener.PatientEventListener;
@@ -22,7 +25,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @Ignore     // currently ignoring this test since we aren't supporting sending ADT messages at this point
