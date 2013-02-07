@@ -88,6 +88,7 @@ public class OrderToPacsConverter {
                 int i = 0;
                 for (Provider referringProvider : referringProviders) {
                     // TODO: do we want to add other information here, like the doctor's id number?
+                    //pv1.getReferringDoctor(i).getIDNumber().setValue(referringProvider.getPerson().getUuid());
                     pv1.getReferringDoctor(i).getFamilyName().setValue(referringProvider.getPerson().getFamilyName());
                     pv1.getReferringDoctor(i).getGivenName().setValue(referringProvider.getPerson().getGivenName());
                     i++;
@@ -107,9 +108,16 @@ public class OrderToPacsConverter {
         // note that we are just sending modality here, not the device location
         obr.getPlacerField2().setValue(getModalityCode(order));
         obr.getQuantityTiming().getPriority().setValue(order.getUrgency().equals(Order.Urgency.STAT) ? "STAT" : "");
-        // TODO: will this field handle a full clinical history -- what this the max characters
-        obr.getReasonForStudy(0).getText().setValue(order.getClinicalHistory());
         obr.getScheduledDateTime().getTimeOfAnEvent().setValue(PacsIntegrationConstants.HL7_DATE_FORMAT.format(order.getStartDate()));
+
+        // break the reason for study up by lines
+        if (StringUtils.isNotBlank(order.getClinicalHistory()))  {
+            int i = 0;
+            for (String line : order.getClinicalHistory().split("\r\n")) {
+                obr.getReasonForStudy(i).getText().setValue(line);
+                i++;
+            }
+        }
 
         return parser.encode(message);
     }

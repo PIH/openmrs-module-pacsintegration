@@ -126,7 +126,7 @@ public class OrderToPacsConverterTest {
         order.setPatient(createPatient());
         order.setConcept(testXrayConcept);
         order.setUrgency(Order.Urgency.STAT);
-        order.setClinicalHistory("Patient fell off horse");
+        order.setClinicalHistory("Patient fell off horse\r\nAnd broke back");
         order.setExamLocation(examLocation);
 
         order.setEncounter(createEncounter());
@@ -139,7 +139,7 @@ public class OrderToPacsConverterTest {
         assertThat(hl7Message, containsString("PID|||6TS-4||Chebaskwony^Collet||197608250000|F\r"));
         assertThat(hl7Message, containsString("PV1|||Radiology|||||^Joseph^Wayne~^Burke^Solomon"));
         assertThat(hl7Message, containsString("ORC|SC\r"));
-        assertThat(hl7Message, endsWith("OBR|||" + uuid.toString() + "|123ABC^Left-hand x-ray|||||||||||||||CR||||||||^^^^^STAT||||^Patient fell off horse|||||201208080000\r"));
+        assertThat(hl7Message, endsWith("OBR|||" + uuid.toString() + "|123ABC^Left-hand x-ray|||||||||||||||CR||||||||^^^^^STAT||||^Patient fell off horse~^And broke back|||||201208080000\r"));
     }
 
     @Test
