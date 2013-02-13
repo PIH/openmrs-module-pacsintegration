@@ -149,13 +149,12 @@ public class OrderToPacsConverterTest {
 
         order.setEncounter(createEncounter());
         order.getEncounter().addProvider(clinicialEncounterRole, createProvider());
-        order.getEncounter().addProvider(clinicialEncounterRole, createAnotherProvider());
 
         String hl7Message = converter.convertToPacsFormat(order, "SC");
 
         assertThat(hl7Message, startsWith("MSH|^~\\&||openmrs_mirebalais|||||ORM^O01||P|2.3\r"));
         assertThat(hl7Message, containsString("PID|||6TS-4||Chebaskwony^Collet||197608250000|F\r"));
-        assertThat(hl7Message, containsString("PV1|||Radiology|||||123^Joseph^Wayne~456^Burke^Solomon"));
+        assertThat(hl7Message, containsString("PV1|||Radiology|||||123^Joseph^Wayne"));
         assertThat(hl7Message, containsString("ORC|SC\r"));
         assertThat(hl7Message, endsWith("OBR|||" + uuid.toString() + "|123ABC^Left-hand x-ray|||||||||||||||CR||||||||^^^^^STAT||||^Patient fell off horse~^And broke back|||||201208080000\r"));
     }
@@ -228,20 +227,6 @@ public class OrderToPacsConverterTest {
 
         provider.setPerson(person);
         provider.setIdentifier("123");
-        return provider;
-    }
-
-    private Provider createAnotherProvider() {
-        Provider provider = new Provider();
-
-        Person person = new Person();
-        PersonName providerName = new PersonName();
-        providerName.setFamilyName("Burke");
-        providerName.setGivenName("Solomon");
-        person.addName(providerName);
-
-        provider.setPerson(person);
-        provider.setIdentifier("456");
         return provider;
     }
 
