@@ -81,7 +81,11 @@ public class OrderToPacsConverter {
 
         PV1 pv1 = message.getPATIENT().getPATIENT_VISIT().getPV1();
         // TODO: do we need patient class
-        pv1.getAssignedPatientLocation().getPointOfCare().setValue(order.getExamLocation() != null ? order.getExamLocation().getName() : "");
+        if (order.getExamLocation() != null) {
+            pv1.getAssignedPatientLocation().getPointOfCare().setValue(order.getExamLocation().getId().toString());
+            pv1.getAssignedPatientLocation().getLocationType().setValue(order.getExamLocation().getName());
+        }
+
         if (order.getEncounter() != null) {
         Set<Provider> referringProviders = order.getEncounter().getProvidersByRole(properties.getClinicianEncounterRole());
             if (referringProviders != null && referringProviders.size() > 0) {
