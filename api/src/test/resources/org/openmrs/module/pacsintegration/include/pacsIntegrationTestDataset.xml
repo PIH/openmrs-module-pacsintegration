@@ -12,7 +12,7 @@
                      uuid="7abcc666-7227-4581-8c99-2b4f0c4e988a"/>
     <global_property property="pacsintegration.procedureCodeConceptSourceUuid" property_value="j3nfjk33-639f-4cb4-961f-1e025b908433"
                      uuid="7abcc666-7227-4581-8c99-2b4aac4f888a"/>
-    <global_property property="emr.clinicianEncounterRole" property_value="a0b03050-c99b-11e0-9572-0800200c9a66"
+    <global_property property="emr.orderingProviderEncounterRole" property_value="a0b03050-c99b-11e0-9572-0800200c9a66"
                      uuid="7abcc666-7227-4581-8c99-2b4bbb4f888a"/>
     <global_property property="emr.xrayOrderablesConcept" property_value="0dde1358-7fcf-4341-a330-f119241a46e8"
                      uuid="7abcc666-7227-4581-8c00-2b4bbb4f888a"/>     <!-- just assigning this to a concept set in the core data -->

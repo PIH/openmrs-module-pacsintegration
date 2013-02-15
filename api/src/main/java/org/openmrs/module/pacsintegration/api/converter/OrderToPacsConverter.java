@@ -87,7 +87,7 @@ public class OrderToPacsConverter {
         }
 
         if (order.getEncounter() != null) {
-        Set<Provider> referringProviders = order.getEncounter().getProvidersByRole(properties.getClinicianEncounterRole());
+        Set<Provider> referringProviders = order.getEncounter().getProvidersByRole(properties.getOrderingProviderEncounterRole());
             if (referringProviders != null && referringProviders.size() > 0) {
                 // note that if there are multiple clinicians associated with the encounter, we only sent the first one
                 Provider referringProvider = referringProviders.iterator().next();

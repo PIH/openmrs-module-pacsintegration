@@ -111,7 +111,6 @@ public class OrderToPacsConverterTest {
         examLocation.setId(2);
         examLocation.setName("Radiology");
 
-
         User authenticatedUser = new User();
 
         mockStatic(Context.class);
@@ -126,7 +125,7 @@ public class OrderToPacsConverterTest {
         when(administrationService.getGlobalProperty(PacsIntegrationGlobalProperties.PROCEDURE_CODE_CONCEPT_SOURCE_UUID)).thenReturn(procedureCodeConceptSource.getUuid());
         when(conceptService.getConceptMapTypeByUuid(PacsIntegrationConstants.SAME_AS_CONCEPT_MAP_TYPE_UUID)).thenReturn(sameAsConceptMapType);
         when(conceptService.getConceptSourceByUuid(procedureCodeConceptSource.getUuid())).thenReturn(procedureCodeConceptSource);
-        when(properties.getClinicianEncounterRole()).thenReturn(clinicialEncounterRole);
+        when(properties.getOrderingProviderEncounterRole()).thenReturn(clinicialEncounterRole);
         when(properties.getXrayOrderablesConcept()).thenReturn(testXrayConceptSet);
 
         converter = new OrderToPacsConverter();
