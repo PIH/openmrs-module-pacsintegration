@@ -49,6 +49,9 @@
         <property name="conceptService">
             <ref bean="conceptService"/>
         </property>
+        <property name="locationService">
+            <ref bean="locationService"/>
+        </property>
         <property name="properties">
             <ref bean="emrProperties"/>
         </property>

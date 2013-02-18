@@ -26,7 +26,9 @@ import org.mockito.MockitoAnnotations;
 import org.openmrs.Encounter;
 import org.openmrs.TestOrder;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.LocationService;
 import org.openmrs.api.OrderService;
+import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.emr.order.EmrOrderService;
 import org.openmrs.module.emr.radiology.RadiologyOrder;
@@ -37,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static org.mockito.Matchers.any;
@@ -50,6 +53,12 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private LocationService locationService;
+
+    @Autowired
+    private ProviderService providerService;
 
     @InjectMocks
     @Autowired
@@ -122,6 +131,31 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 
         Mockito.verify(emrOrderService, timeout(10000).never()).ensureAccessionNumberAssignedTo(order);
         Mockito.verify(pacsIntegrationService, timeout(10000).never()).sendMessageToPacs(any(String.class));
+    }
+
+    @Test
+    @NotTransactional
+    public void testPlacingRadiologyOrderShouldGenerateProperMessage() throws Exception {
+        RadiologyOrder order = new RadiologyOrder();
+        order.setOrderType(Context.getOrderService().getOrderType(1001));
+        order.setPatient(Context.getPatientService().getPatient(7));
+        order.setConcept(Context.getConceptService().getConcept(18));
+        order.setStartDate(new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2012"));
+        order.setAccessionNumber("A1B2C3");
+        order.setExamLocation(locationService.getLocation(1));
+
+        Encounter encounter = new Encounter();
+        encounter.setPatient(Context.getPatientService().getPatient(7));
+        encounter.setEncounterDatetime(new Date());
+        encounter.addOrder(order);
+        encounter.addProvider(encounterService.getEncounterRole(1001), providerService.getProvider(1));
+        encounterService.saveEncounter(encounter);
+
+        Mockito.verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs("MSH|^~\\&||Mirebalais|||||ORM^O01||P|2.3\r" +
+                "PID|||6TS-4||Chebaskwony^Collet||197608250000|F\r" +
+                "PV1|||1FED2^^^^^^^^Unknown Location|||||Test^User^Super\r" +
+                "ORC|NW\r" +
+                "OBR|||A1B2C3|127689^FOOD ASSISTANCE||||||||||||||||||||||||||||||||201208080000\r");
     }
 
 }

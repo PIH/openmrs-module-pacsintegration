@@ -14,7 +14,7 @@
 package org.openmrs.module.pacsintegration;
 
 public class PacsIntegrationGlobalProperties {
-	
+
 	public static final String RADIOLOGY_ORDER_TYPE_UUID = "pacsintegration.radiologyOrderTypeUuid";
 
     public static final String PATIENT_IDENTIFIER_TYPE_UUID = "pacsintegration.patientIdentifierTypeUuid";
@@ -28,4 +28,7 @@ public class PacsIntegrationGlobalProperties {
     public static final String PROCEDURE_CODE_CONCEPT_SOURCE_UUID = "pacsintegration.procedureCodeConceptSourceUuid";
 
     public static final String DEFAULT_LOCALE = "pacsintegration.defaultLocale";
+
+    public static final String LOCATION_CODE_ATTRIBUTE_TYPE_UUID = "pacsintegration.locationCodeAttributeTypeUuid";
+
 }

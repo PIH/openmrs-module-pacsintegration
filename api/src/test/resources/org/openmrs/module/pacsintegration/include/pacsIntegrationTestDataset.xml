@@ -12,7 +12,9 @@
                      uuid="7abcc666-7227-4581-8c99-2b4f0c4e988a"/>
     <global_property property="pacsintegration.procedureCodeConceptSourceUuid" property_value="j3nfjk33-639f-4cb4-961f-1e025b908433"
                      uuid="7abcc666-7227-4581-8c99-2b4aac4f888a"/>
-    <global_property property="emr.orderingProviderEncounterRole" property_value="a0b03050-c99b-11e0-9572-0800200c9a66"
+    <global_property property="pacsintegration.locationCodeAttributeTypeUuid" property_value="11103050-c99b-11e0-9572-0800200c9a66"
+                     uuid="7cccc666-7227-4581-8c99-2b4bbb4f888a"/>
+    <global_property property="emr.orderingProviderEncounterRole" property_value="a0b03050-c99b-11e0-9572-080020000a66"
                      uuid="7abcc666-7227-4581-8c99-2b4bbb4f888a"/>
     <global_property property="emr.xrayOrderablesConcept" property_value="0dde1358-7fcf-4341-a330-f119241a46e8"
                      uuid="7abcc666-7227-4581-8c00-2b4bbb4f888a"/>     <!-- just assigning this to a concept set in the core data -->
@@ -26,4 +28,15 @@
     <orders order_id="1001" order_type_id="1001" concept_id="88" orderer="1" accession_number="54321"
             start_date="2008-08-08 00:00:00.0" creator="1" discontinued="false" date_created="2008-08-19 12:20:22.0"
             voided="false" patient_id="7" uuid="921de0bb-05c4-444a-be03-e01b4c4b9142" urgency="STAT"/>
+
+    <location_attribute_type location_attribute_type_id="1001" name="Location code" description="Location code"
+            datatype="org.openmrs.customdatatype.datatype.FreeTextDatatype" min_occurs="0" max_occurs="1"
+            creator="1" date_created="2008-08-08 00:00:00.0" retired="0" uuid="11103050-c99b-11e0-9572-0800200c9a66"/>
+
+    <location_attribute location_attribute_id="1001" location_id="1" attribute_type_id="1001" uuid="888cc666-7227-4581-8c00-2b4bbb4f888a"
+            value_reference="1FED2" creator="1" voided="0" date_created="2008-08-08 00:00:00.0"/>
+
+    <encounter_role encounter_role_id="1001" name="Ordering Provider" description="Ordering Provider" creator="1"
+                    retired="false" date_created="2011-08-18 14:00:00.0" uuid="a0b03050-c99b-11e0-9572-080020000a66" />
+
 </dataset>

@@ -26,11 +26,15 @@ import org.apache.commons.lang.StringUtils;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptSource;
+import org.openmrs.Location;
+import org.openmrs.LocationAttribute;
+import org.openmrs.LocationAttributeType;
 import org.openmrs.Order;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Provider;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.module.emr.EmrProperties;
 import org.openmrs.module.emr.radiology.RadiologyOrder;
@@ -38,6 +42,7 @@ import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -51,6 +56,8 @@ public class OrderToPacsConverter {
     private AdministrationService adminService;
 
     private ConceptService conceptService;
+
+    private LocationService locationService;
 
     private EmrProperties properties;
 
@@ -80,9 +87,16 @@ public class OrderToPacsConverter {
         // TODO: do we need patient admission ID / account number
 
         PV1 pv1 = message.getPATIENT().getPATIENT_VISIT().getPV1();
+
         // TODO: do we need patient class
         if (order.getExamLocation() != null) {
-            pv1.getAssignedPatientLocation().getPointOfCare().setValue(order.getExamLocation().getId().toString());
+
+            // set the location code if one has been specified
+            String locationCode = getLocationCode(order.getExamLocation());
+            if (StringUtils.isNotBlank(locationCode)) {
+                pv1.getAssignedPatientLocation().getPointOfCare().setValue(locationCode);
+            }
+
             pv1.getAssignedPatientLocation().getLocationType().setValue(order.getExamLocation().getName());
         }
 
@@ -180,6 +194,36 @@ public class OrderToPacsConverter {
         }
     }
 
+    private LocationAttributeType getLocationCodeAttributeType() {
+        // we allow this to be null
+        return locationService.getLocationAttributeTypeByUuid(adminService.getGlobalProperty(
+                PacsIntegrationGlobalProperties.LOCATION_CODE_ATTRIBUTE_TYPE_UUID));
+
+    }
+
+    private String getLocationCode(Location location) {
+
+        LocationAttributeType locationCodeAttributeType = getLocationCodeAttributeType();
+
+        if (locationCodeAttributeType == null) {
+            return null;
+        }
+
+        List<LocationAttribute> locationCodes = location.getActiveAttributes(locationCodeAttributeType);
+
+        if (locationCodes == null || locationCodes.size() == 0) {
+            return null;
+        }
+
+        // there should never be more than one active location code, so we just use a get(0) here
+        if (locationCodes.get(0).getValue() != null) {
+            return locationCodes.get(0).getValue().toString();
+        }
+        else {
+            return null;
+        }
+    }
+
     private Locale getDefaultLocale() {
         String defaultLocale = adminService.getGlobalProperty(PacsIntegrationGlobalProperties.DEFAULT_LOCALE);
 
@@ -204,6 +248,10 @@ public class OrderToPacsConverter {
 
     public void setConceptService(ConceptService conceptService) {
         this.conceptService = conceptService;
+    }
+
+    public void setLocationService(LocationService locationService) {
+        this.locationService = locationService;
     }
 
     public void setProperties(EmrProperties properties) {

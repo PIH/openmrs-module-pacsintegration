@@ -113,6 +113,15 @@
         </description>
     </globalProperty>
 
+    <globalProperty>
+        <property>pacsintegration.locationCodeAttributeTypeUuid</property>
+        <defaultValue></defaultValue>
+        <description>
+            UUID of the location attribute that stores the location code we want to pass on the PACS system;
+            if no code is specified, we just pass on the location name
+        </description>
+    </globalProperty>
+
 
 </module>
 
