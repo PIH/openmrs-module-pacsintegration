@@ -38,7 +38,7 @@
         <openMRSVersion>1.9.3-SNAPSHOT</openMRSVersion>
         <emrVersion>0.1.0-SNAPSHOT</emrVersion>
         <eventVersion>2.0.1</eventVersion>
-        <uiframeworkVersion>1.9</uiframeworkVersion>
+        <uiframeworkVersion>2.5</uiframeworkVersion>
         <idgenVersion>2.4-SNAPSHOT</idgenVersion>
         <htmlformentryVersion>2.0.5</htmlformentryVersion>
         <providerManagementVersion>1.1.2</providerManagementVersion>
