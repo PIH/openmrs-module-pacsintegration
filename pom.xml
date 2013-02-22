@@ -39,7 +39,7 @@
         <emrVersion>0.1.0-SNAPSHOT</emrVersion>
         <eventVersion>2.0.1</eventVersion>
         <uiframeworkVersion>2.5</uiframeworkVersion>
-        <idgenVersion>2.4-SNAPSHOT</idgenVersion>
+        <idgenVersion>2.4</idgenVersion>
         <htmlformentryVersion>2.0.5</htmlformentryVersion>
         <providerManagementVersion>1.1.2</providerManagementVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
