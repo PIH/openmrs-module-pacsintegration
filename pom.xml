@@ -40,7 +40,7 @@
         <eventVersion>2.0.1</eventVersion>
         <uiframeworkVersion>2.5</uiframeworkVersion>
         <idgenVersion>2.4</idgenVersion>
-        <htmlformentryVersion>2.0.5</htmlformentryVersion>
+        <htmlformentryVersion>2.0.6</htmlformentryVersion>
         <providerManagementVersion>1.1.2</providerManagementVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
