@@ -22,10 +22,11 @@
         <url>http://openmrs.org</url>
     </organization>
 
+
     <scm>
-        <connection>scm:svn:http://svn.openmrs.org/openmrs-modules/pacsintegration/trunk/</connection>
-        <developerConnection>scm:svn:http://svn.openmrs.org/openmrs-modules/pacsintegration/trunk/</developerConnection>
-        <url>http://svn.openmrs.org/openmrs-modules/pacsintegration/trunk/</url>
+        <connection>scm:git:git@github.com:PIH/openmrs-module-pacsintegration.git</connection>
+        <developerConnection>scm:git:git@github.com:PIH/openmrs-module-pacsintegration.git</developerConnection>
+        <url>scm:git:git@github.com:PIH/openmrs-module-pacsintegration.git</url>
     </scm>
 
     <modules>
