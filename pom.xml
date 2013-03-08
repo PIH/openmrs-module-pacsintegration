@@ -37,7 +37,7 @@
     <properties>
         <springVersion>3.0.5.RELEASE</springVersion>
         <openMRSVersion>1.9.3</openMRSVersion>
-        <emrVersion>0.1.0-SNAPSHOT</emrVersion>
+        <emrVersion>1.0</emrVersion>
         <eventVersion>2.0.1</eventVersion>
         <uiframeworkVersion>2.5.1</uiframeworkVersion>
         <idgenVersion>2.4</idgenVersion>
