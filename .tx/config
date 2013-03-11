@@ -1,7 +1,7 @@
 [main]
 host = https://www.transifex.com/
 
-[mirebalais.pacs-registration-module]
+[mirebalais.pacs-integration-module]
 source_file = api/src/main/resources/messages.properties
 source_lang = en
 trans.fr = api/src/main/resources/messages_fr.properties
