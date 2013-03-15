@@ -16,9 +16,12 @@ package org.openmrs.module.pacsintegration.api.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.impl.BaseOpenmrsService;
+import org.openmrs.module.pacsintegration.InboundQueue;
 import org.openmrs.module.pacsintegration.OutboundQueue;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
+import org.openmrs.module.pacsintegration.api.converter.PacsToHl7Converter;
 import org.openmrs.module.pacsintegration.api.db.PacsIntegrationDAO;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * It is a default implementation of
@@ -27,7 +30,9 @@ import org.openmrs.module.pacsintegration.api.db.PacsIntegrationDAO;
 public class PacsIntegrationServiceImpl extends BaseOpenmrsService implements PacsIntegrationService {
 	
 	protected final Log log = LogFactory.getLog(this.getClass());
-	
+
+    private PacsToHl7Converter pacsToHl7Converter;
+
 	private PacsIntegrationDAO dao;
 	
 	/**
@@ -45,8 +50,23 @@ public class PacsIntegrationServiceImpl extends BaseOpenmrsService implements Pa
 	}
 	
 	@Override
+    @Transactional
 	public void sendMessageToPacs(String message) {
 		OutboundQueue outbound = new OutboundQueue(message);
 		dao.saveOutboundQueue(outbound);
 	}
+
+    @Override
+    @Transactional
+    public void readNewMessagesFromPacs() {
+
+        for (InboundQueue message : dao.getNewMessagesFromInboundQueue()) {
+
+            // remember null checks
+            // note that we are only handline ORU messages
+            // convert, process, mark as read
+
+        }
+
+    }
 }

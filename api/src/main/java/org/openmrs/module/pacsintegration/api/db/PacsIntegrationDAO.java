@@ -13,6 +13,9 @@
  */
 package org.openmrs.module.pacsintegration.api.db;
 
+import java.util.List;
+
+import org.openmrs.module.pacsintegration.InboundQueue;
 import org.openmrs.module.pacsintegration.OutboundQueue;
 
 /**
@@ -20,6 +23,11 @@ import org.openmrs.module.pacsintegration.OutboundQueue;
  */
 public interface PacsIntegrationDAO {
 	
-	public void saveOutboundQueue(OutboundQueue outbound);
+	public void saveOutboundQueue(OutboundQueue outboundQueue);
+
+    public void saveInboundQueue(InboundQueue inboundQueue);
+
+    public List<InboundQueue> getNewMessagesFromInboundQueue();
+
 	
 }

@@ -50,4 +50,22 @@
         </modifyColumn>
     </changeSet>
 
+    <changeSet id="201303121424" author="mgoodrich">
+        <comment>Adds inbound queue table</comment>
+        <createTable tableName="pacsintegration_inbound_queue">
+            <column name="pacsintegration_inbound_queue_id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="message" type="mediumtext">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_created" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processed" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>
