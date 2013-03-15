@@ -11,15 +11,17 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.pacsintegration.api.db;
+package org.openmrs.module.pacsintegration;
 
-import org.openmrs.module.pacsintegration.OutboundQueue;
+import org.openmrs.ConceptSource;
+import org.openmrs.module.emrapi.utils.ModuleProperties;
+import org.springframework.stereotype.Component;
 
-/**
- * Database methods for {@link org.openmrs.module.pacsintegration.api.PacsIntegrationService}.
- */
-public interface PacsIntegrationDAO {
-	
-	public void saveOutboundQueue(OutboundQueue outboundQueue);
-	
+@Component("pacsIntegrationProperties")
+public class PacsIntegrationProperties extends ModuleProperties {
+
+    public ConceptSource getProcedureCodesConceptSource() {
+        return getConceptSourceByGlobalProperty(PacsIntegrationConstants.GP_PROCEDURE_CODE_CONCEPT_SOURCE_UUID);
+    }
+
 }

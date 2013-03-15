@@ -11,16 +11,17 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.pacsintegration.api.messages;
+package org.openmrs.module.pacsintegration.messages;
 
 import org.openmrs.Order;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
+import org.openmrs.module.pacsintegration.util.HL7Utils;
 
 /**
- * Models a HL7 OrmMessage
+ * Models a HL7 ORMMessage
  */
 
-public class OrmMessage extends Message {
+public class ORMMessage extends Message {
 	
 	private String orderControl;
 	private String accessionNumber;
@@ -36,15 +37,15 @@ public class OrmMessage extends Message {
 	private String modality;
 	private String sendingFacility;
 
-    public OrmMessage(Order order, String orderControl) {
+    public ORMMessage(Order order, String orderControl) {
         this.orderControl = orderControl;
         this.accessionNumber = order.getAccessionNumber();
         this.patientId = order.getPatient().getPatientIdentifier().getIdentifier();
         this.familyName = order.getPatient().getFamilyName();
         this.givenName = order.getPatient().getGivenName();
-        this.dateOfBirth = PacsIntegrationConstants.HL7_DATE_FORMAT.format(order.getPatient().getBirthdate());
+        this.dateOfBirth = HL7Utils.hl7DateFormat.format(order.getPatient().getBirthdate());
         this.patientSex = order.getPatient().getGender();
-        this.scheduledExamDatetime = PacsIntegrationConstants.HL7_DATE_FORMAT.format(order.getStartDate());
+        this.scheduledExamDatetime = HL7Utils.hl7DateFormat.format(order.getStartDate());
         // TODO: ormMessage.setDeviceLocation();
         // TODO: ormMessage.setModality();
         // TODO: we should set this to specific identifier that is configured, not just the preferred one?

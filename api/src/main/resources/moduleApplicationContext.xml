@@ -13,6 +13,9 @@
                 </property>
             </bean>
         </property>
+        <property name="hl7Listener">
+            <ref bean="hl7listener"/>
+        </property>
     </bean>
 
     <bean parent="serviceContext">
@@ -39,7 +42,7 @@
     </bean>
 
     <!-- configure the OrderToPacs converter bean-->
-    <bean id="orderToPacsConverter" class="org.openmrs.module.pacsintegration.api.converter.OrderToPacsConverter">
+    <bean id="orderToPacsConverter" class="org.openmrs.module.pacsintegration.converter.OrderToPacsConverter">
         <property name="patientService">
             <ref bean="patientService"/>
         </property>
@@ -52,11 +55,14 @@
         <property name="locationService">
             <ref bean="locationService"/>
         </property>
+        <property name="properties">
+            <ref bean="emrProperties"/>
+        </property>
         <property name="radiologyProperties">
             <ref bean="radiologyProperties"/>
         </property>
-        <property name="properties">
-            <ref bean="emrProperties"/>
+        <property name="pacsIntegrationProperties">
+            <ref bean="pacsIntegrationProperties"/>
         </property>
     </bean>
 
@@ -87,5 +93,38 @@
         </property>
     </bean>
 
+    <!-- configure the listener that listens for HL7 messages -->
+    <bean id="hl7listener" class="org.openmrs.module.pacsintegration.listener.HL7Listener">
+        <property name="handlers">
+                <map>
+                    <entry key="ORM_O01">
+                        <bean class="org.openmrs.module.pacsintegration.handler.ORM_O01Handler">
+                            <property name="adminService">
+                                <ref bean="adminService"/>
+                            </property>
+                            <property name="patientService">
+                                <ref bean="patientService"/>
+                            </property>
+                            <property name="emrProperties">
+                                <ref bean="emrProperties"/>
+                            </property>
+                        </bean>
+                    </entry>
+                    <entry key="ORU_R01">
+                        <bean class="org.openmrs.module.pacsintegration.handler.ORU_R01Handler">
+                            <property name="adminService">
+                                <ref bean="adminService"/>
+                            </property>
+                            <property name="patientService">
+                                <ref bean="patientService"/>
+                            </property>
+                            <property name="emrProperties">
+                                <ref bean="emrProperties"/>
+                            </property>
+                        </bean>
+                    </entry>
+                </map>
+        </property>
+    </bean>
 
 </beans>

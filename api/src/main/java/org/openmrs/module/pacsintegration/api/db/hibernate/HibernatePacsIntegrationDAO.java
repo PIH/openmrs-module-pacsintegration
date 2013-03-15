@@ -42,9 +42,10 @@ public class HibernatePacsIntegrationDAO implements PacsIntegrationDAO {
 	public SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}
-	
-	@Override
-	public void saveOutboundQueue(OutboundQueue outbound) {
-		sessionFactory.getCurrentSession().saveOrUpdate(outbound);
+
+    @Override
+	public void saveOutboundQueue(OutboundQueue outboundQueue) {
+		sessionFactory.getCurrentSession().saveOrUpdate(outboundQueue);
 	}
+
 }

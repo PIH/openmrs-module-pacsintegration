@@ -1,4 +1,4 @@
-package org.openmrs.module.pacsintegration.api.converter;
+package org.openmrs.module.pacsintegration.converter;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.DataTypeException;
@@ -12,13 +12,14 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PatientService;
-import org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties;
+import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
+import org.openmrs.module.pacsintegration.util.HL7Utils;
 
 import java.text.SimpleDateFormat;
 
 public class PatientToPacsConverter {
 
-    private final SimpleDateFormat pacsDateFormat = new SimpleDateFormat("yyyyMMddHHmm");
+    // TODO: not currently used
 
     private Parser parser = new PipeParser();
 
@@ -52,6 +53,7 @@ public class PatientToPacsConverter {
 
 
     private void populateMSHSegment(MSH mshSegment, String messageType) throws DataTypeException {
+        // TODO: refactor to use the HL7Util method
         mshSegment.getFieldSeparator().setValue("|");
         mshSegment.getEncodingCharacters().setValue("^~\\&");
         mshSegment.getMessageType().getMessageType().setValue("ADT");
@@ -66,12 +68,12 @@ public class PatientToPacsConverter {
         pidSegment.getPatientIDInternalID(0).getID().setValue(patient.getPatientIdentifier(getPatientIdentifierType()).getIdentifier());
         pidSegment.getPatientName().getFamilyName().setValue(patient.getFamilyName());
         pidSegment.getPatientName().getGivenName().setValue(patient.getGivenName());
-        pidSegment.getDateOfBirth().getTimeOfAnEvent().setValue(pacsDateFormat.format(patient.getBirthdate()));
+        pidSegment.getDateOfBirth().getTimeOfAnEvent().setValue(HL7Utils.hl7DateFormat.format(patient.getBirthdate()));
         pidSegment.getSex().setValue(patient.getGender());
     }
 
     private PatientIdentifierType getPatientIdentifierType() {
-        PatientIdentifierType patientIdentifierType = patientService.getPatientIdentifierTypeByUuid(adminService.getGlobalProperty(PacsIntegrationGlobalProperties.PATIENT_IDENTIFIER_TYPE_UUID));
+        PatientIdentifierType patientIdentifierType = patientService.getPatientIdentifierTypeByUuid(adminService.getGlobalProperty(PacsIntegrationConstants.GP_PATIENT_IDENTIFIER_TYPE_UUID));
         if (patientIdentifierType == null) {
             throw new RuntimeException("No patient identifier type specified. Is pacsintegration.patientIdentifierTypeUuid properly set?");
         }

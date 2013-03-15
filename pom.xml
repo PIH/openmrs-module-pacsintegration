@@ -183,7 +183,7 @@
             <groupId>ca.uhn.hapi</groupId>
             <artifactId>hapi</artifactId>
             <version>0.5</version>
-            <scope>provided</scope>
+            <type>pom</type>
         </dependency>
 
         <dependency>

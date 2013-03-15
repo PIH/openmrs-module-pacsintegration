@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.pacsintegration.api.converter;
+package org.openmrs.module.pacsintegration.converter;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -44,8 +44,7 @@ import org.openmrs.module.emr.EmrProperties;
 import org.openmrs.module.emr.radiology.RadiologyOrder;
 import org.openmrs.module.emr.radiology.RadiologyProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
-import org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties;
-import org.powermock.api.mockito.PowerMockito;
+import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -132,21 +131,22 @@ public class OrderToPacsConverterTest {
         ConceptService conceptService = mock(ConceptService.class);
         LocationService locationService = mock(LocationService.class);
         RadiologyProperties radiologyProperties = mock(RadiologyProperties.class);
-        EmrProperties properties = mock(EmrProperties.class);
+        EmrProperties emrProperties = mock(EmrProperties.class);
+        PacsIntegrationProperties pacsIntegrationProperties = mock(PacsIntegrationProperties.class);
 
         when(Context.getAuthenticatedUser()).thenReturn(authenticatedUser);
         when(patientService.getPatientIdentifierTypeByUuid(anyString())).thenReturn(patientIdentifierType);
 
-        when(administrationService.getGlobalProperty(PacsIntegrationGlobalProperties.SENDING_FACILITY)).thenReturn("openmrs_mirebalais");
-        when(administrationService.getGlobalProperty(PacsIntegrationGlobalProperties.PROCEDURE_CODE_CONCEPT_SOURCE_UUID)).thenReturn(procedureCodeConceptSource.getUuid());
-        when(administrationService.getGlobalProperty(PacsIntegrationGlobalProperties.LOCATION_CODE_ATTRIBUTE_TYPE_UUID)).thenReturn(locationCodeAttributeType.getUuid());
+        when(administrationService.getGlobalProperty(PacsIntegrationConstants.GP_SENDING_FACILITY)).thenReturn("openmrs_mirebalais");
+        when(administrationService.getGlobalProperty(PacsIntegrationConstants.GP_PROCEDURE_CODE_CONCEPT_SOURCE_UUID)).thenReturn(procedureCodeConceptSource.getUuid());
+        when(administrationService.getGlobalProperty(PacsIntegrationConstants.GP_LOCATION_CODE_ATTRIBUTE_TYPE_UUID)).thenReturn(locationCodeAttributeType.getUuid());
 
         when(conceptService.getConceptMapTypeByUuid(PacsIntegrationConstants.SAME_AS_CONCEPT_MAP_TYPE_UUID)).thenReturn(sameAsConceptMapType);
-        when(conceptService.getConceptSourceByUuid(procedureCodeConceptSource.getUuid())).thenReturn(procedureCodeConceptSource);
+        when(pacsIntegrationProperties.getProcedureCodesConceptSource()).thenReturn(procedureCodeConceptSource);
 
         when(locationService.getLocationAttributeTypeByUuid(locationCodeAttributeType.getUuid())).thenReturn(locationCodeAttributeType);
 
-        when(properties.getOrderingProviderEncounterRole()).thenReturn(clinicialEncounterRole);
+        when(emrProperties.getOrderingProviderEncounterRole()).thenReturn(clinicialEncounterRole);
         when(radiologyProperties.getXrayOrderablesConcept()).thenReturn(testXrayConceptSet);
 
         converter = new OrderToPacsConverter();
@@ -155,7 +155,8 @@ public class OrderToPacsConverterTest {
         converter.setConceptService(conceptService);
         converter.setLocationService(locationService);
         converter.setRadiologyProperties(radiologyProperties);
-        converter.setProperties(properties);
+        converter.setEmrProperties(emrProperties);
+        converter.setPacsIntegrationProperties(pacsIntegrationProperties);
     }
 
     @Test
@@ -175,11 +176,13 @@ public class OrderToPacsConverterTest {
 
         String hl7Message = converter.convertToPacsFormat(order, "SC");
 
-        assertThat(hl7Message, startsWith("MSH|^~\\&||openmrs_mirebalais|||||ORM^O01||P|2.3\r"));
-        assertThat(hl7Message, containsString("PID|||6TS-4||Chebaskwony^Collet||197608250000|F\r"));
+        assertThat(hl7Message, startsWith("MSH|^~\\&||openmrs_mirebalais|||"));
+        // TODO: test that a valid date is passed
+        assertThat(hl7Message, containsString("||ORM^O01||P|2.3\r"));
+        assertThat(hl7Message, containsString("PID|||6TS-4||Chebaskwony^Collet||19760825000000|F\r"));
         assertThat(hl7Message, containsString("PV1|||ABCDEF^^^^^^^^Radiology|||||123^Joseph^Wayne"));
         assertThat(hl7Message, containsString("ORC|SC\r"));
-        assertThat(hl7Message, endsWith("OBR|||" + uuid.toString() + "|123ABC^Left-hand x-ray|||||||||||||||CR||||||||^^^^^STAT||||^Patient fell off horse~^And broke back|||||201208080000\r"));
+        assertThat(hl7Message, endsWith("OBR|||" + uuid.toString() + "|123ABC^Left-hand x-ray|||||||||||||||CR||||||||^^^^^STAT||||^Patient fell off horse~^And broke back|||||20120808000000\r"));
     }
 
     @Test
@@ -197,10 +200,12 @@ public class OrderToPacsConverterTest {
 
         String hl7Message = converter.convertToPacsFormat(order, "SC");
 
-        assertThat(hl7Message, startsWith("MSH|^~\\&||openmrs_mirebalais|||||ORM^O01||P|2.3\r"));
+        assertThat(hl7Message, startsWith("MSH|^~\\&||openmrs_mirebalais|||"));
+        // TODO: test that a valid date is passed
+        assertThat(hl7Message, containsString("||ORM^O01||P|2.3\r"));
         assertThat(hl7Message, containsString("PID|||6TS-4||UNKNOWN^UNKNOWN|||F\r"));
         assertThat(hl7Message, containsString("ORC|SC\r"));
-        assertThat(hl7Message, endsWith("OBR|||" + uuid.toString() + "|123ABC^Left-hand x-ray|||||||||||||||CR||||||||||||^Patient fell off horse|||||201208080000\r"));
+        assertThat(hl7Message, endsWith("OBR|||" + uuid.toString() + "|123ABC^Left-hand x-ray|||||||||||||||CR||||||||||||^Patient fell off horse|||||20120808000000\r"));
     }
 
 

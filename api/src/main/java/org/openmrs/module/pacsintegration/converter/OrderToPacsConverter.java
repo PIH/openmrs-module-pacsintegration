@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.pacsintegration.api.converter;
+package org.openmrs.module.pacsintegration.converter;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.v23.message.ORM_O01;
@@ -40,16 +40,17 @@ import org.openmrs.module.emr.EmrProperties;
 import org.openmrs.module.emr.radiology.RadiologyOrder;
 import org.openmrs.module.emr.radiology.RadiologyProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
-import org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties;
+import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
+import org.openmrs.module.pacsintegration.util.HL7Utils;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
 public class OrderToPacsConverter {
 
-    private final SimpleDateFormat pacsDateFormat = new SimpleDateFormat("yyyyMMddHHmm");
     private Parser parser = new PipeParser();
 
     private PatientService patientService;
@@ -60,9 +61,11 @@ public class OrderToPacsConverter {
 
     private LocationService locationService;
 
+    private EmrProperties emrProperties;
+
     private RadiologyProperties radiologyProperties;
 
-    private EmrProperties properties;
+    private PacsIntegrationProperties pacsIntegrationProperties;
 
     public String convertToPacsFormat(RadiologyOrder order, String orderControl) throws HL7Exception {
 
@@ -72,20 +75,15 @@ public class OrderToPacsConverter {
 
         // handle the MSH component
         MSH msh = message.getMSH();
-        msh.getFieldSeparator().setValue("|");
-        msh.getEncodingCharacters().setValue("^~\\&");
-        msh.getSendingFacility().getNamespaceID().setValue(adminService.getGlobalProperty(PacsIntegrationGlobalProperties.SENDING_FACILITY));
-        msh.getMessageType().getMessageType().setValue("ORM");
-        msh.getMessageType().getTriggerEvent().setValue("O01");
-        //  TODO: do we need to send Message Control ID?
-        msh.getProcessingID().getProcessingID().setValue("P");  // stands for production (?)
-        msh.getVersionID().setValue("2.3");
+        HL7Utils.populateMessageHeader(msh, new Date(), "ORM", "O01", adminService.getGlobalProperty(PacsIntegrationConstants.GP_SENDING_FACILITY));
 
+        // handle the patient component
         PID pid = message.getPATIENT().getPID();
         pid.getPatientIDInternalID(0).getID().setValue(order.getPatient().getPatientIdentifier(getPatientIdentifierType()).getIdentifier());
         pid.getPatientName().getFamilyName().setValue(order.getPatient().getFamilyName());
         pid.getPatientName().getGivenName().setValue(order.getPatient().getGivenName());
-        pid.getDateOfBirth().getTimeOfAnEvent().setValue(order.getPatient().getBirthdate() != null ? pacsDateFormat.format(order.getPatient().getBirthdate()) : "");
+        pid.getDateOfBirth().getTimeOfAnEvent().setValue(order.getPatient().getBirthdate() != null
+                ? HL7Utils.hl7DateFormat.format(order.getPatient().getBirthdate()) : "");
         pid.getSex().setValue(order.getPatient().getGender());
         // TODO: do we need patient admission ID / account number
 
@@ -104,7 +102,7 @@ public class OrderToPacsConverter {
         }
 
         if (order.getEncounter() != null) {
-        Set<Provider> referringProviders = order.getEncounter().getProvidersByRole(properties.getOrderingProviderEncounterRole());
+        Set<Provider> referringProviders = order.getEncounter().getProvidersByRole(emrProperties.getOrderingProviderEncounterRole());
             if (referringProviders != null && referringProviders.size() > 0) {
                 // note that if there are multiple clinicians associated with the encounter, we only sent the first one
                 Provider referringProvider = referringProviders.iterator().next();
@@ -126,7 +124,7 @@ public class OrderToPacsConverter {
         // note that we are just sending modality here, not the device location
         obr.getPlacerField2().setValue(getModalityCode(order));
         obr.getQuantityTiming().getPriority().setValue(order.getUrgency().equals(Order.Urgency.STAT) ? "STAT" : "");
-        obr.getScheduledDateTime().getTimeOfAnEvent().setValue(PacsIntegrationConstants.HL7_DATE_FORMAT.format(order.getStartDate()));
+        obr.getScheduledDateTime().getTimeOfAnEvent().setValue(HL7Utils.hl7DateFormat.format(order.getStartDate()));
 
         // break the reason for study up by lines
         if (StringUtils.isNotBlank(order.getClinicalHistory()))  {
@@ -146,7 +144,7 @@ public class OrderToPacsConverter {
             throw new RuntimeException("Concept must be specified on an order to send to PACS");
         }
 
-        ConceptSource procedureCodesConceptSource = getProcedureCodesConceptSource();
+        ConceptSource procedureCodesConceptSource = pacsIntegrationProperties.getProcedureCodesConceptSource();
         ConceptMapType sameAsConceptMapType = getSameAsConceptMapType();
 
         for (ConceptMap conceptMap : order.getConcept().getConceptMappings()) {
@@ -178,7 +176,7 @@ public class OrderToPacsConverter {
     }
 
     private PatientIdentifierType getPatientIdentifierType() {
-        PatientIdentifierType patientIdentifierType = patientService.getPatientIdentifierTypeByUuid(adminService.getGlobalProperty(PacsIntegrationGlobalProperties.PATIENT_IDENTIFIER_TYPE_UUID));
+        PatientIdentifierType patientIdentifierType = patientService.getPatientIdentifierTypeByUuid(adminService.getGlobalProperty(PacsIntegrationConstants.GP_PATIENT_IDENTIFIER_TYPE_UUID));
         if (patientIdentifierType == null) {
             throw new RuntimeException("No patient identifier type specified. Is pacsintegration.patientIdentifierTypeUuid properly set?");
         }
@@ -187,20 +185,10 @@ public class OrderToPacsConverter {
         }
     }
 
-    private ConceptSource getProcedureCodesConceptSource() {
-        ConceptSource source = conceptService.getConceptSourceByUuid(adminService.getGlobalProperty(PacsIntegrationGlobalProperties.PROCEDURE_CODE_CONCEPT_SOURCE_UUID));
-        if (source == null) {
-            throw new RuntimeException(("No procedure codes concept source specified. Is pacsintegration.procedureCodeConceptSourceUuid properly set."));
-        }
-        else {
-            return source;
-        }
-    }
-
     private LocationAttributeType getLocationCodeAttributeType() {
         // we allow this to be null
         return locationService.getLocationAttributeTypeByUuid(adminService.getGlobalProperty(
-                PacsIntegrationGlobalProperties.LOCATION_CODE_ATTRIBUTE_TYPE_UUID));
+                PacsIntegrationConstants.GP_LOCATION_CODE_ATTRIBUTE_TYPE_UUID));
 
     }
 
@@ -228,7 +216,7 @@ public class OrderToPacsConverter {
     }
 
     private Locale getDefaultLocale() {
-        String defaultLocale = adminService.getGlobalProperty(PacsIntegrationGlobalProperties.DEFAULT_LOCALE);
+        String defaultLocale = adminService.getGlobalProperty(PacsIntegrationConstants.GP_DEFAULT_LOCALE);
 
         if (StringUtils.isEmpty(defaultLocale)) {
             defaultLocale = "en";
@@ -261,7 +249,11 @@ public class OrderToPacsConverter {
         this.radiologyProperties = radiologyProperties;
     }
 
-    public void setProperties(EmrProperties properties) {
-        this.properties = properties;
+    public void setEmrProperties(EmrProperties emrProperties) {
+        this.emrProperties = emrProperties;
+    }
+
+    public void setPacsIntegrationProperties(PacsIntegrationProperties pacsIntegrationProperties) {
+        this.pacsIntegrationProperties = pacsIntegrationProperties;
     }
 }
