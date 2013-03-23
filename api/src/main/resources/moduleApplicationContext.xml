@@ -39,7 +39,7 @@
     </bean>
 
     <!-- configure the OrderToPacs converter bean-->
-    <bean id="orderToPacsConverter" class="org.openmrs.module.pacsintegration.api.converter.OrderToPacsConverter">
+    <bean id="orderToPacsConverter" class="org.openmrs.module.pacsintegration.converter.OrderToPacsConverter">
         <property name="patientService">
             <ref bean="patientService"/>
         </property>
@@ -84,5 +84,9 @@
         </property>
     </bean>
 
+    <!-- configure the listener that listens for HL7 messages -->
+    <bean id="hl7listener" class="org.openmrs.module.pacsintegration.listener.HL7Listener">
+
+    </bean>
 
 </beans>

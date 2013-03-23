@@ -13,12 +13,9 @@
  */
 package org.openmrs.module.pacsintegration.api.db.hibernate;
 
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.SessionFactory;
-import org.openmrs.module.pacsintegration.InboundQueue;
 import org.openmrs.module.pacsintegration.OutboundQueue;
 import org.openmrs.module.pacsintegration.api.db.PacsIntegrationDAO;
 
@@ -47,20 +44,8 @@ public class HibernatePacsIntegrationDAO implements PacsIntegrationDAO {
 	}
 
     @Override
-    public void saveInboundQueue(InboundQueue inboundQueue) {
-        sessionFactory.getCurrentSession().saveOrUpdate(inboundQueue);
-    }
-
-    @Override
 	public void saveOutboundQueue(OutboundQueue outboundQueue) {
 		sessionFactory.getCurrentSession().saveOrUpdate(outboundQueue);
 	}
-
-    @Override
-    public List<InboundQueue> getNewMessagesFromInboundQueue() {
-
-        // should order by date
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
 
 }

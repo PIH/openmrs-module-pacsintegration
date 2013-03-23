@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.pacsintegration.api.messages;
+package org.openmrs.module.pacsintegration.messages;
 
 import org.openmrs.Order;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;

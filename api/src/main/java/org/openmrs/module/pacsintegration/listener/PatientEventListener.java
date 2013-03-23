@@ -11,7 +11,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.event.Event;
 import org.openmrs.event.SubscribableEventListener;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
-import org.openmrs.module.pacsintegration.api.converter.PatientToPacsConverter;
+import org.openmrs.module.pacsintegration.converter.PatientToPacsConverter;
 
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
@@ -25,6 +25,7 @@ import static org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties
 import static org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties.LISTENER_USERNAME;
 
 
+// not currently in use
 public class PatientEventListener implements SubscribableEventListener {
 
     protected final Log log = LogFactory.getLog(this.getClass());

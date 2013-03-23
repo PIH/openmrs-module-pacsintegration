@@ -14,7 +14,7 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonName;
 import org.openmrs.api.PatientService;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
-import org.openmrs.module.pacsintegration.api.converter.PatientToPacsConverter;
+import org.openmrs.module.pacsintegration.converter.PatientToPacsConverter;
 import org.openmrs.module.pacsintegration.listener.PatientEventListener;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;

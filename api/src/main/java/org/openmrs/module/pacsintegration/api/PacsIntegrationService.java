@@ -35,11 +35,4 @@ public interface PacsIntegrationService extends OpenmrsService {
 	 */
 	public void sendMessageToPacs(String message);
 
-    /**
-     * Poll the inbound queue for any new messages from PACS
-     *
-     * returns true/false whether any new messages were processed
-     */
-    public void readNewMessagesFromPacs();
-	
 }
