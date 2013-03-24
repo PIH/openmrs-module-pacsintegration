@@ -18,6 +18,8 @@ import java.text.SimpleDateFormat;
 
 public class PatientToPacsConverter {
 
+    // TODO: not currently used
+
     private final SimpleDateFormat pacsDateFormat = new SimpleDateFormat("yyyyMMddHHmm");
 
     private Parser parser = new PipeParser();
@@ -52,6 +54,7 @@ public class PatientToPacsConverter {
 
 
     private void populateMSHSegment(MSH mshSegment, String messageType) throws DataTypeException {
+        // TODO: refactor to use the HL7Util method
         mshSegment.getFieldSeparator().setValue("|");
         mshSegment.getEncodingCharacters().setValue("^~\\&");
         mshSegment.getMessageType().getMessageType().setValue("ADT");

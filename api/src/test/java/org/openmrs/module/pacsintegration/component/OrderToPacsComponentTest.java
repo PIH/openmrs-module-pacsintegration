@@ -19,6 +19,7 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -42,7 +43,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.timeout;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -151,11 +157,26 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
         encounter.addProvider(encounterService.getEncounterRole(1001), providerService.getProvider(1));
         encounterService.saveEncounter(encounter);
 
-        Mockito.verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs("MSH|^~\\&||Mirebalais|||||ORM^O01||P|2.3\r" +
-                "PID|||6TS-4||Chebaskwony^Collet||197608250000|F\r" +
-                "PV1|||1FED2^^^^^^^^Unknown Location|||||Test^User^Super\r" +
-                "ORC|NW\r" +
-                "OBR|||A1B2C3|127689^FOOD ASSISTANCE||||||||||||||||||||||||||||||||201208080000\r");
+        Mockito.verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs(argThat(new IsExpectedHL7Message()));
+    }
+
+    public class IsExpectedHL7Message extends ArgumentMatcher<String> {
+
+        @Override
+        public boolean matches(Object o) {
+
+            String hl7Message = (String) o;
+
+            assertThat(hl7Message, startsWith("MSH|^~\\&||Mirebalais|||"));
+            // TODO: test that a valid date is passed
+            assertThat(hl7Message, containsString("||ORM^O01||P|2.3\r"));
+            assertThat(hl7Message, containsString("PID|||6TS-4||Chebaskwony^Collet||197608250000|F\r"));
+            assertThat(hl7Message, containsString("PV1|||1FED2^^^^^^^^Unknown Location|||||Test^User^Super\r"));
+            assertThat(hl7Message, containsString("ORC|NW\r"));
+            assertThat(hl7Message, endsWith("OBR|||A1B2C3|127689^FOOD ASSISTANCE||||||||||||||||||||||||||||||||201208080000\r"));
+
+            return true;
+        }
     }
 
 }

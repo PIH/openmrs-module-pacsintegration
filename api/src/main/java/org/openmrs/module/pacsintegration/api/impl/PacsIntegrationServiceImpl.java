@@ -19,6 +19,7 @@ import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.pacsintegration.OutboundQueue;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.api.db.PacsIntegrationDAO;
+import org.openmrs.module.pacsintegration.listener.HL7Listener;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -30,20 +31,8 @@ public class PacsIntegrationServiceImpl extends BaseOpenmrsService implements Pa
 	protected final Log log = LogFactory.getLog(this.getClass());
 
 	private PacsIntegrationDAO dao;
-	
-	/**
-	 * @param dao the dao to set
-	 */
-	public void setDao(PacsIntegrationDAO dao) {
-		this.dao = dao;
-	}
-	
-	/**
-	 * @return the dao
-	 */
-	public PacsIntegrationDAO getDao() {
-		return dao;
-	}
+
+    private HL7Listener hl7Listener;
 	
 	@Override
     @Transactional
@@ -51,4 +40,38 @@ public class PacsIntegrationServiceImpl extends BaseOpenmrsService implements Pa
 		OutboundQueue outbound = new OutboundQueue(message);
 		dao.saveOutboundQueue(outbound);
 	}
+
+    @Override
+    public void initializeHL7Listener() {
+        hl7Listener.initialize();
+    }
+
+    @Override
+    public void stopHL7Listener() {
+        hl7Listener.stop();
+    }
+
+    /**
+     * @param dao the dao to set
+     */
+    public void setDao(PacsIntegrationDAO dao) {
+        this.dao = dao;
+    }
+
+    /**
+     * @return the dao
+     */
+    public PacsIntegrationDAO getDao() {
+        return dao;
+    }
+
+    public HL7Listener getHl7Listener() {
+        return hl7Listener;
+    }
+
+    public void setHl7Listener(HL7Listener hl7Listener) {
+        this.hl7Listener = hl7Listener;
+    }
 }
+
+

@@ -123,7 +123,7 @@
         </dependency>
 
         <!-- uiframework and idgen are a transitive dependency, required by the emr module. We don't directly require it ourselves,
-             so it's not mentioned in config.xml  We need to add them here so that we can properly fire up the application context during testing -->
+             so it's not mentioned in config.xml  We need to add them here so that we can properly fire up the handler context during testing -->
         <dependency>
             <groupId>org.openmrs.module</groupId>
             <artifactId>uiframework-api</artifactId>

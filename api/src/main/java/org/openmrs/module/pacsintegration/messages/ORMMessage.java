@@ -17,10 +17,10 @@ import org.openmrs.Order;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 
 /**
- * Models a HL7 OrmMessage
+ * Models a HL7 ORMMessage
  */
 
-public class OrmMessage extends Message {
+public class ORMMessage extends Message {
 	
 	private String orderControl;
 	private String accessionNumber;
@@ -36,7 +36,7 @@ public class OrmMessage extends Message {
 	private String modality;
 	private String sendingFacility;
 
-    public OrmMessage(Order order, String orderControl) {
+    public ORMMessage(Order order, String orderControl) {
         this.orderControl = orderControl;
         this.accessionNumber = order.getAccessionNumber();
         this.patientId = order.getPatient().getPatientIdentifier().getIdentifier();

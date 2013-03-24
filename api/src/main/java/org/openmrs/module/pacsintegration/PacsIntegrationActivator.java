@@ -15,7 +15,9 @@ package org.openmrs.module.pacsintegration;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.ModuleActivator;
+import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 
 /**
  * This class contains the logic that is run every time this module is either started or stopped.
@@ -50,13 +52,15 @@ public class PacsIntegrationActivator implements ModuleActivator {
 	 */
 	public void started() {
 		log.info("PACS Integration Module started");
-	}
+        Context.getService(PacsIntegrationService.class).initializeHL7Listener();
+    }
 	
 	/**
 	 * @see ModuleActivator#willStop()
 	 */
 	public void willStop() {
 		log.info("Stopping PACS Integration Module");
+        Context.getService(PacsIntegrationService.class).stopHL7Listener();
 	}
 	
 	/**

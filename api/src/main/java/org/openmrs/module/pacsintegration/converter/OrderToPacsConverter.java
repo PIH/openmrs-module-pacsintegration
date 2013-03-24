@@ -40,8 +40,10 @@ import org.openmrs.module.emr.EmrProperties;
 import org.openmrs.module.emr.radiology.RadiologyOrder;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties;
+import org.openmrs.module.pacsintegration.util.HL7Utils;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -69,15 +71,9 @@ public class OrderToPacsConverter {
 
         // handle the MSH component
         MSH msh = message.getMSH();
-        msh.getFieldSeparator().setValue("|");
-        msh.getEncodingCharacters().setValue("^~\\&");
-        msh.getSendingFacility().getNamespaceID().setValue(adminService.getGlobalProperty(PacsIntegrationGlobalProperties.SENDING_FACILITY));
-        msh.getMessageType().getMessageType().setValue("ORM");
-        msh.getMessageType().getTriggerEvent().setValue("O01");
-        //  TODO: do we need to send Message Control ID?
-        msh.getProcessingID().getProcessingID().setValue("P");  // stands for production (?)
-        msh.getVersionID().setValue("2.3");
+        HL7Utils.populateMessageHeader(msh, new Date(), "ORM", "O01", adminService.getGlobalProperty(PacsIntegrationGlobalProperties.SENDING_FACILITY));
 
+        // handle the patient component
         PID pid = message.getPATIENT().getPID();
         pid.getPatientIDInternalID(0).getID().setValue(order.getPatient().getPatientIdentifier(getPatientIdentifierType()).getIdentifier());
         pid.getPatientName().getFamilyName().setValue(order.getPatient().getFamilyName());

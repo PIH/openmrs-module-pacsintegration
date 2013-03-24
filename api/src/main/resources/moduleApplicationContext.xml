@@ -13,6 +13,9 @@
                 </property>
             </bean>
         </property>
+        <property name="hl7Listener">
+            <ref bean="hl7listener"/>
+        </property>
     </bean>
 
     <bean parent="serviceContext">
@@ -86,7 +89,23 @@
 
     <!-- configure the listener that listens for HL7 messages -->
     <bean id="hl7listener" class="org.openmrs.module.pacsintegration.listener.HL7Listener">
-
+        <property name="handlers">
+                <map>
+                    <entry key="ORU_R01">
+                        <bean class="org.openmrs.module.pacsintegration.handler.ORU_R01Handler">
+                            <property name="adminService">
+                                <ref bean="adminService"/>
+                            </property>
+                            <property name="patientService">
+                                <ref bean="patientService"/>
+                            </property>
+                            <property name="emrProperties">
+                                <ref bean="emrProperties"/>
+                            </property>
+                        </bean>
+                    </entry>
+                </map>
+        </property>
     </bean>
 
 </beans>
