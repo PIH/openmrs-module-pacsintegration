@@ -15,6 +15,7 @@ public class HL7ListenerComponentTest extends BaseModuleContextSensitiveTest {
         executeDataSet(XML_DATASET);
     }
 
+    @Ignore
     @Test
     public void stall() throws InterruptedException {
         new PacsIntegrationActivator().started();

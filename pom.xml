@@ -36,12 +36,15 @@
     <properties>
         <springVersion>3.0.5.RELEASE</springVersion>
         <openMRSVersion>1.9.3</openMRSVersion>
-        <emrVersion>1.0</emrVersion>
+        <emrVersion>1.2-SNAPSHOT</emrVersion>
         <eventVersion>2.0.1</eventVersion>
         <uiframeworkVersion>2.5.1</uiframeworkVersion>
         <idgenVersion>2.4</idgenVersion>
         <htmlformentryVersion>2.0.6</htmlformentryVersion>
         <providerManagementVersion>1.1.2</providerManagementVersion>
+        <reportingVersion>0.7.5</reportingVersion>
+        <serializationxstreamVersion>0.2.7</serializationxstreamVersion>
+        <calculationVersion>1.0</calculationVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -143,6 +146,27 @@
             <artifactId>htmlformentry-api</artifactId>
             <version>${htmlformentryVersion}</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>reporting-api</artifactId>
+            <version>${reportingVersion}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>calculation-api</artifactId>
+            <version>${calculationVersion}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>serialization.xstream-api</artifactId>
+            <version>${serializationxstreamVersion}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- End OpenMRS modules -->
