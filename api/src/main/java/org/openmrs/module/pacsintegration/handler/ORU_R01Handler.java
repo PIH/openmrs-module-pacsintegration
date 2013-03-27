@@ -4,13 +4,18 @@ import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.Application;
 import ca.uhn.hl7v2.app.ApplicationException;
 import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hl7v2.model.v23.group.ORU_R01_OBSERVATION;
+import ca.uhn.hl7v2.model.v23.group.ORU_R01_ORDER_OBSERVATION;
 import ca.uhn.hl7v2.model.v23.message.ORU_R01;
+import ca.uhn.hl7v2.model.v23.segment.OBX;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
+import org.openmrs.Provider;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.module.emr.EmrProperties;
 import org.openmrs.module.emr.radiology.RadiologyOrder;
@@ -28,6 +33,8 @@ public class ORU_R01Handler implements Application {
 
     private PatientService patientService;
 
+    private EncounterService encounterService;
+
     private AdministrationService adminService;
 
     private RadiologyService radiologyService;
@@ -38,6 +45,14 @@ public class ORU_R01Handler implements Application {
 
     public void setPatientService(PatientService patientService) {
         this.patientService = patientService;
+    }
+
+    public void setEncounterService(EncounterService encounterService) {
+        this.encounterService = encounterService;
+    }
+
+    public void setRadiologyService(RadiologyService radiologyService) {
+        this.radiologyService = radiologyService;
     }
 
     public void setAdminService(AdministrationService adminService) {
@@ -63,13 +78,18 @@ public class ORU_R01Handler implements Application {
             Patient patient = getPatient(patientIdentifier);
             RadiologyOrder order = getRadiologyOrder(accessionNumber, patient);
 
-            // now getEncounterOrCreateIfNecessary--see if there are any study encounters associated with this order
-            // set provider for the order if none specified
-            // then parse and create any report object
+            String eventType = getEventType(oruR01.getRESPONSE().getORDER_OBSERVATION());
 
+            if (StringUtils.isNotBlank(eventType) && eventType.equalsIgnoreCase("StudyComplete")) {
+                // TODO: handle study complete case
+                encounterService.saveEncounter(encounter);
+            }
+            else {
+                // right now we aren't handling any other cases besides the study complete case
+            }
 
         }
-        catch (PacsIntegrationException e) {
+        catch (Exception e) {
             log.error(e.getMessage());
             return HL7Utils.generateErrorACK(messageControlID, getSendingFacility(),
                     e.getMessage());
@@ -116,19 +136,25 @@ public class ORU_R01Handler implements Application {
         // if there is an existing order, make sure the patients match
         // (note that we are allowing incoming obs with accession numbers that don't match anything in the system)
         if (radiologyOrder != null && !radiologyOrder.getPatient().equals(patient)) {
-            throw new PacsIntegrationException("Cannot import ORU_R01 message. Patient referenced in message different from patient attached to existing order");
+            throw new PacsIntegrationException("Cannot import ORU_R01 message. Patient referenced in message different from patient attached to existing order.");
 
         }
 
         return radiologyOrder;
     }
 
-    private void validateAccessionNumber(String accessionNumber, Patient patient) {
-        if (StringUtils.isBlank(accessionNumber)) {
-            throw new PacsIntegrationException("Cannot import ORU_R01 message. No accession number specified.");
+    private String getEventType(ORU_R01_ORDER_OBSERVATION orderObs) throws HL7Exception {
+
+        // iterate through all the obx fields, looking for "Event type"
+        for (int i = 0; i < orderObs.getOBSERVATIONReps(); i++) {
+            ORU_R01_OBSERVATION obs = orderObs.getOBSERVATION(i);
+          if (obs.getOBX().getObservationIdentifier().getIdentifier().getValue() != null) {
+                  //obs.getOBX().getObservationIdentifier().getIdentifier().getValue().equalsIgnoreCase("EventType")) {
+                return obs.getOBX().getObservationValue(0).getData().toString();
+            }
         }
 
-
+        return null;
     }
 
     private String getSendingFacility() {
