@@ -39,7 +39,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.module.emr.EmrProperties;
 import org.openmrs.module.emr.radiology.RadiologyOrder;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
-import org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties;
+import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
 import org.openmrs.module.pacsintegration.util.HL7Utils;
 
 import java.text.SimpleDateFormat;
@@ -61,7 +61,9 @@ public class OrderToPacsConverter {
 
     private LocationService locationService;
 
-    private EmrProperties properties;
+    private EmrProperties emrProperties;
+
+    private PacsIntegrationProperties pacsIntegrationProperties;
 
     public String convertToPacsFormat(RadiologyOrder order, String orderControl) throws HL7Exception {
 
@@ -71,7 +73,7 @@ public class OrderToPacsConverter {
 
         // handle the MSH component
         MSH msh = message.getMSH();
-        HL7Utils.populateMessageHeader(msh, new Date(), "ORM", "O01", adminService.getGlobalProperty(PacsIntegrationGlobalProperties.SENDING_FACILITY));
+        HL7Utils.populateMessageHeader(msh, new Date(), "ORM", "O01", adminService.getGlobalProperty(PacsIntegrationConstants.GP_SENDING_FACILITY));
 
         // handle the patient component
         PID pid = message.getPATIENT().getPID();
@@ -97,7 +99,7 @@ public class OrderToPacsConverter {
         }
 
         if (order.getEncounter() != null) {
-        Set<Provider> referringProviders = order.getEncounter().getProvidersByRole(properties.getOrderingProviderEncounterRole());
+        Set<Provider> referringProviders = order.getEncounter().getProvidersByRole(emrProperties.getOrderingProviderEncounterRole());
             if (referringProviders != null && referringProviders.size() > 0) {
                 // note that if there are multiple clinicians associated with the encounter, we only sent the first one
                 Provider referringProvider = referringProviders.iterator().next();
@@ -139,7 +141,7 @@ public class OrderToPacsConverter {
             throw new RuntimeException("Concept must be specified on an order to send to PACS");
         }
 
-        ConceptSource procedureCodesConceptSource = getProcedureCodesConceptSource();
+        ConceptSource procedureCodesConceptSource = pacsIntegrationProperties.getProcedureCodesConceptSource();
         ConceptMapType sameAsConceptMapType = getSameAsConceptMapType();
 
         for (ConceptMap conceptMap : order.getConcept().getConceptMappings()) {
@@ -160,7 +162,7 @@ public class OrderToPacsConverter {
             throw new RuntimeException("Concept must be specified on an order to send to PACS");
         }
 
-        if (properties.getXrayOrderablesConcept().getSetMembers().contains(order.getConcept())) {
+        if (emrProperties.getXrayOrderablesConcept().getSetMembers().contains(order.getConcept())) {
             return PacsIntegrationConstants.XRAY_MODALITY_CODE;
         }
         else {
@@ -171,7 +173,7 @@ public class OrderToPacsConverter {
     }
 
     private PatientIdentifierType getPatientIdentifierType() {
-        PatientIdentifierType patientIdentifierType = patientService.getPatientIdentifierTypeByUuid(adminService.getGlobalProperty(PacsIntegrationGlobalProperties.PATIENT_IDENTIFIER_TYPE_UUID));
+        PatientIdentifierType patientIdentifierType = patientService.getPatientIdentifierTypeByUuid(adminService.getGlobalProperty(PacsIntegrationConstants.GP_PATIENT_IDENTIFIER_TYPE_UUID));
         if (patientIdentifierType == null) {
             throw new RuntimeException("No patient identifier type specified. Is pacsintegration.patientIdentifierTypeUuid properly set?");
         }
@@ -180,20 +182,10 @@ public class OrderToPacsConverter {
         }
     }
 
-    private ConceptSource getProcedureCodesConceptSource() {
-        ConceptSource source = conceptService.getConceptSourceByUuid(adminService.getGlobalProperty(PacsIntegrationGlobalProperties.PROCEDURE_CODE_CONCEPT_SOURCE_UUID));
-        if (source == null) {
-            throw new RuntimeException(("No procedure codes concept source specified. Is pacsintegration.procedureCodeConceptSourceUuid properly set."));
-        }
-        else {
-            return source;
-        }
-    }
-
     private LocationAttributeType getLocationCodeAttributeType() {
         // we allow this to be null
         return locationService.getLocationAttributeTypeByUuid(adminService.getGlobalProperty(
-                PacsIntegrationGlobalProperties.LOCATION_CODE_ATTRIBUTE_TYPE_UUID));
+                PacsIntegrationConstants.GP_LOCATION_CODE_ATTRIBUTE_TYPE_UUID));
 
     }
 
@@ -221,7 +213,7 @@ public class OrderToPacsConverter {
     }
 
     private Locale getDefaultLocale() {
-        String defaultLocale = adminService.getGlobalProperty(PacsIntegrationGlobalProperties.DEFAULT_LOCALE);
+        String defaultLocale = adminService.getGlobalProperty(PacsIntegrationConstants.GP_DEFAULT_LOCALE);
 
         if (StringUtils.isEmpty(defaultLocale)) {
             defaultLocale = "en";
@@ -250,7 +242,11 @@ public class OrderToPacsConverter {
         this.locationService = locationService;
     }
 
-    public void setProperties(EmrProperties properties) {
-        this.properties = properties;
+    public void setEmrProperties(EmrProperties emrProperties) {
+        this.emrProperties = emrProperties;
+    }
+
+    public void setPacsIntegrationProperties(PacsIntegrationProperties pacsIntegrationProperties) {
+        this.pacsIntegrationProperties = pacsIntegrationProperties;
     }
 }

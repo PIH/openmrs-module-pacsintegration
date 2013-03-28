@@ -43,7 +43,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.emr.EmrProperties;
 import org.openmrs.module.emr.radiology.RadiologyOrder;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
-import org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -129,29 +128,29 @@ public class OrderToPacsConverterTest {
         AdministrationService administrationService = mock(AdministrationService.class);
         ConceptService conceptService = mock(ConceptService.class);
         LocationService locationService = mock(LocationService.class);
-        EmrProperties properties = mock(EmrProperties.class);
+        EmrProperties emrProperties = mock(EmrProperties.class);
 
         when(Context.getAuthenticatedUser()).thenReturn(authenticatedUser);
         when(patientService.getPatientIdentifierTypeByUuid(anyString())).thenReturn(patientIdentifierType);
 
-        when(administrationService.getGlobalProperty(PacsIntegrationGlobalProperties.SENDING_FACILITY)).thenReturn("openmrs_mirebalais");
-        when(administrationService.getGlobalProperty(PacsIntegrationGlobalProperties.PROCEDURE_CODE_CONCEPT_SOURCE_UUID)).thenReturn(procedureCodeConceptSource.getUuid());
-        when(administrationService.getGlobalProperty(PacsIntegrationGlobalProperties.LOCATION_CODE_ATTRIBUTE_TYPE_UUID)).thenReturn(locationCodeAttributeType.getUuid());
+        when(administrationService.getGlobalProperty(PacsIntegrationConstants.GP_SENDING_FACILITY)).thenReturn("openmrs_mirebalais");
+        when(administrationService.getGlobalProperty(PacsIntegrationConstants.GP_PROCEDURE_CODE_CONCEPT_SOURCE_UUID)).thenReturn(procedureCodeConceptSource.getUuid());
+        when(administrationService.getGlobalProperty(PacsIntegrationConstants.GP_LOCATION_CODE_ATTRIBUTE_TYPE_UUID)).thenReturn(locationCodeAttributeType.getUuid());
 
         when(conceptService.getConceptMapTypeByUuid(PacsIntegrationConstants.SAME_AS_CONCEPT_MAP_TYPE_UUID)).thenReturn(sameAsConceptMapType);
         when(conceptService.getConceptSourceByUuid(procedureCodeConceptSource.getUuid())).thenReturn(procedureCodeConceptSource);
 
         when(locationService.getLocationAttributeTypeByUuid(locationCodeAttributeType.getUuid())).thenReturn(locationCodeAttributeType);
 
-        when(properties.getOrderingProviderEncounterRole()).thenReturn(clinicialEncounterRole);
-        when(properties.getXrayOrderablesConcept()).thenReturn(testXrayConceptSet);
+        when(emrProperties.getOrderingProviderEncounterRole()).thenReturn(clinicialEncounterRole);
+        when(emrProperties.getXrayOrderablesConcept()).thenReturn(testXrayConceptSet);
 
         converter = new OrderToPacsConverter();
         converter.setPatientService(patientService);
         converter.setAdminService(administrationService);
         converter.setConceptService(conceptService);
         converter.setLocationService(locationService);
-        converter.setProperties(properties);
+        converter.setEmrProperties(emrProperties);
     }
 
     @Test

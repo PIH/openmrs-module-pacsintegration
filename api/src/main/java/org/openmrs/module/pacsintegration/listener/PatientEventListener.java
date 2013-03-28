@@ -21,8 +21,8 @@ import java.util.List;
 
 import static org.openmrs.event.Event.Action.CREATED;
 import static org.openmrs.event.Event.Action.UPDATED;
-import static org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties.LISTENER_PASSWORD;
-import static org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties.LISTENER_USERNAME;
+import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_PASSWORD;
+import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_USERNAME;
 
 
 // not currently in use
@@ -61,7 +61,7 @@ public class PatientEventListener implements SubscribableEventListener {
     public void onMessage(Message message)  {
         Context.openSession();
         try {
-            Context.authenticate(admin.getGlobalProperty(LISTENER_USERNAME), admin.getGlobalProperty(LISTENER_PASSWORD));
+            Context.authenticate(admin.getGlobalProperty(GP_LISTENER_USERNAME), admin.getGlobalProperty(GP_LISTENER_PASSWORD));
             MapMessage mapMessage = (MapMessage) message;
             String action = mapMessage.getString("action");
             String classname = mapMessage.getString("classname");

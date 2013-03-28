@@ -55,10 +55,14 @@
         <property name="locationService">
             <ref bean="locationService"/>
         </property>
-        <property name="properties">
+        <property name="emrProperties">
             <ref bean="emrProperties"/>
         </property>
+        <property name="pacsIntegrationProperties">
+            <ref bean="pacsIntegrationProperties"/>
+        </property>
     </bean>
+
 
 
     <!-- register event listeners -->

@@ -7,21 +7,24 @@ import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.v23.group.ORU_R01_OBSERVATION;
 import ca.uhn.hl7v2.model.v23.group.ORU_R01_ORDER_OBSERVATION;
 import ca.uhn.hl7v2.model.v23.message.ORU_R01;
-import ca.uhn.hl7v2.model.v23.segment.OBX;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.Concept;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.Provider;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.ProviderService;
 import org.openmrs.module.emr.EmrProperties;
 import org.openmrs.module.emr.radiology.RadiologyOrder;
 import org.openmrs.module.emr.radiology.RadiologyService;
+import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationException;
-import org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties;
+import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
 import org.openmrs.module.pacsintegration.util.HL7Utils;
 
 import java.util.Collections;
@@ -35,11 +38,17 @@ public class ORU_R01Handler implements Application {
 
     private EncounterService encounterService;
 
+    private ConceptService conceptService;
+
     private AdministrationService adminService;
 
     private RadiologyService radiologyService;
 
+    private ProviderService providerService;
+
     private EmrProperties emrProperties;
+
+    private PacsIntegrationProperties pacsIntegrationProperties;
 
     // TODO: do we want to assume that this "stream" (via port 6662) is only from PACS
 
@@ -51,6 +60,10 @@ public class ORU_R01Handler implements Application {
         this.encounterService = encounterService;
     }
 
+    public void setConceptService(ConceptService conceptService) {
+        this.conceptService = conceptService;
+    }
+
     public void setRadiologyService(RadiologyService radiologyService) {
         this.radiologyService = radiologyService;
     }
@@ -59,8 +72,16 @@ public class ORU_R01Handler implements Application {
         this.adminService = adminService;
     }
 
+    public void setProviderService(ProviderService providerService) {
+        this.providerService = providerService;
+    }
+
     public void setEmrProperties(EmrProperties emrProperties) {
         this.emrProperties = emrProperties;
+    }
+
+    public void setPacsIntegrationProperties(PacsIntegrationProperties pacsIntegrationProperties) {
+        this.pacsIntegrationProperties = pacsIntegrationProperties;
     }
 
     @Override
@@ -72,16 +93,19 @@ public class ORU_R01Handler implements Application {
         String accessionNumber = oruR01.getRESPONSE().getORDER_OBSERVATION().getOBR().getFillerOrderNumber().getEntityIdentifier().getValue();
         String encounterDate = oruR01.getRESPONSE().getORDER_OBSERVATION().getOBR().getObservationDateTime().getTimeOfAnEvent().getValue();  // TODO: parse this
 
+
         Encounter encounter = new Encounter();
 
         try {
             Patient patient = getPatient(patientIdentifier);
             RadiologyOrder order = getRadiologyOrder(accessionNumber, patient);
+            Concept procedure = getProcedure(oruR01.getRESPONSE().getORDER_OBSERVATION().getOBR().getUniversalServiceIdentifier().getIdentifier().getValue());
 
             String eventType = getEventType(oruR01.getRESPONSE().getORDER_OBSERVATION());
 
             if (StringUtils.isNotBlank(eventType) && eventType.equalsIgnoreCase("StudyComplete")) {
-                // TODO: handle study complete case
+                Provider technologist = getTechnologist(oruR01.getRESPONSE().getORDER_OBSERVATION());
+
                 encounterService.saveEncounter(encounter);
             }
             else {
@@ -89,14 +113,14 @@ public class ORU_R01Handler implements Application {
             }
 
         }
-        catch (Exception e) {
+        catch (PacsIntegrationException e) {
             log.error(e.getMessage());
             return HL7Utils.generateErrorACK(messageControlID, getSendingFacility(),
                     e.getMessage());
         }
 
         return HL7Utils.generateACK(oruR01.getMSH().getMessageControlID().getValue(),
-                adminService.getGlobalProperty(PacsIntegrationGlobalProperties.SENDING_FACILITY));
+                adminService.getGlobalProperty(PacsIntegrationConstants.GP_SENDING_FACILITY));
     }
 
     @Override
@@ -144,20 +168,46 @@ public class ORU_R01Handler implements Application {
     }
 
     private String getEventType(ORU_R01_ORDER_OBSERVATION orderObs) throws HL7Exception {
+        return getFieldData(orderObs, "EventType");
+    }
 
-        // iterate through all the obx fields, looking for "Event type"
-        for (int i = 0; i < orderObs.getOBSERVATIONReps(); i++) {
-            ORU_R01_OBSERVATION obs = orderObs.getOBSERVATION(i);
-          if (obs.getOBX().getObservationIdentifier().getIdentifier().getValue() != null) {
-                  //obs.getOBX().getObservationIdentifier().getIdentifier().getValue().equalsIgnoreCase("EventType")) {
-                return obs.getOBX().getObservationValue(0).getData().toString();
+    private Provider getTechnologist(ORU_R01_ORDER_OBSERVATION orderObs) throws HL7Exception {
+
+        String techInfo = getFieldData(orderObs, "Technologist");
+
+        if (StringUtils.isNotBlank(techInfo)) {
+            String techProviderId = techInfo.split("\\^")[0];
+            if (StringUtils.isNotBlank(techProviderId)) {
+                return providerService.getProviderByIdentifier(techProviderId);
             }
         }
 
         return null;
     }
 
+    private Concept getProcedure(String procedureCode) {
+        Concept procedure = conceptService.getConceptByMapping(procedureCode, pacsIntegrationProperties.getProcedureCodesConceptSource().getName());
+
+        if (procedure == null) {
+            throw new PacsIntegrationException("Cannot import ORU_R01 message. Procedure code not recognized.");
+        }
+
+        return procedure;
+    }
+
     private String getSendingFacility() {
-        return adminService.getGlobalProperty(PacsIntegrationGlobalProperties.SENDING_FACILITY);
+        return adminService.getGlobalProperty(PacsIntegrationConstants.GP_SENDING_FACILITY);
+    }
+
+    private String getFieldData(ORU_R01_ORDER_OBSERVATION orderObs, String field) throws HL7Exception  {
+        // iterate through all the obx fields, looking for "specified field"
+        for (int i = 0; i < orderObs.getOBSERVATIONReps(); i++) {
+            ORU_R01_OBSERVATION obs = orderObs.getOBSERVATION(i);
+            if (obs.getOBX().getObservationIdentifier().getIdentifier().getValue() != null &&
+                    obs.getOBX().getObservationIdentifier().getIdentifier().getValue().equalsIgnoreCase(field)) {
+                return obs.getOBX().getObservationValue(0).getData().toString();
+            }
+        }
+        return null;
     }
 }

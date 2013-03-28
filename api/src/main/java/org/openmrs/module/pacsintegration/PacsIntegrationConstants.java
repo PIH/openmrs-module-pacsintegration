@@ -19,6 +19,13 @@ import java.text.SimpleDateFormat;
 
 public class PacsIntegrationConstants {
 
+    public static final String GP_PATIENT_IDENTIFIER_TYPE_UUID = "pacsintegration.patientIdentifierTypeUuid";
+    public static final String GP_LISTENER_USERNAME = "pacsintegration.listenerUsername";
+    public static final String GP_LISTENER_PASSWORD = "pacsintegration.listenerPassword";
+    public static final String GP_SENDING_FACILITY = "pacsintegration.sendingFacility";
+    public static final String GP_PROCEDURE_CODE_CONCEPT_SOURCE_UUID = "pacsintegration.procedureCodeConceptSourceUuid";
+    public static final String GP_DEFAULT_LOCALE = "pacsintegration.defaultLocale";
+    public static final String GP_LOCATION_CODE_ATTRIBUTE_TYPE_UUID = "pacsintegration.locationCodeAttributeTypeUuid";
     public static String XRAY_MODALITY_CODE = "CR";
 
     public static String SAME_AS_CONCEPT_MAP_TYPE_UUID = "35543629-7d8c-11e1-909d-c80aa9edcf4e";

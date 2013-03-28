@@ -31,8 +31,8 @@ import javax.jms.Message;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties.LISTENER_PASSWORD;
-import static org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties.LISTENER_USERNAME;
+import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_PASSWORD;
+import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_USERNAME;
 
 public class OrderEventListener implements SubscribableEventListener {
 
@@ -50,7 +50,7 @@ public class OrderEventListener implements SubscribableEventListener {
 	public void onMessage(Message message) {
 		Context.openSession();
 		try {
-            Context.authenticate(adminService.getGlobalProperty(LISTENER_USERNAME), adminService.getGlobalProperty(LISTENER_PASSWORD));
+            Context.authenticate(adminService.getGlobalProperty(GP_LISTENER_USERNAME), adminService.getGlobalProperty(GP_LISTENER_PASSWORD));
 
 			MapMessage mapMessage = (MapMessage) message;
 			String action = mapMessage.getString("action");
