@@ -95,6 +95,19 @@
     <bean id="hl7listener" class="org.openmrs.module.pacsintegration.listener.HL7Listener">
         <property name="handlers">
                 <map>
+                    <entry key="ORM_O01">
+                        <bean class="org.openmrs.module.pacsintegration.handler.ORM_O01Handler">
+                            <property name="adminService">
+                                <ref bean="adminService"/>
+                            </property>
+                            <property name="patientService">
+                                <ref bean="patientService"/>
+                            </property>
+                            <property name="emrProperties">
+                                <ref bean="emrProperties"/>
+                            </property>
+                        </bean>
+                    </entry>
                     <entry key="ORU_R01">
                         <bean class="org.openmrs.module.pacsintegration.handler.ORU_R01Handler">
                             <property name="adminService">

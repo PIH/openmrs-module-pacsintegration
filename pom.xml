@@ -37,6 +37,7 @@
         <springVersion>3.0.5.RELEASE</springVersion>
         <openMRSVersion>1.9.3</openMRSVersion>
         <emrVersion>1.2-SNAPSHOT</emrVersion>
+        <emrapiVersion>1.0-SNAPSHOT</emrapiVersion>
         <eventVersion>2.0.1</eventVersion>
         <uiframeworkVersion>2.5.1</uiframeworkVersion>
         <idgenVersion>2.4</idgenVersion>
@@ -95,6 +96,13 @@
         <!-- End OpenMRS core -->
 
         <!-- Start OpenMRS modules -->
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>emrapi-api</artifactId>
+            <version>${emrapiVersion}</version>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.openmrs.module</groupId>

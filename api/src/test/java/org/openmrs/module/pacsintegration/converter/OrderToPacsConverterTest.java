@@ -43,6 +43,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.emr.EmrProperties;
 import org.openmrs.module.emr.radiology.RadiologyOrder;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
+import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -129,6 +130,7 @@ public class OrderToPacsConverterTest {
         ConceptService conceptService = mock(ConceptService.class);
         LocationService locationService = mock(LocationService.class);
         EmrProperties emrProperties = mock(EmrProperties.class);
+        PacsIntegrationProperties pacsIntegrationProperties = mock(PacsIntegrationProperties.class);
 
         when(Context.getAuthenticatedUser()).thenReturn(authenticatedUser);
         when(patientService.getPatientIdentifierTypeByUuid(anyString())).thenReturn(patientIdentifierType);
@@ -138,7 +140,7 @@ public class OrderToPacsConverterTest {
         when(administrationService.getGlobalProperty(PacsIntegrationConstants.GP_LOCATION_CODE_ATTRIBUTE_TYPE_UUID)).thenReturn(locationCodeAttributeType.getUuid());
 
         when(conceptService.getConceptMapTypeByUuid(PacsIntegrationConstants.SAME_AS_CONCEPT_MAP_TYPE_UUID)).thenReturn(sameAsConceptMapType);
-        when(conceptService.getConceptSourceByUuid(procedureCodeConceptSource.getUuid())).thenReturn(procedureCodeConceptSource);
+        when(pacsIntegrationProperties.getProcedureCodesConceptSource()).thenReturn(procedureCodeConceptSource);
 
         when(locationService.getLocationAttributeTypeByUuid(locationCodeAttributeType.getUuid())).thenReturn(locationCodeAttributeType);
 
@@ -151,6 +153,7 @@ public class OrderToPacsConverterTest {
         converter.setConceptService(conceptService);
         converter.setLocationService(locationService);
         converter.setEmrProperties(emrProperties);
+        converter.setPacsIntegrationProperties(pacsIntegrationProperties);
     }
 
     @Test

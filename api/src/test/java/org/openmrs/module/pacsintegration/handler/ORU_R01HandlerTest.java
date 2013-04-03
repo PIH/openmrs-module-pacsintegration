@@ -8,37 +8,48 @@ import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.parser.PipeParser;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.openmrs.Concept;
 import org.openmrs.ConceptSource;
 import org.openmrs.Encounter;
 import org.openmrs.EncounterRole;
+import org.openmrs.EncounterType;
+import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Provider;
+import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.ProviderService;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.emr.EmrProperties;
 import org.openmrs.module.emr.radiology.RadiologyOrder;
+import org.openmrs.module.emr.radiology.RadiologyReport;
 import org.openmrs.module.emr.radiology.RadiologyService;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Context.class)
 public class ORU_R01HandlerTest {
 
     private ORU_R01Handler handler;
@@ -49,11 +60,11 @@ public class ORU_R01HandlerTest {
 
     private ConceptService conceptService;
 
-    private EncounterService encounterService;
-
     private RadiologyService radiologyService;
 
     private ProviderService providerService;
+
+    private LocationService locationService;
 
     private EmrProperties emrProperties;
 
@@ -61,21 +72,25 @@ public class ORU_R01HandlerTest {
 
     private PatientIdentifierType primaryIdentifierType = new PatientIdentifierType();
 
-    private EncounterRole radiologyTechnicianEncounterRole = new EncounterRole();
+    private Provider principalResultsInterpreter = new Provider();
 
     @Before
     public void setup() {
+
+        User authenticatedUser = new User();
+        mockStatic(Context.class);
+        when(Context.getAuthenticatedUser()).thenReturn(authenticatedUser);
+
         adminService = mock(AdministrationService.class);
         when(adminService.getGlobalProperty(PacsIntegrationConstants.GP_SENDING_FACILITY)).thenReturn("openmrs_mirebalais");
 
         patientService = mock(PatientService.class);
         radiologyService = mock(RadiologyService.class);
-        encounterService = mock(EncounterService.class);
         conceptService = mock(ConceptService.class);
         providerService = mock(ProviderService.class);
+        locationService = mock(LocationService.class);
 
         emrProperties = mock(EmrProperties.class);
-        when(emrProperties.getRadiologyTechnicianEncounterRole()).thenReturn(radiologyTechnicianEncounterRole);
         when(emrProperties.getPrimaryIdentifierType()).thenReturn(primaryIdentifierType);
 
         pacsIntegrationProperties = mock(PacsIntegrationProperties.class);
@@ -86,10 +101,10 @@ public class ORU_R01HandlerTest {
         handler = new ORU_R01Handler();
         handler.setAdminService(adminService);
         handler.setPatientService(patientService);
-        handler.setEncounterService(encounterService);
         handler.setConceptService(conceptService);
         handler.setRadiologyService(radiologyService);
         handler.setProviderService(providerService);
+        handler.setLocationService(locationService);
         handler.setEmrProperties(emrProperties);
         handler.setPacsIntegrationProperties(pacsIntegrationProperties);
     }
@@ -97,46 +112,57 @@ public class ORU_R01HandlerTest {
     @Test
     public void shouldReturnErrorACKIfNoPatientIdentifierInResponse() throws HL7Exception, ApplicationException {
 
-        String message = "MSH|^~\\&|HMI||RAD|REPORTS|20130228174643||ORU^R01|RTS01CE16057B105AC0|P|2.3|\r" +
+        String message = "MSH|^~\\&|HMI||RAD|REPORTS|20130228174549||ORU^R01|RTS01CE16055AAF5290|P|2.3|\r" +
                 "PID|1||||Patient^Test^||19770222|M||||||||||\r" +
                 "PV1|1||||||||||||||||||\r" +
-                "OBR|1||0000001297|36554-4^CHEST|||20130228170350||||||||||||MBL^CR||||||P|||||||&Goodrich&Mark&&&&^||||20130228170350\r" +
-                "OBX|1|RP|||||||||F\r" +
-                "OBX|2|TX|EventType^EventType|1|REVIEWED\r" +
-                "OBX|3|CN|Technologist^Technologist|1|1435^Duck^Donald\r" +
-                "OBX|4|TX|ExamRoom^ExamRoom|1|100AcreWoods\r" +
-                "OBX|5|TS|StartDateTime^StartDateTime|1|20111009215317\r" +
-                "OBX|6|TS|StopDateTime^StopDateTime|1|20111009215817\r" +
-                "ZDS|2.16.840.1.113883.3.234.1.3.101.1.2.1013.2011.15607503.2^HMI^Application^DICOM\r";
+                "OBR|1||0000001297|36554-4^CHEST|||20130228170556||||||||||||MBL^CR||||||F|||||||&Goodrich&Mark&&&&^M123||||20130228170556\r" +
+                "OBX|1|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|2|TX|36554-4&BODY^CHEST||Clinical Indication: ||||||F\r" +
+                "OBX|3|TX|36554-4&BODY^CHEST||test x-ray.||||||F\r" +
+                "OBX|4|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|5|TX|36554-4&BODY^CHEST||A test final report!!||||||F\r" +
+                "OBX|6|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|7|TX|36554-4&BODY^CHEST||Findings:  Posteroanterior and lateral chest radiographs were obtained.  The ||||||F\r" +
+                "OBX|8|TX|36554-4&BODY^CHEST||lungs are well inflated.  No infiltrate, pneumonia, or pulmonary edema is ||||||F\r" +
+                "OBX|9|TX|36554-4&BODY^CHEST||present.  The cardiac and mediastinal structures appear normal.  The pleural ||||||F\r" +
+                "OBX|10|TX|36554-4&BODY^CHEST||spaces and bony structures are normal.||||||F\r" +
+                "OBX|11|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|12|TX|36554-4&BODY^CHEST||Summary:  Normal chest radiographs.||||||F\r";
 
         ACK ack = (ACK) handler.processMessage(parseMessage(message));
 
         assertThat(ack.getMSA().getAcknowledgementCode().getValue(), is("AR"));
-        assertThat(ack.getMSA().getTextMessage().getValue(), is("Cannot import ORU_R01 message. No patient identifier specified."));
+        assertThat(ack.getMSA().getTextMessage().getValue(), is("Cannot import message. No patient identifier specified."));
     }
 
     @Test
-    public void shouldReturnErrorACKIfNoPatientWithIdentifier() throws HL7Exception, ApplicationException {
+    public void shouldReturnErrorACKIfNoPatientWithPatientIdentifier() throws HL7Exception, ApplicationException {
 
         when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true))
                 .thenReturn(new ArrayList<Patient>());
 
-        String message = "MSH|^~\\&|HMI||RAD|REPORTS|20130228174643||ORU^R01|RTS01CE16057B105AC0|P|2.3|\r" +
+
+        String message = "MSH|^~\\&|HMI||RAD|REPORTS|20130228174549||ORU^R01|RTS01CE16055AAF5290|P|2.3|\r" +
                 "PID|1||GG2F98||Patient^Test^||19770222|M||||||||||\r" +
                 "PV1|1||||||||||||||||||\r" +
-                "OBR|1||0000001297|36554-4^CHEST|||20130228170350||||||||||||MBL^CR||||||P|||||||&Goodrich&Mark&&&&^||||20130228170350\r" +
-                "OBX|1|RP|||||||||F\r" +
-                "OBX|2|TX|EventType^EventType|1|REVIEWED\r" +
-                "OBX|3|CN|Technologist^Technologist|1|1435^Duck^Donald\r" +
-                "OBX|4|TX|ExamRoom^ExamRoom|1|100AcreWoods\r" +
-                "OBX|5|TS|StartDateTime^StartDateTime|1|20111009215317\r" +
-                "OBX|6|TS|StopDateTime^StopDateTime|1|20111009215817\r" +
-                "ZDS|2.16.840.1.113883.3.234.1.3.101.1.2.1013.2011.15607503.2^HMI^Application^DICOM\r";
+                "OBR|1||0000001297|36554-4^CHEST|||20130228170556||||||||||||MBL^CR||||||F|||||||&Goodrich&Mark&&&&^M123||||20130228170556\r" +
+                "OBX|1|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|2|TX|36554-4&BODY^CHEST||Clinical Indication: ||||||F\r" +
+                "OBX|3|TX|36554-4&BODY^CHEST||test x-ray.||||||F\r" +
+                "OBX|4|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|5|TX|36554-4&BODY^CHEST||A test final report!!||||||F\r" +
+                "OBX|6|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|7|TX|36554-4&BODY^CHEST||Findings:  Posteroanterior and lateral chest radiographs were obtained.  The ||||||F\r" +
+                "OBX|8|TX|36554-4&BODY^CHEST||lungs are well inflated.  No infiltrate, pneumonia, or pulmonary edema is ||||||F\r" +
+                "OBX|9|TX|36554-4&BODY^CHEST||present.  The cardiac and mediastinal structures appear normal.  The pleural ||||||F\r" +
+                "OBX|10|TX|36554-4&BODY^CHEST||spaces and bony structures are normal.||||||F\r" +
+                "OBX|11|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|12|TX|36554-4&BODY^CHEST||Summary:  Normal chest radiographs.||||||F\r";
 
         ACK ack = (ACK) handler.processMessage(parseMessage(message));
 
         assertThat(ack.getMSA().getAcknowledgementCode().getValue(), is("AR"));
-        assertThat(ack.getMSA().getTextMessage().getValue(), is("Cannot import ORU_R01 message. No patient with identifier GG2F98"));
+        assertThat(ack.getMSA().getTextMessage().getValue(), is("Cannot import message. No patient with identifier GG2F98"));
     }
 
     @Test
@@ -153,22 +179,27 @@ public class ORU_R01HandlerTest {
 
         when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(radiologyOrder);
 
-        String message = "MSH|^~\\&|HMI||RAD|REPORTS|20130228174643||ORU^R01|RTS01CE16057B105AC0|P|2.3|\r" +
+        String message = "MSH|^~\\&|HMI||RAD|REPORTS|20130228174549||ORU^R01|RTS01CE16055AAF5290|P|2.3|\r" +
                 "PID|1||GG2F98||Patient^Test^||19770222|M||||||||||\r" +
                 "PV1|1||||||||||||||||||\r" +
-                "OBR|1||0000001297|36554-4^CHEST|||20130228170350||||||||||||MBL^CR||||||P|||||||&Goodrich&Mark&&&&^||||20130228170350\r" +
-                "OBX|1|RP|||||||||F\r" +
-                "OBX|2|TX|EventType^EventType|1|REVIEWED\r" +
-                "OBX|3|CN|Technologist^Technologist|1|1435^Duck^Donald\r" +
-                "OBX|4|TX|ExamRoom^ExamRoom|1|100AcreWoods\r" +
-                "OBX|5|TS|StartDateTime^StartDateTime|1|20111009215317\r" +
-                "OBX|6|TS|StopDateTime^StopDateTime|1|20111009215817\r" +
-                "ZDS|2.16.840.1.113883.3.234.1.3.101.1.2.1013.2011.15607503.2^HMI^Application^DICOM\r";
+                "OBR|1||0000001297|36554-4^CHEST|||20130228170556||||||||||||MBL^CR||||||F|||||||M123&Goodrich&Mark&&&&||||20130228170556\r" +
+                "OBX|1|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|2|TX|36554-4&BODY^CHEST||Clinical Indication: ||||||F\r" +
+                "OBX|3|TX|36554-4&BODY^CHEST||test x-ray.||||||F\r" +
+                "OBX|4|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|5|TX|36554-4&BODY^CHEST||A test final report!!||||||F\r" +
+                "OBX|6|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|7|TX|36554-4&BODY^CHEST||Findings:  Posteroanterior and lateral chest radiographs were obtained.  The ||||||F\r" +
+                "OBX|8|TX|36554-4&BODY^CHEST||lungs are well inflated.  No infiltrate, pneumonia, or pulmonary edema is ||||||F\r" +
+                "OBX|9|TX|36554-4&BODY^CHEST||present.  The cardiac and mediastinal structures appear normal.  The pleural ||||||F\r" +
+                "OBX|10|TX|36554-4&BODY^CHEST||spaces and bony structures are normal.||||||F\r" +
+                "OBX|11|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|12|TX|36554-4&BODY^CHEST||Summary:  Normal chest radiographs.||||||F\r";
 
         ACK ack = (ACK) handler.processMessage(parseMessage(message));
 
         assertThat(ack.getMSA().getAcknowledgementCode().getValue(), is("AR"));
-        assertThat(ack.getMSA().getTextMessage().getValue(), is("Cannot import ORU_R01 message. Patient referenced in message different from patient attached to existing order."));
+        assertThat(ack.getMSA().getTextMessage().getValue(), is("Cannot import message. Patient referenced in message different from patient attached to existing order."));
     }
 
     @Test
@@ -183,115 +214,136 @@ public class ORU_R01HandlerTest {
         when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(radiologyOrder);
         when(conceptService.getConceptByMapping("36554-4", "LOINC")).thenReturn(null);
 
-        String message = "MSH|^~\\&|HMI||RAD|REPORTS|20130228174643||ORU^R01|RTS01CE16057B105AC0|P|2.3|\r" +
+        String message = "MSH|^~\\&|HMI||RAD|REPORTS|20130228174549||ORU^R01|RTS01CE16055AAF5290|P|2.3|\r" +
                 "PID|1||GG2F98||Patient^Test^||19770222|M||||||||||\r" +
                 "PV1|1||||||||||||||||||\r" +
-                "OBR|1||0000001297|36554-4^CHEST|||20130228170350||||||||||||MBL^CR||||||P|||||||&Goodrich&Mark&&&&^||||20130228170350\r" +
-                "OBX|1|RP|||||||||F\r" +
-                "OBX|2|TX|EventType^EventType|1|REVIEWED\r" +
-                "OBX|3|CN|Technologist^Technologist|1|1435^Duck^Donald\r" +
-                "OBX|4|TX|ExamRoom^ExamRoom|1|100AcreWoods\r" +
-                "OBX|5|TS|StartDateTime^StartDateTime|1|20111009215317\r" +
-                "OBX|6|TS|StopDateTime^StopDateTime|1|20111009215817\r" +
-                "ZDS|2.16.840.1.113883.3.234.1.3.101.1.2.1013.2011.15607503.2^HMI^Application^DICOM\r";
+                "OBR|1||0000001297|36554-4^CHEST|||20130228170556||||||||||||MBL^CR||||||F|||||||M123&Goodrich&Mark&&&&||||20130228170556\r" +
+                "OBX|1|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|2|TX|36554-4&BODY^CHEST||Clinical Indication: ||||||F\r" +
+                "OBX|3|TX|36554-4&BODY^CHEST||test x-ray.||||||F\r" +
+                "OBX|4|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|5|TX|36554-4&BODY^CHEST||A test final report!!||||||F\r" +
+                "OBX|6|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|7|TX|36554-4&BODY^CHEST||Findings:  Posteroanterior and lateral chest radiographs were obtained.  The ||||||F\r" +
+                "OBX|8|TX|36554-4&BODY^CHEST||lungs are well inflated.  No infiltrate, pneumonia, or pulmonary edema is ||||||F\r" +
+                "OBX|9|TX|36554-4&BODY^CHEST||present.  The cardiac and mediastinal structures appear normal.  The pleural ||||||F\r" +
+                "OBX|10|TX|36554-4&BODY^CHEST||spaces and bony structures are normal.||||||F\r" +
+                "OBX|11|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|12|TX|36554-4&BODY^CHEST||Summary:  Normal chest radiographs.||||||F\r";
 
         ACK ack = (ACK) handler.processMessage(parseMessage(message));
 
         assertThat(ack.getMSA().getAcknowledgementCode().getValue(), is("AR"));
-        assertThat(ack.getMSA().getTextMessage().getValue(), is("Cannot import ORU_R01 message. Procedure code not recognized."));
+        assertThat(ack.getMSA().getTextMessage().getValue(), is("Cannot import message. Procedure code not recognized."));
     }
 
-
     @Test
-    public void shouldReturnACKButNotSaveEncounterIfMessageNotStudyCompleteMessage() throws HL7Exception, ApplicationException {
+    public void shouldSaveReportEncounterAndSendACK() throws HL7Exception, ApplicationException {
 
         Patient patient = new Patient(1);
         RadiologyOrder radiologyOrder = new RadiologyOrder();
         radiologyOrder.setPatient(patient);
         Concept procedure = new Concept();
+        Location reportLocation = new Location();
 
         when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true))
                 .thenReturn(Collections.singletonList(patient));
         when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(radiologyOrder);
         when(conceptService.getConceptByMapping("36554-4", "LOINC")).thenReturn(procedure);
+        when(providerService.getProviderByIdentifier("M123")).thenReturn(principalResultsInterpreter);
+        when(locationService.getLocation("Mirebalais Hospital")).thenReturn(reportLocation);
 
-        String message = "MSH|^~\\&|HMI||RAD|REPORTS|20130228174643||ORU^R01|RTS01CE16057B105AC0|P|2.3|\r" +
+        String message = "MSH|^~\\&|HMI|Mirebalais Hospital|RAD|REPORTS|20130228174549||ORU^R01|RTS01CE16055AAF5290|P|2.3|\r" +
                 "PID|1||GG2F98||Patient^Test^||19770222|M||||||||||\r" +
                 "PV1|1||||||||||||||||||\r" +
-                "OBR|1||0000001297|36554-4^CHEST|||20130228170350||||||||||||MBL^CR||||||P|||||||&Goodrich&Mark&&&&^||||20130228170350\r" +
-                "OBX|1|RP|DummyNotEventType||||||||F\r" +
-                "OBX|2|TX|EventType^EventType|1|REVIEWED\r" +
-                "OBX|3|CN|Technologist^Technologist|1|1435^Duck^Donald\r" +
-                "OBX|4|TX|ExamRoom^ExamRoom|1|100AcreWoods\r" +
-                "OBX|5|TS|StartDateTime^StartDateTime|1|20111009215317\r" +
-                "OBX|6|TS|StopDateTime^StopDateTime|1|20111009215817\r" +
-                "ZDS|2.16.840.1.113883.3.234.1.3.101.1.2.1013.2011.15607503.2^HMI^Application^DICOM\r";
-
-        ACK ack = (ACK) handler.processMessage(parseMessage(message));
-
-        assertThat(ack.getMSA().getAcknowledgementCode().getValue(), is("AA"));
-        verify(encounterService, never()).saveEncounter(any(Encounter.class));
-    }
-
-    @Test
-    public void shouldSaveStudyCompleteEncounter() throws HL7Exception, ApplicationException {
-
-        Patient patient = new Patient(1);
-        RadiologyOrder radiologyOrder = new RadiologyOrder();
-        radiologyOrder.setPatient(patient);
-        Concept procedure = new Concept();
-        Provider radiologyTechnician = new Provider();
-
-        when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true))
-                .thenReturn(Collections.singletonList(patient));
-        when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(radiologyOrder);
-        when(conceptService.getConceptByMapping("36554-4", "LOINC")).thenReturn(procedure);
-        when(providerService.getProviderByIdentifier("1435")).thenReturn(radiologyTechnician);
-
-        String message = "MSH|^~\\&|HMI||RAD|REPORTS|20130228174643||ORU^R01|RTS01CE16057B105AC0|P|2.3|\r" +
-                "PID|1||GG2F98||Patient^Test^||19770222|M||||||||||\r" +
-                "PV1|1||||||||||||||||||\r" +
-                "OBR|1||0000001297|36554-4^CHEST|||20130228170350||||||||||||MBL^CR||||||P|||||||&Goodrich&Mark&&&&^||||20130228170350\r" +
-                "OBX|1|RP|DummyNotEventType||||||||F\r" +
-                "OBX|2|TX|EventType^EventType|1|StudyComplete\r" +
-                "OBX|3|CN|Technologist^Technologist|1|1435^Duck^Donald\r" +
-                "OBX|4|TX|ExamRoom^ExamRoom|1|100AcreWoods\r" +
-                "OBX|5|TS|StartDateTime^StartDateTime|1|20111009215317\r" +
-                "OBX|6|TS|StopDateTime^StopDateTime|1|20111009215817\r" +
-                "ZDS|2.16.840.1.113883.3.234.1.3.101.1.2.1013.2011.15607503.2^HMI^Application^DICOM\r";
+                "OBR|1||0000001297|36554-4^CHEST|||20130228170556||||||||||||MBL^CR||||||F|||||||M123&Goodrich&Mark&&&&||||20130228170556\r" +
+                "OBX|1|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|2|TX|36554-4&BODY^CHEST||Clinical Indication: ||||||F\r" +
+                "OBX|3|TX|36554-4&BODY^CHEST||test x-ray.||||||F\r" +
+                "OBX|4|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|5|TX|36554-4&BODY^CHEST||A test final report!!||||||F\r" +
+                "OBX|6|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|7|TX|36554-4&BODY^CHEST||Findings:  Posteroanterior and lateral chest radiographs were obtained.  The ||||||F\r" +
+                "OBX|8|TX|36554-4&BODY^CHEST||lungs are well inflated.  No infiltrate, pneumonia, or pulmonary edema is ||||||F\r" +
+                "OBX|9|TX|36554-4&BODY^CHEST||present.  The cardiac and mediastinal structures appear normal.  The pleural ||||||F\r" +
+                "OBX|10|TX|36554-4&BODY^CHEST||spaces and bony structures are normal.||||||F\r" +
+                "OBX|11|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|12|TX|36554-4&BODY^CHEST||Summary:  Normal chest radiographs.||||||F\r";
 
         ACK ack = (ACK) handler.processMessage(parseMessage(message));
 
         assertThat(ack.getMSA().getAcknowledgementCode().getValue(), is("AA"));
 
-        Encounter expectedEncounter = new Encounter();
-        expectedEncounter.addProvider(radiologyTechnicianEncounterRole, radiologyTechnician);
-        //expectedEncounter.setEncounterDatetime();
+        RadiologyReport expectedReport = new RadiologyReport();
+        expectedReport.setPatient(patient);
+        expectedReport.setAccessionNumber("0000001297");
+        expectedReport.setAssociatedRadiologyOrder(radiologyOrder);
+        expectedReport.setPrincipalResultsInterpreter(principalResultsInterpreter);
+        expectedReport.setProcedure(procedure);
+        expectedReport.setReportType(RadiologyReport.Type.FINAL);
+        expectedReport.setReportLocation(reportLocation);
+        expectedReport.setReportBody(buildExpectedReportBody());
 
-        //verify(encounterService).saveEncounter(is(new IsExpectedStudyCompleteEncounter(expectedEncounter)));
+        Calendar cal = Calendar.getInstance();
+        cal.set(2013,1,28);
+        cal.set(Calendar.HOUR_OF_DAY, 17);
+        cal.set(Calendar.MINUTE, 05);
+        cal.set(Calendar.SECOND, 56);
+        cal.set(Calendar.MILLISECOND, 00);
+        expectedReport.setReportDate(cal.getTime()) ;
+
+        // TODO: will need to power mock Context
+
+        verify(radiologyService).saveRadiologyReport(argThat(new IsExpectedRadiologyReport(expectedReport))) ;
     }
+
+   // TODO: unknown provider use case
+    // TODO: unknown order use case?
 
     private Message parseMessage(String message) throws HL7Exception {
         Parser parser = new PipeParser();
         return parser.parse(message);
     }
 
-    public class IsExpectedStudyCompleteEncounter extends ArgumentMatcher<Encounter> {
+    private String buildExpectedReportBody() {
+                return
+                "\r\n" +
+                "Clinical Indication: \r\n" +
+                "test x-ray.\r\n" +
+                "\r\n" +
+                "A test final report!!\r\n" +
+                "\r\n" +
+                "Findings:  Posteroanterior and lateral chest radiographs were obtained.  The \r\n" +
+                "lungs are well inflated.  No infiltrate, pneumonia, or pulmonary edema is \r\n" +
+                "present.  The cardiac and mediastinal structures appear normal.  The pleural \r\n" +
+                "spaces and bony structures are normal.\r\n" +
+                "\r\n" +
+                "Summary:  Normal chest radiographs.\r\n";
+    }
 
-        private Encounter expectedEncounter;
+    public class IsExpectedRadiologyReport extends ArgumentMatcher<RadiologyReport> {
 
-        public IsExpectedStudyCompleteEncounter(Encounter encounter){
-            this.expectedEncounter = encounter;
+        private RadiologyReport expectedReport;
+
+        public IsExpectedRadiologyReport(RadiologyReport radiologyReport){
+            this.expectedReport = radiologyReport;
         }
 
         @Override
         public boolean matches(Object o) {
-            Encounter encounter = (Encounter) o;
-            assertThat(encounter.getEncounterType(), is(expectedEncounter.getEncounterType()));
-            assertThat(encounter.getProvidersByRole(radiologyTechnicianEncounterRole).size(), is(1));
-            assertThat(encounter.getProvidersByRole(radiologyTechnicianEncounterRole).iterator().next(),
-                    is(expectedEncounter.getProvidersByRole(radiologyTechnicianEncounterRole).iterator().next()));
+            RadiologyReport report = (RadiologyReport) o;
+
+            assertThat(report.getPatient(), is(expectedReport.getPatient()));
+            assertThat(report.getAccessionNumber(), is(expectedReport.getAccessionNumber()));
+            assertThat(report.getAssociatedRadiologyOrder(), is(expectedReport.getAssociatedRadiologyOrder()));
+            assertThat(report.getProcedure(), is(expectedReport.getProcedure()));
+            assertThat(report.getReportDate(), is(expectedReport.getReportDate()));
+            assertThat(report.getReportType(), is(expectedReport.getReportType()));
+            assertThat(report.getReportLocation(), is(expectedReport.getReportLocation()));
+            assertThat(report.getReportBody(), is(expectedReport.getReportBody()));
+
             return true;
         }
     }
+
 }

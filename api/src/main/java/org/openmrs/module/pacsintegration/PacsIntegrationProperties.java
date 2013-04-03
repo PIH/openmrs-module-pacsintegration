@@ -14,7 +14,7 @@
 package org.openmrs.module.pacsintegration;
 
 import org.openmrs.ConceptSource;
-import org.openmrs.module.emr.utils.ModuleProperties;
+import org.openmrs.module.emrapi.utils.ModuleProperties;
 import org.springframework.stereotype.Component;
 
 @Component("pacsIntegrationProperties")

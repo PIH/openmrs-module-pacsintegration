@@ -13,14 +13,13 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
+import org.openmrs.module.pacsintegration.util.HL7Utils;
 
 import java.text.SimpleDateFormat;
 
 public class PatientToPacsConverter {
 
     // TODO: not currently used
-
-    private final SimpleDateFormat pacsDateFormat = new SimpleDateFormat("yyyyMMddHHmm");
 
     private Parser parser = new PipeParser();
 
@@ -69,7 +68,7 @@ public class PatientToPacsConverter {
         pidSegment.getPatientIDInternalID(0).getID().setValue(patient.getPatientIdentifier(getPatientIdentifierType()).getIdentifier());
         pidSegment.getPatientName().getFamilyName().setValue(patient.getFamilyName());
         pidSegment.getPatientName().getGivenName().setValue(patient.getGivenName());
-        pidSegment.getDateOfBirth().getTimeOfAnEvent().setValue(pacsDateFormat.format(patient.getBirthdate()));
+        pidSegment.getDateOfBirth().getTimeOfAnEvent().setValue(HL7Utils.hl7DateFormat.format(patient.getBirthdate()));
         pidSegment.getSex().setValue(patient.getGender());
     }
 

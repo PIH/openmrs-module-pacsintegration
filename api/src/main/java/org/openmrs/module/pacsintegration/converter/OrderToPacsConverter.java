@@ -50,7 +50,6 @@ import java.util.Set;
 
 public class OrderToPacsConverter {
 
-    private final SimpleDateFormat pacsDateFormat = new SimpleDateFormat("yyyyMMddHHmm");
     private Parser parser = new PipeParser();
 
     private PatientService patientService;
@@ -80,7 +79,8 @@ public class OrderToPacsConverter {
         pid.getPatientIDInternalID(0).getID().setValue(order.getPatient().getPatientIdentifier(getPatientIdentifierType()).getIdentifier());
         pid.getPatientName().getFamilyName().setValue(order.getPatient().getFamilyName());
         pid.getPatientName().getGivenName().setValue(order.getPatient().getGivenName());
-        pid.getDateOfBirth().getTimeOfAnEvent().setValue(order.getPatient().getBirthdate() != null ? pacsDateFormat.format(order.getPatient().getBirthdate()) : "");
+        pid.getDateOfBirth().getTimeOfAnEvent().setValue(order.getPatient().getBirthdate() != null
+                ? HL7Utils.hl7DateFormat.format(order.getPatient().getBirthdate()) : "");
         pid.getSex().setValue(order.getPatient().getGender());
         // TODO: do we need patient admission ID / account number
 

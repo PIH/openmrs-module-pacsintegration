@@ -15,7 +15,6 @@
 package org.openmrs.module.pacsintegration.util;
 
 import ca.uhn.hl7v2.model.DataTypeException;
-import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.v23.message.ACK;
 import ca.uhn.hl7v2.model.v23.segment.MSH;
 
@@ -25,14 +24,14 @@ import java.util.Date;
 
 public class HL7Utils {
 
-    private static DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+    public static DateFormat hl7DateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 
     public static MSH populateMessageHeader(MSH msh, Date dateTime, String messageType, String triggerEvent, String sendingFacility) throws DataTypeException {
 
         msh.getFieldSeparator().setValue("|");
         msh.getEncodingCharacters().setValue("^~\\&");
         msh.getSendingFacility().getNamespaceID().setValue(sendingFacility);
-        msh.getDateTimeOfMessage().getTimeOfAnEvent().setValue(dateFormat.format(dateTime));
+        msh.getDateTimeOfMessage().getTimeOfAnEvent().setValue(hl7DateFormat.format(dateTime));
         msh.getMessageType().getMessageType().setValue(messageType);
         msh.getMessageType().getTriggerEvent().setValue(triggerEvent);
         //  TODO: do we need to send Message Control ID?
