@@ -121,7 +121,7 @@ public class OrderToPacsConverter {
         // note that we are just sending modality here, not the device location
         obr.getPlacerField2().setValue(getModalityCode(order));
         obr.getQuantityTiming().getPriority().setValue(order.getUrgency().equals(Order.Urgency.STAT) ? "STAT" : "");
-        obr.getScheduledDateTime().getTimeOfAnEvent().setValue(PacsIntegrationConstants.HL7_DATE_FORMAT.format(order.getStartDate()));
+        obr.getScheduledDateTime().getTimeOfAnEvent().setValue(HL7Utils.hl7DateFormat.format(order.getStartDate()));
 
         // break the reason for study up by lines
         if (StringUtils.isNotBlank(order.getClinicalHistory()))  {

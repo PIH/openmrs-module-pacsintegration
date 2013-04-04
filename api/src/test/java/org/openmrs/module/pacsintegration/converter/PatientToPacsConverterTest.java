@@ -59,7 +59,7 @@ public class PatientToPacsConverterTest {
         String hl7Message = converter.convertToAdmitMessage(patient);
 
         assertThat(hl7Message, startsWith("MSH|^~\\&|||||||ADT^A01||P|2.3\r"));
-        assertThat(hl7Message, endsWith("PID|||PATIENT_IDENTIFIER||Doe^John||197908270000|M\r"));
+        assertThat(hl7Message, endsWith("PID|||PATIENT_IDENTIFIER||Doe^John||19790827000000|M\r"));
 
     }
 
@@ -83,7 +83,7 @@ public class PatientToPacsConverterTest {
         String hl7Message = converter.convertToUpdateMessage(patient);
 
         assertThat(hl7Message, startsWith("MSH|^~\\&|||||||ADT^A08||P|2.3\r"));
-        assertThat(hl7Message, endsWith("PID|||PATIENT_IDENTIFIER||Doe^John||197908270000|M\r"));
+        assertThat(hl7Message, endsWith("PID|||PATIENT_IDENTIFIER||Doe^John||19790827000000|M\r"));
 
     }
 }

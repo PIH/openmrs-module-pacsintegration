@@ -170,10 +170,10 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
             assertThat(hl7Message, startsWith("MSH|^~\\&||Mirebalais|||"));
             // TODO: test that a valid date is passed
             assertThat(hl7Message, containsString("||ORM^O01||P|2.3\r"));
-            assertThat(hl7Message, containsString("PID|||6TS-4||Chebaskwony^Collet||197608250000|F\r"));
+            assertThat(hl7Message, containsString("PID|||6TS-4||Chebaskwony^Collet||19760825000000|F\r"));
             assertThat(hl7Message, containsString("PV1|||1FED2^^^^^^^^Unknown Location|||||Test^User^Super\r"));
             assertThat(hl7Message, containsString("ORC|NW\r"));
-            assertThat(hl7Message, endsWith("OBR|||A1B2C3|127689^FOOD ASSISTANCE||||||||||||||||||||||||||||||||201208080000\r"));
+            assertThat(hl7Message, endsWith("OBR|||A1B2C3|127689^FOOD ASSISTANCE||||||||||||||||||||||||||||||||20120808000000\r"));
 
             return true;
         }

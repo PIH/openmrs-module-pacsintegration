@@ -31,6 +31,4 @@ public class PacsIntegrationConstants {
 
     public static String SAME_AS_CONCEPT_MAP_TYPE_UUID = "35543629-7d8c-11e1-909d-c80aa9edcf4e";
 	
-	public static DateFormat HL7_DATE_FORMAT = new SimpleDateFormat("yyyyMMddHHmm");
-	
 }
