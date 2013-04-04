@@ -23,4 +23,5 @@ public class PacsIntegrationProperties extends ModuleProperties {
     public ConceptSource getProcedureCodesConceptSource() {
         return getConceptSourceByGlobalProperty(PacsIntegrationConstants.GP_PROCEDURE_CODE_CONCEPT_SOURCE_UUID);
     }
+
 }
