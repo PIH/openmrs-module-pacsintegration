@@ -52,6 +52,9 @@
         <property name="locationService">
             <ref bean="locationService"/>
         </property>
+        <property name="radiologyProperties">
+            <ref bean="radiologyProperties"/>
+        </property>
         <property name="properties">
             <ref bean="emrProperties"/>
         </property>

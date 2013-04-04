@@ -42,6 +42,7 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.emr.EmrProperties;
 import org.openmrs.module.emr.radiology.RadiologyOrder;
+import org.openmrs.module.emr.radiology.RadiologyProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties;
 import org.powermock.api.mockito.PowerMockito;
@@ -130,6 +131,7 @@ public class OrderToPacsConverterTest {
         AdministrationService administrationService = mock(AdministrationService.class);
         ConceptService conceptService = mock(ConceptService.class);
         LocationService locationService = mock(LocationService.class);
+        RadiologyProperties radiologyProperties = mock(RadiologyProperties.class);
         EmrProperties properties = mock(EmrProperties.class);
 
         when(Context.getAuthenticatedUser()).thenReturn(authenticatedUser);
@@ -145,13 +147,14 @@ public class OrderToPacsConverterTest {
         when(locationService.getLocationAttributeTypeByUuid(locationCodeAttributeType.getUuid())).thenReturn(locationCodeAttributeType);
 
         when(properties.getOrderingProviderEncounterRole()).thenReturn(clinicialEncounterRole);
-        when(properties.getXrayOrderablesConcept()).thenReturn(testXrayConceptSet);
+        when(radiologyProperties.getXrayOrderablesConcept()).thenReturn(testXrayConceptSet);
 
         converter = new OrderToPacsConverter();
         converter.setPatientService(patientService);
         converter.setAdminService(administrationService);
         converter.setConceptService(conceptService);
         converter.setLocationService(locationService);
+        converter.setRadiologyProperties(radiologyProperties);
         converter.setProperties(properties);
     }
 

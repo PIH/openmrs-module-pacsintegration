@@ -38,6 +38,7 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.module.emr.EmrProperties;
 import org.openmrs.module.emr.radiology.RadiologyOrder;
+import org.openmrs.module.emr.radiology.RadiologyProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationGlobalProperties;
 
@@ -58,6 +59,8 @@ public class OrderToPacsConverter {
     private ConceptService conceptService;
 
     private LocationService locationService;
+
+    private RadiologyProperties radiologyProperties;
 
     private EmrProperties properties;
 
@@ -164,7 +167,7 @@ public class OrderToPacsConverter {
             throw new RuntimeException("Concept must be specified on an order to send to PACS");
         }
 
-        if (properties.getXrayOrderablesConcept().getSetMembers().contains(order.getConcept())) {
+        if (radiologyProperties.getXrayOrderablesConcept().getSetMembers().contains(order.getConcept())) {
             return PacsIntegrationConstants.XRAY_MODALITY_CODE;
         }
         else {
@@ -252,6 +255,10 @@ public class OrderToPacsConverter {
 
     public void setLocationService(LocationService locationService) {
         this.locationService = locationService;
+    }
+
+    public void setRadiologyProperties(RadiologyProperties radiologyProperties) {
+        this.radiologyProperties = radiologyProperties;
     }
 
     public void setProperties(EmrProperties properties) {
