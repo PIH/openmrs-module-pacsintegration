@@ -47,7 +47,7 @@ public class ORM_O01Handler extends HL7Handler implements Application {
 
 
     @Override
-    public Message processMessage(Message message) throws ApplicationException, HL7Exception {
+    public Message processMessage(Message message) throws HL7Exception {
 
         ORM_O01 ormO01 = (ORM_O01) message;
         String messageControlID = ormO01.getMSH().getMessageControlID().getValue();

@@ -37,7 +37,7 @@ public class ORU_R01Handler extends HL7Handler implements Application {
     }
 
     @Override
-    public Message processMessage(Message message) throws ApplicationException, HL7Exception {
+    public Message processMessage(Message message) throws HL7Exception {
 
         ORU_R01 oruR01 = (ORU_R01) message;
         String messageControlID = oruR01.getMSH().getMessageControlID().getValue();
