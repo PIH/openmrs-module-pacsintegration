@@ -38,6 +38,7 @@
         <openMRSVersion>1.9.3</openMRSVersion>
         <emrVersion>1.2-SNAPSHOT</emrVersion>
         <emrapiVersion>1.0-SNAPSHOT</emrapiVersion>
+        <metadatasharingVersion>1.1.6</metadatasharingVersion>
         <eventVersion>2.0.1</eventVersion>
         <uiframeworkVersion>2.5.1</uiframeworkVersion>
         <idgenVersion>2.4</idgenVersion>
@@ -133,7 +134,14 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- uiframework and idgen are a transitive dependency, required by the emr module. We don't directly require it ourselves,
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>serialization.xstream-api</artifactId>
+            <version>${serializationxstreamVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- the following are a transitive dependency, required by the emr module. We don't directly require it ourselves,
              so it's not mentioned in config.xml  We need to add them here so that we can properly fire up the handler context during testing -->
         <dependency>
             <groupId>org.openmrs.module</groupId>
@@ -172,10 +180,11 @@
 
         <dependency>
             <groupId>org.openmrs.module</groupId>
-            <artifactId>serialization.xstream-api</artifactId>
-            <version>${serializationxstreamVersion}</version>
-            <scope>provided</scope>
+            <artifactId>metadatasharing-api</artifactId>
+            <version>${metadatasharingVersion}</version>
+            <scope>test</scope>
         </dependency>
+
 
         <!-- End OpenMRS modules -->
 
