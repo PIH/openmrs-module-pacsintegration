@@ -39,7 +39,7 @@
         <emrVersion>1.2-SNAPSHOT</emrVersion>
         <emrapiVersion>1.0-SNAPSHOT</emrapiVersion>
         <paperrecordVersion>1.0-SNAPSHOT</paperrecordVersion>
-        <metadatasharingVersion>1.1.6</metadatasharingVersion>
+        <metadatasharingVersion>1.1.7</metadatasharingVersion>
         <eventVersion>2.0.1</eventVersion>
         <uiframeworkVersion>2.5.1</uiframeworkVersion>
         <idgenVersion>2.4</idgenVersion>
