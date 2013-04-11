@@ -8,7 +8,6 @@ import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.parser.PipeParser;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.openmrs.Concept;
 import org.openmrs.ConceptSource;
@@ -25,6 +24,7 @@ import org.openmrs.module.emr.EmrProperties;
 import org.openmrs.module.emr.radiology.RadiologyOrder;
 import org.openmrs.module.emr.radiology.RadiologyReport;
 import org.openmrs.module.emr.radiology.RadiologyService;
+import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
 
@@ -56,13 +56,15 @@ public class ORU_R01HandlerTest {
 
     private LocationService locationService;
 
-    private EmrProperties emrProperties;
+    private EmrApiProperties emrApiProperties;
 
     private PacsIntegrationProperties pacsIntegrationProperties;
 
     private PatientIdentifierType primaryIdentifierType = new PatientIdentifierType();
 
     private Provider principalResultsInterpreter = new Provider();
+
+    private Concept reportTypeFinal = new Concept();
 
     @Before
     public void setup() {
@@ -76,13 +78,14 @@ public class ORU_R01HandlerTest {
         providerService = mock(ProviderService.class);
         locationService = mock(LocationService.class);
 
-        emrProperties = mock(EmrProperties.class);
-        when(emrProperties.getPrimaryIdentifierType()).thenReturn(primaryIdentifierType);
+        emrApiProperties = mock(EmrApiProperties.class);
+        when(emrApiProperties.getPrimaryIdentifierType()).thenReturn(primaryIdentifierType);
 
         pacsIntegrationProperties = mock(PacsIntegrationProperties.class);
         ConceptSource loinc = new ConceptSource();
         loinc.setName("LOINC");
         when(pacsIntegrationProperties.getProcedureCodesConceptSource()).thenReturn(loinc);
+        when(pacsIntegrationProperties.getReportTypeFinalConcept()).thenReturn(reportTypeFinal);
 
         handler = new ORU_R01Handler();
         handler.setAdminService(adminService);
@@ -91,7 +94,7 @@ public class ORU_R01HandlerTest {
         handler.setRadiologyService(radiologyService);
         handler.setProviderService(providerService);
         handler.setLocationService(locationService);
-        handler.setEmrProperties(emrProperties);
+        handler.setEmrApiProperties(emrApiProperties);
         handler.setPacsIntegrationProperties(pacsIntegrationProperties);
     }
 
@@ -266,7 +269,7 @@ public class ORU_R01HandlerTest {
         expectedReport.setAssociatedRadiologyOrder(radiologyOrder);
         expectedReport.setPrincipalResultsInterpreter(principalResultsInterpreter);
         expectedReport.setProcedure(procedure);
-        expectedReport.setReportType(RadiologyReport.Type.FINAL);
+        expectedReport.setReportType(reportTypeFinal);
         expectedReport.setReportLocation(reportLocation);
         expectedReport.setReportBody(buildExpectedReportBody());
 
@@ -326,7 +329,7 @@ public class ORU_R01HandlerTest {
         expectedReport.setAssociatedRadiologyOrder(null);
         expectedReport.setPrincipalResultsInterpreter(null);
         expectedReport.setProcedure(procedure);
-        expectedReport.setReportType(RadiologyReport.Type.FINAL);
+        expectedReport.setReportType(reportTypeFinal);
         expectedReport.setReportLocation(null);
         expectedReport.setReportBody(buildExpectedReportBody());
 

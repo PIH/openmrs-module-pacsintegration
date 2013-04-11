@@ -98,15 +98,15 @@ public class ORU_R01Handler extends HL7Handler implements Application {
         return providerService.getProviderByIdentifier(providerId);
     }
 
-    private RadiologyReport.Type getReportType(String reportCode) {
+    private Concept getReportType(String reportCode) {
         if (reportCode.equalsIgnoreCase("P"))  {
-            return RadiologyReport.Type.PRELIM;
+            return pacsIntegrationProperties.getReportTypePrelimConcept();
         }
         if (reportCode.equalsIgnoreCase("F")) {
-            return RadiologyReport.Type.FINAL;
+            return pacsIntegrationProperties.getReportTypeFinalConcept();
         }
         if (reportCode.equalsIgnoreCase("C"))  {
-            return RadiologyReport.Type.CORRECTION;
+            return pacsIntegrationProperties.getReportTypeCorrectionConcept();
         }
         return null;
     }

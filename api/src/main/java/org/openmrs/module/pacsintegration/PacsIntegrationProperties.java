@@ -13,6 +13,7 @@
  */
 package org.openmrs.module.pacsintegration;
 
+import org.openmrs.Concept;
 import org.openmrs.ConceptSource;
 import org.openmrs.module.emrapi.utils.ModuleProperties;
 import org.springframework.stereotype.Component;
@@ -24,4 +25,15 @@ public class PacsIntegrationProperties extends ModuleProperties {
         return getConceptSourceByGlobalProperty(PacsIntegrationConstants.GP_PROCEDURE_CODE_CONCEPT_SOURCE_UUID);
     }
 
+    public Concept getReportTypePrelimConcept() {
+        return getConceptByGlobalProperty(PacsIntegrationConstants.GP_REPORT_TYPE_PRELIM);
+    }
+
+    public Concept getReportTypeFinalConcept() {
+        return getConceptByGlobalProperty(PacsIntegrationConstants.GP_REPORT_TYPE_FINAL);
+    }
+
+    public Concept getReportTypeCorrectionConcept() {
+        return getConceptByGlobalProperty(PacsIntegrationConstants.GP_REPORT_TYPE_CORRECTION);
+    }
 }

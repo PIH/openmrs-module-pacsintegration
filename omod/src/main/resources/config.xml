@@ -123,5 +123,29 @@
     </globalProperty>
 
 
+    <globalProperty>
+        <property>pacsintegration.reportTypePrelim</property>
+        <defaultValue></defaultValue>
+        <description>
+            UUID of the concept we want to use to mark a report as "preliminary" (ie, one flagged with a report status = "P")
+        </description>
+    </globalProperty>
+
+    <globalProperty>
+        <property>pacsintegration.reportTypeFinal</property>
+        <defaultValue></defaultValue>
+        <description>
+            UUID of the concept we want to use to mark a report as "final" (ie, one flagged with a report status = "F")
+        </description>
+    </globalProperty>
+
+    <globalProperty>
+        <property>pacsintegration.reportTypeFinal</property>
+        <defaultValue></defaultValue>
+        <description>
+            UUID of the concept we want to use to mark a report as "correction" (ie, one flagged with a report status = "C")
+        </description>
+    </globalProperty>
+
 </module>
 

@@ -1,22 +1,16 @@
 package org.openmrs.module.pacsintegration.handler;
 
-import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.model.v23.group.ORM_O01_OBSERVATION;
-import ca.uhn.hl7v2.model.v23.group.ORM_O01_ORDER_DETAIL;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Patient;
-import org.openmrs.Provider;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
-import org.openmrs.api.ProviderService;
-import org.openmrs.module.emr.EmrProperties;
 import org.openmrs.module.emr.radiology.RadiologyOrder;
-import org.openmrs.module.emr.radiology.RadiologyReport;
 import org.openmrs.module.emr.radiology.RadiologyService;
+import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationException;
 import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
@@ -36,7 +30,7 @@ abstract public class HL7Handler {
 
     protected LocationService locationService;
 
-    protected EmrProperties emrProperties;
+    protected EmrApiProperties emrApiProperties;
 
     protected PacsIntegrationProperties pacsIntegrationProperties;
 
@@ -47,7 +41,7 @@ abstract public class HL7Handler {
         }
 
         List<Patient> patientList = patientService.getPatients(null, patientIdentifier,
-                Collections.singletonList(emrProperties.getPrimaryIdentifierType()), true);
+                Collections.singletonList(emrApiProperties.getPrimaryIdentifierType()), true);
 
         if (patientList == null || patientList.size() == 0) {
             throw new PacsIntegrationException("Cannot import message. No patient with identifier " + patientIdentifier);
@@ -123,8 +117,8 @@ abstract public class HL7Handler {
         this.locationService = locationService;
     }
 
-    public void setEmrProperties(EmrProperties emrProperties) {
-        this.emrProperties = emrProperties;
+    public void setEmrApiProperties(EmrApiProperties emrApiProperties) {
+        this.emrApiProperties = emrApiProperties;
     }
 
     public void setPacsIntegrationProperties(PacsIntegrationProperties pacsIntegrationProperties) {

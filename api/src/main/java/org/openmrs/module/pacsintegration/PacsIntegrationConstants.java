@@ -26,6 +26,9 @@ public class PacsIntegrationConstants {
     public static final String GP_PROCEDURE_CODE_CONCEPT_SOURCE_UUID = "pacsintegration.procedureCodeConceptSourceUuid";
     public static final String GP_DEFAULT_LOCALE = "pacsintegration.defaultLocale";
     public static final String GP_LOCATION_CODE_ATTRIBUTE_TYPE_UUID = "pacsintegration.locationCodeAttributeTypeUuid";
+    public static final String GP_REPORT_TYPE_PRELIM = "pacsintegration.reportTypePrelim";
+    public static final String GP_REPORT_TYPE_FINAL = "pacsintegration.reportTypeFinal";
+    public static final String GP_REPORT_TYPE_CORRECTION = "pacsintegration.reportTypeCorrection";
 
     public static String XRAY_MODALITY_CODE = "CR";
 

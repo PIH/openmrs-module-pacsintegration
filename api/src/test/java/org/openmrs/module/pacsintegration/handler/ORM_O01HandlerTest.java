@@ -25,6 +25,7 @@ import org.openmrs.module.emr.EmrProperties;
 import org.openmrs.module.emr.radiology.RadiologyOrder;
 import org.openmrs.module.emr.radiology.RadiologyService;
 import org.openmrs.module.emr.radiology.RadiologyStudy;
+import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
 
@@ -55,7 +56,7 @@ public class ORM_O01HandlerTest {
 
     private ProviderService providerService;
 
-    private EmrProperties emrProperties;
+    private EmrApiProperties emrApiProperties;
 
     private PacsIntegrationProperties pacsIntegrationProperties;
 
@@ -71,8 +72,8 @@ public class ORM_O01HandlerTest {
         conceptService = mock(ConceptService.class);
         providerService = mock(ProviderService.class);
 
-        emrProperties = mock(EmrProperties.class);
-        when(emrProperties.getPrimaryIdentifierType()).thenReturn(primaryIdentifierType);
+        emrApiProperties = mock(EmrApiProperties.class);
+        when(emrApiProperties.getPrimaryIdentifierType()).thenReturn(primaryIdentifierType);
 
         pacsIntegrationProperties = mock(PacsIntegrationProperties.class);
         ConceptSource loinc = new ConceptSource();
@@ -85,7 +86,7 @@ public class ORM_O01HandlerTest {
         handler.setConceptService(conceptService);
         handler.setRadiologyService(radiologyService);
         handler.setProviderService(providerService);
-        handler.setEmrProperties(emrProperties);
+        handler.setEmrApiProperties(emrApiProperties);
         handler.setPacsIntegrationProperties(pacsIntegrationProperties);
     }
 

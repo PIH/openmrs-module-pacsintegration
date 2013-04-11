@@ -105,8 +105,8 @@
                             <property name="patientService">
                                 <ref bean="patientService"/>
                             </property>
-                            <property name="emrProperties">
-                                <ref bean="emrProperties"/>
+                            <property name="emrApiProperties">
+                                <ref bean="emrApiProperties"/>
                             </property>
                         </bean>
                     </entry>
@@ -118,8 +118,8 @@
                             <property name="patientService">
                                 <ref bean="patientService"/>
                             </property>
-                            <property name="emrProperties">
-                                <ref bean="emrProperties"/>
+                            <property name="emrApiProperties">
+                                <ref bean="emrApiProperties"/>
                             </property>
                         </bean>
                     </entry>
