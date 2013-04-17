@@ -40,9 +40,9 @@
         <emrapiVersion>1.0-SNAPSHOT</emrapiVersion>
         <paperrecordVersion>1.0-SNAPSHOT</paperrecordVersion>
         <metadatasharingVersion>1.1.7.1</metadatasharingVersion>
-        <eventVersion>2.0.1</eventVersion>
+        <eventVersion>2.1</eventVersion>
         <uiframeworkVersion>2.5.1</uiframeworkVersion>
-        <idgenVersion>2.4</idgenVersion>
+        <idgenVersion>2.5</idgenVersion>
         <htmlformentryVersion>2.0.6</htmlformentryVersion>
         <providerManagementVersion>1.1.2</providerManagementVersion>
         <reportingVersion>0.7.5</reportingVersion>
