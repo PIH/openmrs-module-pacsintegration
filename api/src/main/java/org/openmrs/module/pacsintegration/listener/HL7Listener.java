@@ -1,3 +1,17 @@
+/*
+ * The contents of this file are subject to the OpenMRS Public License
+ * Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://license.openmrs.org
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+ * License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ */
+
 package org.openmrs.module.pacsintegration.listener;
 
 import ca.uhn.hl7v2.app.Application;
@@ -5,21 +19,22 @@ import ca.uhn.hl7v2.app.HL7Service;
 import ca.uhn.hl7v2.app.SimpleServer;
 import ca.uhn.hl7v2.llp.MinLowerLayerProtocol;
 import ca.uhn.hl7v2.parser.PipeParser;
+import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
 
 import java.util.Map;
 
 public class HL7Listener {
 
-    // TODO: make this a global property
-    public static final Integer port = 6662;
-
     private HL7Service hl7Service;
+
+    private PacsIntegrationProperties pacsIntegrationProperties;
 
     private Map<String, Application> handlers;
 
     public void initialize() {
 
-        hl7Service = new SimpleServer(port, new MinLowerLayerProtocol(), new PipeParser());
+        hl7Service = new SimpleServer(pacsIntegrationProperties.getHL7ListenerPort(),
+                new MinLowerLayerProtocol(), new PipeParser());
 
         for (Map.Entry<String,Application>  entry : handlers.entrySet()) {
             String messageType = entry.getKey().split("_")[0];
@@ -44,6 +59,14 @@ public class HL7Listener {
 
     public void setHl7Service(HL7Service hl7Service) {
         this.hl7Service = hl7Service;
+    }
+
+    public PacsIntegrationProperties getPacsIntegrationProperties() {
+        return pacsIntegrationProperties;
+    }
+
+    public void setPacsIntegrationProperties(PacsIntegrationProperties pacsIntegrationProperties) {
+        this.pacsIntegrationProperties = pacsIntegrationProperties;
     }
 
     public Map<String, Application> getHandlers() {

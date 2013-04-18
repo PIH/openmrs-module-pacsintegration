@@ -154,7 +154,7 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
         encounter.setPatient(Context.getPatientService().getPatient(7));
         encounter.setEncounterDatetime(new Date());
         encounter.addOrder(order);
-        encounter.addProvider(encounterService.getEncounterRole(1001), providerService.getProvider(1));
+        encounter.addProvider(encounterService.getEncounterRole(1003), providerService.getProvider(1));
         encounterService.saveEncounter(encounter);
 
         Mockito.verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs(argThat(new IsExpectedHL7Message()));

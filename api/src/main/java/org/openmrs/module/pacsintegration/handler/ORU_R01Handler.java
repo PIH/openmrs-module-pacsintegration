@@ -18,6 +18,7 @@ import org.openmrs.Patient;
 import org.openmrs.Provider;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.ProviderService;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.emr.api.EmrService;
 import org.openmrs.module.emr.radiology.RadiologyOrder;
 import org.openmrs.module.emr.radiology.RadiologyReport;
@@ -27,11 +28,12 @@ import org.openmrs.module.pacsintegration.util.HL7Utils;
 import java.text.ParseException;
 import java.util.Date;
 
+import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_PASSWORD;
+import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_USERNAME;
+
 public class ORU_R01Handler extends HL7Handler implements Application {
 
     protected final Log log = LogFactory.getLog(this.getClass());
-
-    private ProviderService providerService;
 
     public ORU_R01Handler() {
     }
@@ -41,8 +43,17 @@ public class ORU_R01Handler extends HL7Handler implements Application {
 
         ORU_R01 oruR01 = (ORU_R01) message;
         String messageControlID = oruR01.getMSH().getMessageControlID().getValue();
+        String sendingFacility = null;
+
+        Context.openSession();
 
         try {
+            Context.openSession();
+            Context.authenticate(adminService.getGlobalProperty(GP_LISTENER_USERNAME),
+                    adminService.getGlobalProperty(GP_LISTENER_PASSWORD));
+
+            sendingFacility = getSendingFacility();
+
             String patientIdentifier = oruR01.getRESPONSE().getPATIENT().getPID().getPatientIDInternalID(0).getID().getValue();
 
             RadiologyReport report = new RadiologyReport();
@@ -60,14 +71,16 @@ public class ORU_R01Handler extends HL7Handler implements Application {
 
             radiologyService.saveRadiologyReport(report);
         }
-
         catch (Exception e) {
             log.error(e.getMessage());
-            return HL7Utils.generateErrorACK(messageControlID, getSendingFacility(),
-                    e.getMessage());
+            return HL7Utils.generateErrorACK(messageControlID, sendingFacility,
+                e.getMessage());
+        }
+        finally {
+            Context.closeSession();
         }
 
-        return HL7Utils.generateACK(oruR01.getMSH().getMessageControlID().getValue(), getSendingFacility());
+        return HL7Utils.generateACK(oruR01.getMSH().getMessageControlID().getValue(), sendingFacility);
     }
 
     @Override
@@ -109,13 +122,5 @@ public class ORU_R01Handler extends HL7Handler implements Application {
             return pacsIntegrationProperties.getReportTypeCorrectionConcept();
         }
         return null;
-    }
-
-    /**
-     * Setters
-     */
-
-    public void setProviderService(ProviderService providerService) {
-        this.providerService = providerService;
     }
 }

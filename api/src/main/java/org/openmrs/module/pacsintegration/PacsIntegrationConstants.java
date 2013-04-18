@@ -29,6 +29,7 @@ public class PacsIntegrationConstants {
     public static final String GP_REPORT_TYPE_PRELIM = "pacsintegration.reportTypePrelim";
     public static final String GP_REPORT_TYPE_FINAL = "pacsintegration.reportTypeFinal";
     public static final String GP_REPORT_TYPE_CORRECTION = "pacsintegration.reportTypeCorrection";
+    public static final String GP_HL7_LISTENER_PORT = "pacsintegration.hl7ListenerPort";
 
     public static String XRAY_MODALITY_CODE = "CR";
 

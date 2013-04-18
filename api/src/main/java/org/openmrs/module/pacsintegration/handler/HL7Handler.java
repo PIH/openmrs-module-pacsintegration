@@ -8,6 +8,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.ProviderService;
 import org.openmrs.module.emr.radiology.RadiologyOrder;
 import org.openmrs.module.emr.radiology.RadiologyService;
 import org.openmrs.module.emrapi.EmrApiProperties;
@@ -29,6 +30,8 @@ abstract public class HL7Handler {
     protected RadiologyService radiologyService;
 
     protected LocationService locationService;
+
+    protected ProviderService providerService;
 
     protected EmrApiProperties emrApiProperties;
 
@@ -123,5 +126,9 @@ abstract public class HL7Handler {
 
     public void setPacsIntegrationProperties(PacsIntegrationProperties pacsIntegrationProperties) {
         this.pacsIntegrationProperties = pacsIntegrationProperties;
+    }
+
+    public void setProviderService(ProviderService providerService) {
+        this.providerService = providerService;
     }
 }

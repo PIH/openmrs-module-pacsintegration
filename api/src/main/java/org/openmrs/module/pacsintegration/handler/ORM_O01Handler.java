@@ -23,6 +23,7 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.ProviderService;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.emr.EmrProperties;
 import org.openmrs.module.emr.radiology.RadiologyOrder;
 import org.openmrs.module.emr.radiology.RadiologyService;
@@ -37,22 +38,26 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_PASSWORD;
+import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_USERNAME;
+
 public class ORM_O01Handler extends HL7Handler implements Application {
 
     protected final Log log = LogFactory.getLog(this.getClass());;
-
-    private ProviderService providerService;
-
-    // TODO: do we want to assume that this "stream" (via port 6662) is only from PACS
-
 
     @Override
     public Message processMessage(Message message) throws HL7Exception {
 
         ORM_O01 ormO01 = (ORM_O01) message;
         String messageControlID = ormO01.getMSH().getMessageControlID().getValue();
+        String sendingFacility = null;
 
         try {
+            Context.openSession();
+            Context.authenticate(adminService.getGlobalProperty(GP_LISTENER_USERNAME),
+                    adminService.getGlobalProperty(GP_LISTENER_PASSWORD));
+
+            sendingFacility = getSendingFacility();
 
             String eventType = getEventType(ormO01.getORDER().getORDER_DETAIL());
 
@@ -79,11 +84,15 @@ public class ORM_O01Handler extends HL7Handler implements Application {
         }
         catch (Exception e) {
             log.error(e.getMessage());
-            return HL7Utils.generateErrorACK(messageControlID, getSendingFacility(),
+            return HL7Utils.generateErrorACK(messageControlID, sendingFacility,
                     e.getMessage());
         }
+        finally {
+            Context.closeSession();
+        }
 
-        return HL7Utils.generateACK(ormO01.getMSH().getMessageControlID().getValue(), getSendingFacility());
+
+        return HL7Utils.generateACK(ormO01.getMSH().getMessageControlID().getValue(), sendingFacility);
     }
 
     @Override
@@ -148,14 +157,5 @@ public class ORM_O01Handler extends HL7Handler implements Application {
             }
         }
         return null;
-    }
-
-
-    /**
-     * Setters
-     */
-
-    public void setProviderService(ProviderService providerService) {
-        this.providerService = providerService;
     }
 }

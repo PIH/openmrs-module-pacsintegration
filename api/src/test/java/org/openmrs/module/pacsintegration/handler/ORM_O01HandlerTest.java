@@ -8,6 +8,7 @@ import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.parser.PipeParser;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.openmrs.Concept;
 import org.openmrs.ConceptSource;
@@ -16,11 +17,13 @@ import org.openmrs.EncounterRole;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Provider;
+import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.ProviderService;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.emr.EmrProperties;
 import org.openmrs.module.emr.radiology.RadiologyOrder;
 import org.openmrs.module.emr.radiology.RadiologyService;
@@ -28,6 +31,8 @@ import org.openmrs.module.emr.radiology.RadiologyStudy;
 import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -41,7 +46,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Context.class)
 public class ORM_O01HandlerTest {
 
     private ORM_O01Handler handler;
@@ -79,6 +87,10 @@ public class ORM_O01HandlerTest {
         ConceptSource loinc = new ConceptSource();
         loinc.setName("LOINC");
         when(pacsIntegrationProperties.getProcedureCodesConceptSource()).thenReturn(loinc);
+
+        User authenticatedUser = new User();
+        mockStatic(Context.class);
+        when(Context.getAuthenticatedUser()).thenReturn(authenticatedUser);
 
         handler = new ORM_O01Handler();
         handler.setAdminService(adminService);

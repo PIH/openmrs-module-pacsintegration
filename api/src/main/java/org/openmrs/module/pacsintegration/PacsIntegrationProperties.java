@@ -1,4 +1,4 @@
-/**
+/*
  * The contents of this file are subject to the OpenMRS Public License
  * Version 1.0 (the "License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
@@ -21,6 +21,8 @@ import org.springframework.stereotype.Component;
 @Component("pacsIntegrationProperties")
 public class PacsIntegrationProperties extends ModuleProperties {
 
+    // TODO: move util methods to retrieve other global property constants into this file
+
     public ConceptSource getProcedureCodesConceptSource() {
         return getConceptSourceByGlobalProperty(PacsIntegrationConstants.GP_PROCEDURE_CODE_CONCEPT_SOURCE_UUID);
     }
@@ -35,5 +37,9 @@ public class PacsIntegrationProperties extends ModuleProperties {
 
     public Concept getReportTypeCorrectionConcept() {
         return getConceptByGlobalProperty(PacsIntegrationConstants.GP_REPORT_TYPE_CORRECTION);
+    }
+
+    public Integer getHL7ListenerPort() {
+        return getIntegerByGlobalProperty(PacsIntegrationConstants.GP_HL7_LISTENER_PORT);
     }
 }

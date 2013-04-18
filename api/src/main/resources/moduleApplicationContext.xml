@@ -4,43 +4,6 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
   		    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-    <!-- Add services -->
-    <bean id="pacsIntegrationService" class="${project.parent.groupId}.${project.parent.artifactId}.api.impl.PacsIntegrationServiceImpl">
-        <property name="dao">
-            <bean class="${project.parent.groupId}.${project.parent.artifactId}.api.db.hibernate.HibernatePacsIntegrationDAO">
-                <property name="sessionFactory">
-                    <ref bean="sessionFactory"/>
-                </property>
-            </bean>
-        </property>
-        <property name="hl7Listener">
-            <ref bean="hl7listener"/>
-        </property>
-    </bean>
-
-    <bean parent="serviceContext">
-        <property name="moduleService">
-            <list>
-                <value>${project.parent.groupId}.${project.parent.artifactId}.api.PacsIntegrationService</value>
-                <bean
-                        class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-                    <property name="transactionManager">
-                        <ref bean="transactionManager"/>
-                    </property>
-                    <property name="target">
-                        <ref bean="pacsIntegrationService" />
-                    </property>
-                    <property name="preInterceptors">
-                        <ref bean="serviceInterceptors"/>
-                    </property>
-                    <property name="transactionAttributeSource">
-                        <ref bean="transactionAttributeSource"/>
-                    </property>
-                </bean>
-            </list>
-        </property>
-    </bean>
-
     <!-- configure the OrderToPacs converter bean-->
     <bean id="orderToPacsConverter" class="org.openmrs.module.pacsintegration.converter.OrderToPacsConverter">
         <property name="patientService">
@@ -95,6 +58,9 @@
 
     <!-- configure the listener that listens for HL7 messages -->
     <bean id="hl7listener" class="org.openmrs.module.pacsintegration.listener.HL7Listener">
+        <property name="pacsIntegrationProperties">
+            <ref bean="pacsIntegrationProperties"/>
+        </property>
         <property name="handlers">
                 <map>
                     <entry key="ORM_O01">
@@ -104,6 +70,21 @@
                             </property>
                             <property name="patientService">
                                 <ref bean="patientService"/>
+                            </property>
+                            <property name="conceptService">
+                                <ref bean="conceptService"/>
+                            </property>
+                            <property name="locationService">
+                                <ref bean="locationService"/>
+                            </property>
+                            <property name="radiologyService">
+                                <ref bean="radiologyService"/>
+                            </property>
+                            <property name="providerService">
+                                <ref bean="providerService"/>
+                            </property>
+                            <property name="pacsIntegrationProperties">
+                                <ref bean="pacsIntegrationProperties"/>
                             </property>
                             <property name="emrApiProperties">
                                 <ref bean="emrApiProperties"/>
@@ -118,12 +99,64 @@
                             <property name="patientService">
                                 <ref bean="patientService"/>
                             </property>
+                            <property name="conceptService">
+                                <ref bean="conceptService"/>
+                            </property>
+                            <property name="locationService">
+                                <ref bean="locationService"/>
+                            </property>
+                            <property name="radiologyService">
+                                <ref bean="radiologyService"/>
+                            </property>
+                            <property name="providerService">
+                                <ref bean="providerService"/>
+                            </property>
+                            <property name="pacsIntegrationProperties">
+                                <ref bean="pacsIntegrationProperties"/>
+                            </property>
                             <property name="emrApiProperties">
                                 <ref bean="emrApiProperties"/>
                             </property>
                         </bean>
                     </entry>
                 </map>
+        </property>
+    </bean>
+
+    <!-- Add services -->
+    <bean id="pacsIntegrationService" class="${project.parent.groupId}.${project.parent.artifactId}.api.impl.PacsIntegrationServiceImpl">
+        <property name="dao">
+            <bean class="${project.parent.groupId}.${project.parent.artifactId}.api.db.hibernate.HibernatePacsIntegrationDAO">
+                <property name="sessionFactory">
+                    <ref bean="sessionFactory"/>
+                </property>
+            </bean>
+        </property>
+        <property name="hl7Listener">
+            <ref bean="hl7listener"/>
+        </property>
+    </bean>
+
+    <bean parent="serviceContext">
+        <property name="moduleService">
+            <list>
+                <value>${project.parent.groupId}.${project.parent.artifactId}.api.PacsIntegrationService</value>
+                <bean
+                        class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+                    <property name="transactionManager">
+                        <ref bean="transactionManager"/>
+                    </property>
+                    <property name="target">
+                        <ref bean="pacsIntegrationService" />
+                    </property>
+                    <property name="preInterceptors">
+                        <ref bean="serviceInterceptors"/>
+                    </property>
+                    <property name="transactionAttributeSource">
+                        <ref bean="transactionAttributeSource"/>
+                    </property>
+                </bean>
+            </list>
         </property>
     </bean>
 

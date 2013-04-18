@@ -147,5 +147,13 @@
         </description>
     </globalProperty>
 
+    <globalProperty>
+        <property>pacsintegration.hl7ListenerPort</property>
+        <defaultValue>6662</defaultValue>
+        <description>
+            The port the HL7 Listener should listen on for HL7 messages
+        </description>
+    </globalProperty>
+
 </module>
 

@@ -8,6 +8,7 @@ import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.parser.PipeParser;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.openmrs.Concept;
 import org.openmrs.ConceptSource;
@@ -15,11 +16,13 @@ import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Provider;
+import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.ProviderService;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.emr.EmrProperties;
 import org.openmrs.module.emr.radiology.RadiologyOrder;
 import org.openmrs.module.emr.radiology.RadiologyReport;
@@ -27,6 +30,8 @@ import org.openmrs.module.emr.radiology.RadiologyService;
 import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 
 import java.util.ArrayList;
@@ -39,7 +44,10 @@ import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Context.class)
 public class ORU_R01HandlerTest {
 
     private ORU_R01Handler handler;
@@ -86,6 +94,10 @@ public class ORU_R01HandlerTest {
         loinc.setName("LOINC");
         when(pacsIntegrationProperties.getProcedureCodesConceptSource()).thenReturn(loinc);
         when(pacsIntegrationProperties.getReportTypeFinalConcept()).thenReturn(reportTypeFinal);
+
+        User authenticatedUser = new User();
+        mockStatic(Context.class);
+        when(Context.getAuthenticatedUser()).thenReturn(authenticatedUser);
 
         handler = new ORU_R01Handler();
         handler.setAdminService(adminService);
