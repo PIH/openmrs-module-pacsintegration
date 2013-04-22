@@ -14,7 +14,7 @@
                      uuid="7abcc666-7227-4581-8c99-2b4aac4f888a"/>
     <global_property property="pacsintegration.locationCodeAttributeTypeUuid" property_value="11103050-c99b-11e0-9572-0800200c9a66"
                      uuid="7cccc666-7227-4581-8c99-2b4bbb4f888a"/>
-    <global_property property="pacsintegration.hl7ListenerPort" property_value="6662"
+    <global_property property="pacsintegration.hl7ListenerPort" property_value="6665"
                      uuid="7abcc666-7272-4581-8c00-2b4bbb4f888a"/>
     <global_property property="pacsintegration.reportTypeFinal" property_value="0cbe2ed3-dd5f-4f46-9459-26333c9265ab"
                      uuid="7abcc666-7272-4581-8c00-2b4deb4f888a"/>
