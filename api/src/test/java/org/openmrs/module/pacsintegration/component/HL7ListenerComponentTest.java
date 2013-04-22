@@ -140,6 +140,7 @@ public class HL7ListenerComponentTest extends BaseModuleContextSensitiveTest {
                     "OBX|4|TX|ExamRoom^ExamRoom|1|100AcreWoods\r" +
                     "OBX|5|TS|StartDateTime^StartDateTime|1|20111009215317\r" +
                     "OBX|6|TS|StopDateTime^StopDateTime|1|20111009215817\r" +
+                    "OBX|7|TX|ImagesAvailable^ImagesAvailable|1|1\r" +
                     "ZDS|2.16.840.1.113883.3.234.1.3.101.1.2.1013.2011.15607503.2^HMI^Application^DICOM\r";
 
             Thread.sleep(1000);    // give the simple server time to start
