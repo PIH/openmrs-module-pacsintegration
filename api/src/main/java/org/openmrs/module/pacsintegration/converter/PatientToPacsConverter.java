@@ -15,8 +15,6 @@ import org.openmrs.api.PatientService;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.util.HL7Utils;
 
-import java.text.SimpleDateFormat;
-
 public class PatientToPacsConverter {
 
     // TODO: not currently used

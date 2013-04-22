@@ -32,7 +32,6 @@ import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;

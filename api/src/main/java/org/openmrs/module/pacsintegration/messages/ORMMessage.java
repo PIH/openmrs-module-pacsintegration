@@ -14,7 +14,6 @@
 package org.openmrs.module.pacsintegration.messages;
 
 import org.openmrs.Order;
-import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.util.HL7Utils;
 
 /**

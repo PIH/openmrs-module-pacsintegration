@@ -2,7 +2,6 @@ package org.openmrs.module.pacsintegration.handler;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.Application;
-import ca.uhn.hl7v2.app.ApplicationException;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.Type;
 import ca.uhn.hl7v2.model.v23.datatype.CN;
@@ -14,29 +13,14 @@ import ca.uhn.hl7v2.model.v23.message.ORM_O01;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.openmrs.Concept;
-import org.openmrs.Encounter;
-import org.openmrs.Patient;
 import org.openmrs.Provider;
-import org.openmrs.api.AdministrationService;
-import org.openmrs.api.ConceptService;
-import org.openmrs.api.EncounterService;
-import org.openmrs.api.PatientService;
-import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.emr.EmrProperties;
-import org.openmrs.module.emr.radiology.RadiologyOrder;
-import org.openmrs.module.emr.radiology.RadiologyService;
 import org.openmrs.module.emr.radiology.RadiologyStudy;
-import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationException;
-import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
 import org.openmrs.module.pacsintegration.util.HL7Utils;
 
 import java.text.ParseException;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_PASSWORD;
 import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_USERNAME;

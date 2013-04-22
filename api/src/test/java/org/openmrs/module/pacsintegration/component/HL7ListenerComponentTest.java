@@ -15,7 +15,6 @@
 package org.openmrs.module.pacsintegration.component;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
@@ -25,14 +24,11 @@ import org.openmrs.module.ModuleActivator;
 import org.openmrs.module.emr.radiology.RadiologyProperties;
 import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationActivator;
-import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Collections;

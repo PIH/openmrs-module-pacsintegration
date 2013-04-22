@@ -13,10 +13,6 @@
  */
 package org.openmrs.module.pacsintegration;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-
-
 public class PacsIntegrationConstants {
 
     public static final String GP_PATIENT_IDENTIFIER_TYPE_UUID = "pacsintegration.patientIdentifierTypeUuid";
