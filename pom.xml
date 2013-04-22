@@ -192,13 +192,6 @@
             <version>${metadatasharingVersion}</version>
             <scope>test</scope>
         </dependency>
-        
-        <dependency>
-            <groupId>org.openmrs.module</groupId>
-            <artifactId>serialization.xstream-api</artifactId>
-            <version>${serializationxstreamVersion}</version>
-            <scope>provided</scope>
-        </dependency>
 
         <!-- End OpenMRS modules -->
 
@@ -206,7 +199,7 @@
             <groupId>ca.uhn.hapi</groupId>
             <artifactId>hapi</artifactId>
             <version>0.5</version>
-            <type>pom</type>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

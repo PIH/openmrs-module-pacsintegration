@@ -72,7 +72,7 @@ public class ORU_R01Handler extends HL7Handler implements Application {
             radiologyService.saveRadiologyReport(report);
         }
         catch (Exception e) {
-            log.error(e.getMessage());
+            log.error("Unable to parse incoming ORU_RO1 message", e);
             return HL7Utils.generateErrorACK(messageControlID, sendingFacility,
                 e.getMessage());
         }
@@ -108,7 +108,11 @@ public class ORU_R01Handler extends HL7Handler implements Application {
 
 
     private Provider getResultsInterpreter(String providerId) {
-        return providerService.getProviderByIdentifier(providerId);
+        if (StringUtils.isNotBlank(providerId)) {
+            return providerService.getProviderByIdentifier(providerId);
+        }
+
+        return null;
     }
 
     private Concept getReportType(String reportCode) {

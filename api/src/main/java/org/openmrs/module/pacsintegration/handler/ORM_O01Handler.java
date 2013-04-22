@@ -83,7 +83,7 @@ public class ORM_O01Handler extends HL7Handler implements Application {
             }
         }
         catch (Exception e) {
-            log.error(e.getMessage());
+            log.error("Unable to parse incoming ORM_OO1 message", e);
             return HL7Utils.generateErrorACK(messageControlID, sendingFacility,
                     e.getMessage());
         }

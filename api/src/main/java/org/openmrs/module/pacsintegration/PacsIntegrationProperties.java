@@ -15,28 +15,43 @@ package org.openmrs.module.pacsintegration;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptSource;
+import org.openmrs.module.emr.EmrConstants;
+import org.openmrs.module.emr.radiology.RadiologyConstants;
+import org.openmrs.module.emrapi.EmrApiConstants;
+import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.emrapi.utils.ModuleProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component("pacsIntegrationProperties")
 public class PacsIntegrationProperties extends ModuleProperties {
 
-    // TODO: move util methods to retrieve other global property constants into this file
+    @Autowired
+    @Qualifier("emrApiProperties")
+    private EmrApiProperties emrApiProperties;
+
+    public void setEmrApiProperties(EmrApiProperties emrApiProperties) {
+        this.emrApiProperties = emrApiProperties;
+    }
 
     public ConceptSource getProcedureCodesConceptSource() {
         return getConceptSourceByGlobalProperty(PacsIntegrationConstants.GP_PROCEDURE_CODE_CONCEPT_SOURCE_UUID);
     }
 
     public Concept getReportTypePrelimConcept() {
-        return getConceptByGlobalProperty(PacsIntegrationConstants.GP_REPORT_TYPE_PRELIM);
+        return  conceptService.getConceptByMapping(RadiologyConstants.CONCEPT_CODE_RADIOLOGY_REPORT_PRELIM,
+                emrApiProperties.getEmrApiConceptSource().getName());
     }
 
     public Concept getReportTypeFinalConcept() {
-        return getConceptByGlobalProperty(PacsIntegrationConstants.GP_REPORT_TYPE_FINAL);
+        return  conceptService.getConceptByMapping(RadiologyConstants.CONCEPT_CODE_RADIOLOGY_REPORT_FINAL,
+                emrApiProperties.getEmrApiConceptSource().getName());
     }
 
     public Concept getReportTypeCorrectionConcept() {
-        return getConceptByGlobalProperty(PacsIntegrationConstants.GP_REPORT_TYPE_CORRECTION);
+        return  conceptService.getConceptByMapping(RadiologyConstants.CONCEPT_CODE_RADIOLOGY_REPORT_CORRECTION,
+                emrApiProperties.getEmrApiConceptSource().getName());
     }
 
     public Integer getHL7ListenerPort() {
