@@ -12,12 +12,14 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.openmrs.Concept;
 import org.openmrs.ConceptSource;
+import org.openmrs.Location;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Provider;
 import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
+import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
@@ -27,6 +29,7 @@ import org.openmrs.module.emr.radiology.RadiologyStudy;
 import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -60,11 +63,15 @@ public class ORM_O01HandlerTest {
 
     private ProviderService providerService;
 
+    private LocationService locationService;
+
     private EmrApiProperties emrApiProperties;
 
     private PacsIntegrationProperties pacsIntegrationProperties;
 
     private PatientIdentifierType primaryIdentifierType = new PatientIdentifierType();
+
+    private Location mirebalaisHospital = new Location();
 
     @Before
     public void setup() {
@@ -84,6 +91,9 @@ public class ORM_O01HandlerTest {
         loinc.setName("LOINC");
         when(pacsIntegrationProperties.getProcedureCodesConceptSource()).thenReturn(loinc);
 
+        locationService = mock(LocationService.class);
+        when(locationService.getLocation("Mirebalais Hospital")).thenReturn(mirebalaisHospital);
+
         User authenticatedUser = new User();
         mockStatic(Context.class);
         when(Context.getAuthenticatedUser()).thenReturn(authenticatedUser);
@@ -94,6 +104,7 @@ public class ORM_O01HandlerTest {
         handler.setConceptService(conceptService);
         handler.setRadiologyService(radiologyService);
         handler.setProviderService(providerService);
+        handler.setLocationService(locationService);
         handler.setEmrApiProperties(emrApiProperties);
         handler.setPacsIntegrationProperties(pacsIntegrationProperties);
     }
@@ -101,7 +112,7 @@ public class ORM_O01HandlerTest {
     @Test
     public void shouldReturnACKButNotSaveRadiologyStudyIfNotReviewedEventType() throws HL7Exception, ApplicationException {
 
-        String message = "MSH|^~\\&|HMI||RAD|REPORTS|20130228174643||ORM^O01|RTS01CE16057B105AC0|P|2.3|\r" +
+        String message = "MSH|^~\\&|HMI|Mirebalais Hospital|RAD|REPORTS|20130228174643||ORM^O01|RTS01CE16057B105AC0|P|2.3|\r" +
                 "PID|1||GG2F98||Patient^Test^||19770222|M||||||||||\r" +
                 "ORC|\r" +
                 "OBR|1||0000001297|36554-4^CHEST|||20130228170350||||||||||||MBL^CR||||||P|||||||&Goodrich&Mark&&&&^||||20130228170350\r" +
@@ -123,7 +134,7 @@ public class ORM_O01HandlerTest {
     @Test
     public void shouldReturnErrorACKIfNoPatientIdentifierInResponse() throws HL7Exception, ApplicationException {
 
-        String message = "MSH|^~\\&|HMI||RAD|REPORTS|20130228174643||ORM^O01|RTS01CE16057B105AC0|P|2.3|\r" +
+        String message = "MSH|^~\\&|HMI|Mirebalais Hospital|RAD|REPORTS|20130228174643||ORM^O01|RTS01CE16057B105AC0|P|2.3|\r" +
                 "PID|1||||Patient^Test^||19770222|M||||||||||\r" +
                 "ORC|\r" +
                 "OBR|1||0000001297|36554-4^CHEST|||20130228170350||||||||||||MBL^CR||||||P|||||||&Goodrich&Mark&&&&^||||20130228170350\r" +
@@ -147,7 +158,7 @@ public class ORM_O01HandlerTest {
         when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true))
                 .thenReturn(new ArrayList<Patient>());
 
-        String message = "MSH|^~\\&|HMI||RAD|REPORTS|20130228174643||ORM^O01|RTS01CE16057B105AC0|P|2.3|\r" +
+        String message = "MSH|^~\\&|HMI|Mirebalais Hospital|RAD|REPORTS|20130228174643||ORM^O01|RTS01CE16057B105AC0|P|2.3|\r" +
                 "PID|1||GG2F98||Patient^Test^||19770222|M||||||||||\r" +
                 "ORC|\r" +
                 "OBR|1||0000001297|36554-4^CHEST|||20130228170350||||||||||||MBL^CR||||||P|||||||&Goodrich&Mark&&&&^||||20130228170350\r" +
@@ -182,7 +193,7 @@ public class ORM_O01HandlerTest {
         when(conceptService.getConceptByMapping("36554-4", "LOINC")).thenReturn(procedure);
 
 
-        String message = "MSH|^~\\&|HMI||RAD|REPORTS|20130228174643||ORM^O01|RTS01CE16057B105AC0|P|2.3|\r" +
+        String message = "MSH|^~\\&|HMI|Mirebalais Hospital|RAD|REPORTS|20130228174643||ORM^O01|RTS01CE16057B105AC0|P|2.3|\r" +
                 "PID|1||GG2F98||Patient^Test^||19770222|M||||||||||\r" +
                 "ORC|\r" +
                 "OBR|1||0000001297|36554-4^CHEST|||20130228170350||||||||||||MBL^CR||||||P|||||||&Goodrich&Mark&&&&^||||20130228170350\r" +
@@ -212,7 +223,7 @@ public class ORM_O01HandlerTest {
         when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(radiologyOrder);
         when(conceptService.getConceptByMapping("36554-4", "LOINC")).thenReturn(null);
 
-        String message = "MSH|^~\\&|HMI||RAD|REPORTS|20130228174643||ORM^O01|RTS01CE16057B105AC0|P|2.3|\r" +
+        String message = "MSH|^~\\&|HMI|Mirebalais Hospital|RAD|REPORTS|20130228174643||ORM^O01|RTS01CE16057B105AC0|P|2.3|\r" +
                 "PID|1||GG2F98||Patient^Test^||19770222|M||||||||||\r" +
                 "ORC|\r" +
                 "OBR|1||0000001297|36554-4^CHEST|||20130228170350||||||||||||MBL^CR||||||P|||||||&Goodrich&Mark&&&&^||||20130228170350\r" +
@@ -246,7 +257,7 @@ public class ORM_O01HandlerTest {
         when(conceptService.getConceptByMapping("36554-4", "LOINC")).thenReturn(procedure);
         when(providerService.getProviderByIdentifier("1435")).thenReturn(radiologyTechnician);
 
-        String message = "MSH|^~\\&|HMI||RAD|REPORTS|20130228174643||ORM^O01|RTS01CE16057B105AC0|P|2.3|\r" +
+        String message = "MSH|^~\\&|HMI|Mirebalais Hospital|RAD|REPORTS|20130228174643||ORM^O01|RTS01CE16057B105AC0|P|2.3|\r" +
                 "PID|1||GG2F98||Patient^Test^||19770222|M||||||||||\r" +
                 "ORC|\r" +
                 "OBR|1||0000001297|36554-4^CHEST|||20130228170350||||||||||||MBL^CR||||||P|||||||&Goodrich&Mark&&&&^||||20130228170350\r" +
@@ -279,7 +290,7 @@ public class ORM_O01HandlerTest {
         when(conceptService.getConceptByMapping("36554-4", "LOINC")).thenReturn(procedure);
         when(providerService.getProviderByIdentifier("1435")).thenReturn(radiologyTechnician);
 
-        String message = "MSH|^~\\&|HMI||RAD|REPORTS|20130228174643||ORM^O01|RTS01CE16057B105AC0|P|2.3|\r" +
+        String message = "MSH|^~\\&|HMI|Mirebalais Hospital|RAD|REPORTS|20130228174643||ORM^O01|RTS01CE16057B105AC0|P|2.3|\r" +
                 "PID|1||GG2F98||Patient^Test^||19770222|M||||||||||\r" +
                 "ORC|\r" +
                 "OBR|1||0000001297|36554-4^CHEST|||20130228170350||||||||||||MBL^CR||||||P|||||||&Goodrich&Mark&&&&^||||20130228170350\r" +
@@ -302,6 +313,7 @@ public class ORM_O01HandlerTest {
         expectedStudy.setAssociatedRadiologyOrder(radiologyOrder);
         expectedStudy.setTechnician(radiologyTechnician);
         expectedStudy.setAccessionNumber("0000001297");
+        expectedStudy.setStudyLocation(mirebalaisHospital);
         expectedStudy.setImagesAvailable(true);
 
         Calendar cal = Calendar.getInstance();
@@ -328,7 +340,7 @@ public class ORM_O01HandlerTest {
         when(conceptService.getConceptByMapping("36554-4", "LOINC")).thenReturn(procedure);
         when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(null);
 
-        String message = "MSH|^~\\&|HMI||RAD|REPORTS|20130228174643||ORM^O01|RTS01CE16057B105AC0|P|2.3|\r" +
+        String message = "MSH|^~\\&|HMI|Mirebalais Hospital|RAD|REPORTS|20130228174643||ORM^O01|RTS01CE16057B105AC0|P|2.3|\r" +
                 "PID|1||GG2F98||Patient^Test^||19770222|M||||||||||\r" +
                 "ORC|\r" +
                 "OBR|1||0000001297|36554-4^CHEST|||20130228170350||||||||||||MBL^CR||||||P|||||||&Goodrich&Mark&&&&^||||20130228170350\r" +
@@ -349,6 +361,7 @@ public class ORM_O01HandlerTest {
         expectedStudy.setAssociatedRadiologyOrder(null);
         expectedStudy.setTechnician(null);
         expectedStudy.setAccessionNumber("0000001297");
+        expectedStudy.setStudyLocation(mirebalaisHospital);
         expectedStudy.setImagesAvailable(null);
 
         Calendar cal = Calendar.getInstance();
@@ -386,6 +399,7 @@ public class ORM_O01HandlerTest {
             assertThat(study.getPatient(), is(expectedStudy.getPatient()));
             assertThat(study.getTechnician(), is(expectedStudy.getTechnician()));
             assertThat(study.isImagesAvailable(), is(expectedStudy.isImagesAvailable()));
+            assertThat(study.getStudyLocation(), is(expectedStudy.getStudyLocation()));
 
             return true;
         }
