@@ -89,13 +89,12 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 	
 	@Before
 	public void setupDatabase() throws Exception {
+        MockitoAnnotations.initMocks(this);
+		executeDataSet(XML_DATASET);
 
         Context.openSession();
         authenticate();
-
-        MockitoAnnotations.initMocks(this);
-		executeDataSet(XML_DATASET);
-	}
+    }
 
     @After
     public void closeSession() {
