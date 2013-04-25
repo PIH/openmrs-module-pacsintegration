@@ -18,13 +18,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+
 import org.mockito.ArgumentMatcher;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.openmrs.Encounter;
 import org.openmrs.TestOrder;
 import org.openmrs.api.EncounterService;
@@ -53,6 +52,8 @@ import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.mock;
 
+
+@Ignore
 public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 
     @Autowired
