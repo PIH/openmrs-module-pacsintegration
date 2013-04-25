@@ -65,6 +65,8 @@ import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 @Ignore
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Context.class)
 public class OrderToPacsConverterTest {
 
     private OrderToPacsConverter converter;
