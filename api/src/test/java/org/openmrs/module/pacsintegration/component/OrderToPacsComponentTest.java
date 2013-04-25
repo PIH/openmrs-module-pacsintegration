@@ -51,6 +51,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.mock;
 
 public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 
@@ -66,14 +67,11 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
     @Autowired
     private ProviderService providerService;
 
-    @InjectMocks
     @Autowired
     private OrderEventListener orderEventListener;
 
-    @Mock
     private PacsIntegrationService pacsIntegrationService;
 
-    @Mock
     private EmrOrderService emrOrderService;
 
 	protected final Log log = LogFactory.getLog(getClass());
@@ -88,7 +86,12 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 	
 	@Before
 	public void setupDatabase() throws Exception {
-        MockitoAnnotations.initMocks(this);
+
+        pacsIntegrationService = mock(PacsIntegrationService.class);
+        emrOrderService = mock(EmrOrderService.class);
+        orderEventListener.setEmrOrderService(emrOrderService);
+        orderEventListener.setPacsIntegrationService(pacsIntegrationService);
+
 		executeDataSet(XML_DATASET);
     }
 
