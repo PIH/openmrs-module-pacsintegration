@@ -16,6 +16,7 @@ package org.openmrs.module.pacsintegration.component;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -88,13 +89,23 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 	
 	@Before
 	public void setupDatabase() throws Exception {
+
+        Context.openSession();
+        authenticate();
+
         MockitoAnnotations.initMocks(this);
 		executeDataSet(XML_DATASET);
 	}
 
+    @After
+    public void closeSession() {
+        Context.closeSession();
+    }
+
 	@Test
 	@NotTransactional
 	public void testPlacingRadiologyOrderShouldTriggerOutgoingMessage() throws Exception {
+
         RadiologyOrder order = new RadiologyOrder();
 		order.setOrderType(Context.getOrderService().getOrderType(1001));
 		order.setPatient(Context.getPatientService().getPatient(7));
@@ -104,11 +115,13 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 
         Mockito.verify(emrOrderService, timeout(5000)).ensureAccessionNumberAssignedTo(order);
 		Mockito.verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs(any(String.class));
+
 	}
 
     @Test
     @NotTransactional
     public void testSavingOrderWithEncounterShouldTriggerOutgoingMessage() throws Exception {
+
         RadiologyOrder order = new RadiologyOrder();
         order.setOrderType(Context.getOrderService().getOrderType(1001));
         order.setPatient(Context.getPatientService().getPatient(7));
@@ -123,10 +136,13 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 
         Mockito.verify(emrOrderService, timeout(5000)).ensureAccessionNumberAssignedTo(order);
         Mockito.verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs(any(String.class));
+;
     }
 
     @Test
+    @NotTransactional
     public void testSendingTestOrderShouldNotTriggerOutgoingMessage() throws Exception {
+
         TestOrder order = new TestOrder();
         order.setOrderType(Context.getOrderService().getOrderType(1001));
         order.setPatient(Context.getPatientService().getPatient(7));
@@ -142,6 +158,7 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
     @Test
     @NotTransactional
     public void testPlacingRadiologyOrderShouldGenerateProperMessage() throws Exception {
+
         RadiologyOrder order = new RadiologyOrder();
         order.setOrderType(Context.getOrderService().getOrderType(1001));
         order.setPatient(Context.getPatientService().getPatient(7));
@@ -158,6 +175,7 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
         encounterService.saveEncounter(encounter);
 
         Mockito.verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs(argThat(new IsExpectedHL7Message()));
+
     }
 
     public class IsExpectedHL7Message extends ArgumentMatcher<String> {
