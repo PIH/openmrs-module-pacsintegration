@@ -2,6 +2,7 @@ package org.openmrs.module.pacsintegration.converter;
 
 import ca.uhn.hl7v2.HL7Exception;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
@@ -21,7 +22,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-
+@Ignore
 public class PatientToPacsConverterTest {
 
     private PatientToPacsConverter converter;

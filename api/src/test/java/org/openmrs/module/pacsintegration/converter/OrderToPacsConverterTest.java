@@ -14,6 +14,7 @@
 package org.openmrs.module.pacsintegration.converter;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openmrs.Concept;
@@ -63,6 +64,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
+@Ignore
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(Context.class)
 public class OrderToPacsConverterTest {

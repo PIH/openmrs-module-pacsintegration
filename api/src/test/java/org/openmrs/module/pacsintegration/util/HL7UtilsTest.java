@@ -19,6 +19,7 @@ import ca.uhn.hl7v2.model.v23.message.ACK;
 import ca.uhn.hl7v2.model.v23.message.ORU_R01;
 import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.parser.PipeParser;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 
@@ -29,6 +30,7 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
+@Ignore
 public class HL7UtilsTest {
 
     private Parser parser = new PipeParser();
