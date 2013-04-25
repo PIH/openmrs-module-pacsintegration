@@ -103,15 +103,18 @@ public class ORU_R01Handler extends HL7Handler implements Application {
     }
 
     private Concept getReportType(String reportCode) {
-        if (reportCode.equalsIgnoreCase("P"))  {
-            return pacsIntegrationProperties.getReportTypePrelimConcept();
+        if (StringUtils.isNotBlank(reportCode)) {
+            if (reportCode.equalsIgnoreCase("P"))  {
+                return pacsIntegrationProperties.getReportTypePrelimConcept();
+            }
+            if (reportCode.equalsIgnoreCase("F")) {
+                return pacsIntegrationProperties.getReportTypeFinalConcept();
+            }
+            if (reportCode.equalsIgnoreCase("C"))  {
+                return pacsIntegrationProperties.getReportTypeCorrectionConcept();
+            }
         }
-        if (reportCode.equalsIgnoreCase("F")) {
-            return pacsIntegrationProperties.getReportTypeFinalConcept();
-        }
-        if (reportCode.equalsIgnoreCase("C"))  {
-            return pacsIntegrationProperties.getReportTypeCorrectionConcept();
-        }
+
         return null;
     }
 }
