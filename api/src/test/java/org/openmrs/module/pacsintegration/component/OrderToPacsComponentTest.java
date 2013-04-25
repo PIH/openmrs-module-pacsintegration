@@ -91,14 +91,6 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 	public void setupDatabase() throws Exception {
         MockitoAnnotations.initMocks(this);
 		executeDataSet(XML_DATASET);
-
-        Context.openSession();
-        authenticate();
-    }
-
-    @After
-    public void closeSession() {
-        Context.closeSession();
     }
 
 	@Test
@@ -135,7 +127,7 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 
         Mockito.verify(emrOrderService, timeout(5000)).ensureAccessionNumberAssignedTo(order);
         Mockito.verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs(any(String.class));
-;
+
     }
 
     @Test
