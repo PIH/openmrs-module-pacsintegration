@@ -52,7 +52,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.timeout;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 
     @Autowired
