@@ -16,6 +16,7 @@ package org.openmrs.module.pacsintegration.component;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openmrs.api.context.Context;
@@ -33,7 +34,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Tests {@link PacsIntegrationService}}.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@Ignore
 public class PacsIntegrationServiceComponentTest extends BaseModuleContextSensitiveTest {
 
     @Autowired

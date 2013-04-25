@@ -29,7 +29,6 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @Ignore     // currently ignoring this test since we aren't supporting sending ADT messages at this point
 public class PatientToPacsComponentTest extends BaseModuleContextSensitiveTest {
 
