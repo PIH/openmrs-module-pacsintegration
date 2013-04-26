@@ -50,11 +50,14 @@
         </property>
     </bean>
 
+
+    <!--
     <bean class="org.openmrs.event.Event">
         <property name="subscription">
             <ref bean="orderEventListener" />
         </property>
     </bean>
+    -->
 
     <!-- configure the listener that listens for HL7 messages -->
     <bean id="hl7listener" class="org.openmrs.module.pacsintegration.listener.HL7Listener">
