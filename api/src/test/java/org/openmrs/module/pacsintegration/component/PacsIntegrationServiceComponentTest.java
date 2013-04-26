@@ -13,28 +13,24 @@
  */
 package org.openmrs.module.pacsintegration.component;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.openmrs.api.context.Context;
-import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
-import org.openmrs.test.BaseModuleContextSensitiveTest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.List;
-
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.Test;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
+import org.openmrs.test.BaseModuleContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Autowired;
+
 /**
  * Tests {@link PacsIntegrationService}}.
  */
-@Ignore
 public class PacsIntegrationServiceComponentTest extends BaseModuleContextSensitiveTest {
 
     @Autowired
