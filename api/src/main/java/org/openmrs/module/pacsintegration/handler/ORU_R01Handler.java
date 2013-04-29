@@ -12,7 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Provider;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.emr.radiology.RadiologyReport;
+import org.openmrs.module.radiologyapp.RadiologyReport;
 import org.openmrs.module.pacsintegration.util.HL7Utils;
 
 import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_PASSWORD;

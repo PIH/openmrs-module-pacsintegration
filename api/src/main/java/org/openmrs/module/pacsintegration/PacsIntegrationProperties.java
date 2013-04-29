@@ -15,7 +15,7 @@ package org.openmrs.module.pacsintegration;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptSource;
-import org.openmrs.module.emr.radiology.RadiologyConstants;
+import org.openmrs.module.radiologyapp.RadiologyConstants;
 import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.emrapi.utils.ModuleProperties;
 import org.springframework.beans.factory.annotation.Autowired;

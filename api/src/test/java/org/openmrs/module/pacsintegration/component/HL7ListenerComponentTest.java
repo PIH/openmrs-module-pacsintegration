@@ -22,7 +22,7 @@ import org.openmrs.Patient;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.module.ModuleActivator;
-import org.openmrs.module.emr.radiology.RadiologyProperties;
+import org.openmrs.module.radiologyapp.RadiologyProperties;
 import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationActivator;
 import org.openmrs.test.BaseModuleContextSensitiveTest;

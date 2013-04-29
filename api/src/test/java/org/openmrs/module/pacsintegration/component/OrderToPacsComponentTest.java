@@ -40,7 +40,7 @@ import org.openmrs.api.OrderService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.emr.order.EmrOrderService;
-import org.openmrs.module.emr.radiology.RadiologyOrder;
+import org.openmrs.module.radiologyapp.RadiologyOrder;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.listener.OrderEventListener;
 import org.openmrs.test.BaseModuleContextSensitiveTest;

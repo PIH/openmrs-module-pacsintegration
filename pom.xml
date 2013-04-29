@@ -36,8 +36,9 @@
     <properties>
         <springVersion>3.0.5.RELEASE</springVersion>
         <openMRSVersion>1.9.4-SNAPSHOT</openMRSVersion>
-        <emrVersion>1.2-SNAPSHOT</emrVersion>
+        <emrVersion>2.0-SNAPSHOT</emrVersion>
         <emrapiVersion>1.0-SNAPSHOT</emrapiVersion>
+        <radiologyappVersion>1.0-SNAPSHOT</radiologyappVersion>
         <paperrecordVersion>1.0-SNAPSHOT</paperrecordVersion>
         <metadatasharingVersion>1.1.8</metadatasharingVersion>
         <eventVersion>2.1</eventVersion>
@@ -108,8 +109,8 @@
 
         <dependency>
             <groupId>org.openmrs.module</groupId>
-            <artifactId>paperrecord-api</artifactId>
-            <version>${paperrecordVersion}</version>
+            <artifactId>radiologyapp-api</artifactId>
+            <version>${radiologyappVersion}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -192,6 +193,14 @@
             <version>${metadatasharingVersion}</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>paperrecord-api</artifactId>
+            <version>${paperrecordVersion}</version>
+            <scope>test</scope>
+        </dependency>
+
 
         <!-- End OpenMRS modules -->
 
