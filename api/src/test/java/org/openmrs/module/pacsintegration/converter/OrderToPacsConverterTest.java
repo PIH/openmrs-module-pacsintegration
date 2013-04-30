@@ -55,7 +55,7 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.emr.EmrProperties;
+import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.radiologyapp.RadiologyOrder;
 import org.openmrs.module.radiologyapp.RadiologyProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
@@ -131,7 +131,7 @@ public class OrderToPacsConverterTest {
         ConceptService conceptService = mock(ConceptService.class);
         LocationService locationService = mock(LocationService.class);
         RadiologyProperties radiologyProperties = mock(RadiologyProperties.class);
-        EmrProperties emrProperties = mock(EmrProperties.class);
+        EmrApiProperties emrProperties = mock(EmrApiProperties.class);
         PacsIntegrationProperties pacsIntegrationProperties = mock(PacsIntegrationProperties.class);
 
         when(Context.getAuthenticatedUser()).thenReturn(authenticatedUser);
@@ -155,7 +155,7 @@ public class OrderToPacsConverterTest {
         converter.setConceptService(conceptService);
         converter.setLocationService(locationService);
         converter.setRadiologyProperties(radiologyProperties);
-        converter.setEmrProperties(emrProperties);
+        converter.setEmrApiProperties(emrProperties);
         converter.setPacsIntegrationProperties(pacsIntegrationProperties);
     }
 

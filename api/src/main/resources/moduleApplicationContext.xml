@@ -18,8 +18,8 @@
         <property name="locationService">
             <ref bean="locationService"/>
         </property>
-        <property name="emrProperties">
-            <ref bean="emrProperties"/>
+        <property name="emrApiProperties">
+            <ref bean="emrApiProperties"/>
         </property>
         <property name="radiologyProperties">
             <ref bean="radiologyProperties"/>

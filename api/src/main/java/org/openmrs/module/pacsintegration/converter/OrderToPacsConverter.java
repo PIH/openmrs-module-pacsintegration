@@ -36,7 +36,7 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
-import org.openmrs.module.emr.EmrProperties;
+import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.radiologyapp.RadiologyOrder;
 import org.openmrs.module.radiologyapp.RadiologyProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
@@ -60,7 +60,7 @@ public class OrderToPacsConverter {
 
     private LocationService locationService;
 
-    private EmrProperties emrProperties;
+    private EmrApiProperties emrApiProperties;
 
     private RadiologyProperties radiologyProperties;
 
@@ -101,7 +101,7 @@ public class OrderToPacsConverter {
         }
 
         if (order.getEncounter() != null) {
-        Set<Provider> referringProviders = order.getEncounter().getProvidersByRole(emrProperties.getOrderingProviderEncounterRole());
+        Set<Provider> referringProviders = order.getEncounter().getProvidersByRole(emrApiProperties.getOrderingProviderEncounterRole());
             if (referringProviders != null && referringProviders.size() > 0) {
                 // note that if there are multiple clinicians associated with the encounter, we only sent the first one
                 Provider referringProvider = referringProviders.iterator().next();
@@ -248,8 +248,8 @@ public class OrderToPacsConverter {
         this.radiologyProperties = radiologyProperties;
     }
 
-    public void setEmrProperties(EmrProperties emrProperties) {
-        this.emrProperties = emrProperties;
+    public void setEmrApiProperties(EmrApiProperties emrApiProperties) {
+        this.emrApiProperties = emrApiProperties;
     }
 
     public void setPacsIntegrationProperties(PacsIntegrationProperties pacsIntegrationProperties) {
