@@ -82,7 +82,7 @@ public class OrderToPacsConverter {
         pid.getPatientName().getFamilyName().setValue(order.getPatient().getFamilyName());
         pid.getPatientName().getGivenName().setValue(order.getPatient().getGivenName());
         pid.getDateOfBirth().getTimeOfAnEvent().setValue(order.getPatient().getBirthdate() != null
-                ? HL7Utils.hl7DateFormat.format(order.getPatient().getBirthdate()) : "");
+                ? HL7Utils.getHl7DateFormat().format(order.getPatient().getBirthdate()) : "");
         pid.getSex().setValue(order.getPatient().getGender());
         // TODO: do we need patient admission ID / account number
 
@@ -123,7 +123,7 @@ public class OrderToPacsConverter {
         // note that we are just sending modality here, not the device location
         obr.getPlacerField2().setValue(getModalityCode(order));
         obr.getQuantityTiming().getPriority().setValue(order.getUrgency().equals(Order.Urgency.STAT) ? "STAT" : "");
-        obr.getScheduledDateTime().getTimeOfAnEvent().setValue(HL7Utils.hl7DateFormat.format(order.getStartDate()));
+        obr.getScheduledDateTime().getTimeOfAnEvent().setValue(HL7Utils.getHl7DateFormat().format(order.getStartDate()));
 
         // break the reason for study up by lines
         if (StringUtils.isNotBlank(order.getClinicalHistory()))  {

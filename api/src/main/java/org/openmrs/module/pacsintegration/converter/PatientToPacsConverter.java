@@ -66,7 +66,7 @@ public class PatientToPacsConverter {
         pidSegment.getPatientIDInternalID(0).getID().setValue(patient.getPatientIdentifier(getPatientIdentifierType()).getIdentifier());
         pidSegment.getPatientName().getFamilyName().setValue(patient.getFamilyName());
         pidSegment.getPatientName().getGivenName().setValue(patient.getGivenName());
-        pidSegment.getDateOfBirth().getTimeOfAnEvent().setValue(HL7Utils.hl7DateFormat.format(patient.getBirthdate()));
+        pidSegment.getDateOfBirth().getTimeOfAnEvent().setValue(HL7Utils.getHl7DateFormat().format(patient.getBirthdate()));
         pidSegment.getSex().setValue(patient.getGender());
     }
 

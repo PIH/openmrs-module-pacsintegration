@@ -42,9 +42,9 @@ public class ORMMessage extends Message {
         this.patientId = order.getPatient().getPatientIdentifier().getIdentifier();
         this.familyName = order.getPatient().getFamilyName();
         this.givenName = order.getPatient().getGivenName();
-        this.dateOfBirth = HL7Utils.hl7DateFormat.format(order.getPatient().getBirthdate());
+        this.dateOfBirth = HL7Utils.getHl7DateFormat().format(order.getPatient().getBirthdate());
         this.patientSex = order.getPatient().getGender();
-        this.scheduledExamDatetime = HL7Utils.hl7DateFormat.format(order.getStartDate());
+        this.scheduledExamDatetime = HL7Utils.getHl7DateFormat().format(order.getStartDate());
         // TODO: ormMessage.setDeviceLocation();
         // TODO: ormMessage.setModality();
         // TODO: we should set this to specific identifier that is configured, not just the preferred one?

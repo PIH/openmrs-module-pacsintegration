@@ -108,7 +108,7 @@ public class ORM_O01Handler extends HL7Handler implements Application {
             String datePerformed = ((TS) getFieldData(orderDetail, "StartDateTime")).getTimeOfAnEvent().getValue();
 
             if (StringUtils.isNotBlank(datePerformed)) {
-                return HL7Utils.hl7DateFormat.parse(datePerformed);
+                return HL7Utils.getHl7DateFormat().parse(datePerformed);
             }
             else {
                 throw new PacsIntegrationException("Cannot import message. Date performed must be specified.");

@@ -47,7 +47,7 @@ public class ORU_R01Handler extends HL7Handler implements Application {
 
             report.setAccessionNumber(oruR01.getRESPONSE().getORDER_OBSERVATION().getOBR().getFillerOrderNumber().getEntityIdentifier().getValue());
             report.setPatient(getPatient(patientIdentifier));
-            report.setReportDate(HL7Utils.hl7DateFormat.parse(oruR01.getRESPONSE().getORDER_OBSERVATION().getOBR()
+            report.setReportDate(HL7Utils.getHl7DateFormat().parse(oruR01.getRESPONSE().getORDER_OBSERVATION().getOBR()
                     .getObservationDateTime().getTimeOfAnEvent().getValue()));
             report.setAssociatedRadiologyOrder(getRadiologyOrder(report.getAccessionNumber(), report.getPatient()));
             report.setProcedure(getProcedure(oruR01.getRESPONSE().getORDER_OBSERVATION().getOBR().getUniversalServiceIdentifier().getIdentifier().getValue()));
