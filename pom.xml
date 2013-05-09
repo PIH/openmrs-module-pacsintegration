@@ -46,7 +46,7 @@
         <idgenVersion>2.5</idgenVersion>
         <htmlformentryVersion>2.0.8</htmlformentryVersion>
         <providerManagementVersion>1.1.2</providerManagementVersion>
-        <reportingVersion>0.7.5</reportingVersion>
+        <reportingVersion>0.7.6</reportingVersion>
         <serializationxstreamVersion>0.2.7</serializationxstreamVersion>
         <calculationVersion>1.0</calculationVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
