@@ -24,8 +24,7 @@
                      uuid="7abcc666-7227-4581-8c00-2b4ccb4f888a"/>      <!-- just assigning this to patient identifier 1 in the core data set -->
 
     <concept_reference_term concept_reference_term_id="1011" concept_source_id="2" code="127689" name="some term" description="some term" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="f40666f0-49d5-11e0-8fed-18a905e044dc"/>
-    <concept_reference_map concept_map_id="1011" concept_id="18" concept_reference_term_id="1011" concept_map_type_id="1001" creator="1" date_created="2004-08-12 00:00:00.0" uuid="23b6e712-49d8-11e0-8fed-18a111e044dc"/>
-    <concept_map_type concept_map_type_id="1001" name="same-as-demo" description="Indicates similarity" is_hidden="0" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="35543629-7d8c-11e1-909d-c80aa9edcf4e"/>
+    <concept_reference_map concept_map_id="1011" concept_id="18" concept_reference_term_id="1011" concept_map_type_id="2" creator="1" date_created="2004-08-12 00:00:00.0" uuid="23b6e712-49d8-11e0-8fed-18a111e044dc"/>
 
     <order_type order_type_id="1001" name="Radiology Order" description="Ordering a radiology exam" creator="1"
                 date_created="2008-08-15 13:49:47.0" retired="false" uuid="84ce45a8-5e7c-48f7-a581-bb1d17d63a62"/>
