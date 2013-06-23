@@ -49,20 +49,26 @@ public class ORM_O01Handler extends HL7Handler implements Application {
             // means that the technologist has marked the study as reviewed
             if (StringUtils.isNotBlank(eventType) && eventType.equalsIgnoreCase("REVIEWED")) {
 
-                String patientIdentifier = ormO01.getPATIENT().getPID().getPatientIDInternalID(0).getID().getValue();
+                String accessionNumber = ormO01.getORDER().getORDER_DETAIL().getOBR().getFillerOrderNumber().getEntityIdentifier().getValue();
 
-                RadiologyStudy radiologyStudy = new RadiologyStudy();
+                // only create this study if it doesn't already exist
+                if (radiologyService.getRadiologyStudyByAccessionNumber(accessionNumber) == null) {
 
-                radiologyStudy.setPatient(getPatient(patientIdentifier));
-                radiologyStudy.setAccessionNumber(ormO01.getORDER().getORDER_DETAIL().getOBR().getFillerOrderNumber().getEntityIdentifier().getValue());
-                radiologyStudy.setAssociatedRadiologyOrder(getRadiologyOrder(radiologyStudy.getAccessionNumber(), radiologyStudy.getPatient()));
-                radiologyStudy.setProcedure(getProcedure(ormO01.getORDER().getORDER_DETAIL().getOBR().getUniversalServiceIdentifier().getIdentifier().getValue()));
-                radiologyStudy.setTechnician(getTechnologist(ormO01.getORDER().getORDER_DETAIL()));
-                radiologyStudy.setDatePerformed(getDatePerformed(ormO01.getORDER().getORDER_DETAIL()));
-                radiologyStudy.setImagesAvailable(areImagesAvailable(ormO01.getORDER().getORDER_DETAIL()));
-                radiologyStudy.setStudyLocation(getLocationByName(ormO01.getMSH().getSendingFacility().getNamespaceID().getValue()));
+                    String patientIdentifier = ormO01.getPATIENT().getPID().getPatientIDInternalID(0).getID().getValue();
 
-                radiologyService.saveRadiologyStudy(radiologyStudy);
+                    RadiologyStudy radiologyStudy = new RadiologyStudy();
+
+                    radiologyStudy.setPatient(getPatient(patientIdentifier));
+                    radiologyStudy.setAccessionNumber(accessionNumber);
+                    radiologyStudy.setAssociatedRadiologyOrder(getRadiologyOrder(radiologyStudy.getAccessionNumber(), radiologyStudy.getPatient()));
+                    radiologyStudy.setProcedure(getProcedure(ormO01.getORDER().getORDER_DETAIL().getOBR().getUniversalServiceIdentifier().getIdentifier().getValue()));
+                    radiologyStudy.setTechnician(getTechnologist(ormO01.getORDER().getORDER_DETAIL()));
+                    radiologyStudy.setDatePerformed(getDatePerformed(ormO01.getORDER().getORDER_DETAIL()));
+                    radiologyStudy.setImagesAvailable(areImagesAvailable(ormO01.getORDER().getORDER_DETAIL()));
+                    radiologyStudy.setStudyLocation(getLocationByName(ormO01.getMSH().getSendingFacility().getNamespaceID().getValue()));
+
+                    radiologyService.saveRadiologyStudy(radiologyStudy);
+                }
             }
         }
         catch (Exception e) {
