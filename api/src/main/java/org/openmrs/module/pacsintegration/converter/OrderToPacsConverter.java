@@ -167,6 +167,9 @@ public class OrderToPacsConverter {
         if (radiologyProperties.getXrayOrderablesConcept().getSetMembers().contains(order.getConcept())) {
             return PacsIntegrationConstants.XRAY_MODALITY_CODE;
         }
+        if (radiologyProperties.getCTScanOrderablesConcept().getSetMembers().contains(order.getConcept())) {
+            return PacsIntegrationConstants.CT_SCAN_MODALITY_CODE;
+        }
         else {
             // TODO: double-check if McKesson PACS will have problem if no modality code is set
             return "";

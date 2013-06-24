@@ -13,21 +13,6 @@
  */
 package org.openmrs.module.pacsintegration.converter;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.UUID;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,12 +41,27 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.emrapi.EmrApiProperties;
-import org.openmrs.module.radiologyapp.RadiologyOrder;
-import org.openmrs.module.radiologyapp.RadiologyProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
+import org.openmrs.module.radiologyapp.RadiologyOrder;
+import org.openmrs.module.radiologyapp.RadiologyProperties;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.UUID;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(Context.class)
@@ -74,6 +74,10 @@ public class OrderToPacsConverterTest {
     private Concept testXrayConcept;
 
     private Concept testXrayConceptSet;
+
+    private Concept testCTConcept;
+
+    private Concept testCTConceptSet;
 
     private EncounterRole clinicialEncounterRole;
 
@@ -101,16 +105,35 @@ public class OrderToPacsConverterTest {
         testXrayConceptReferenceTerm.setCode("123ABC");
         testXrayConceptReferenceTerm.setConceptSource(procedureCodeConceptSource);
 
-        ConceptMap sameAsConceptMap = new ConceptMap();
-        sameAsConceptMap.setConceptMapType(sameAsConceptMapType);
-        sameAsConceptMap.setConceptReferenceTerm(testXrayConceptReferenceTerm);
+        ConceptMap sameAsConceptXrayMap = new ConceptMap();
+        sameAsConceptXrayMap.setConceptMapType(sameAsConceptMapType);
+        sameAsConceptXrayMap.setConceptReferenceTerm(testXrayConceptReferenceTerm);
 
         testXrayConcept = new Concept();
         testXrayConcept.addName(testXrayConceptName);
-        testXrayConcept.addConceptMapping(sameAsConceptMap);
+        testXrayConcept.addConceptMapping(sameAsConceptXrayMap);
 
         testXrayConceptSet = new Concept();
         testXrayConceptSet.addSetMember(testXrayConcept);
+
+        ConceptName testCTConceptName = new ConceptName();
+        testCTConceptName.setName("Head without contrast");
+        testCTConceptName.setLocale(new Locale("en"));
+
+        ConceptReferenceTerm testCTConceptReferenceTerm = new ConceptReferenceTerm();
+        testCTConceptReferenceTerm.setCode("456DEF");
+        testCTConceptReferenceTerm.setConceptSource(procedureCodeConceptSource);
+
+        ConceptMap sameAsConceptCTMap = new ConceptMap();
+        sameAsConceptCTMap.setConceptMapType(sameAsConceptMapType);
+        sameAsConceptCTMap.setConceptReferenceTerm(testCTConceptReferenceTerm);
+
+        testCTConcept = new Concept();
+        testCTConcept.addName(testCTConceptName);
+        testCTConcept.addConceptMapping(sameAsConceptCTMap);
+
+        testCTConceptSet = new Concept();
+        testCTConceptSet.addSetMember(testCTConcept);
 
         clinicialEncounterRole = new EncounterRole();
 
@@ -148,6 +171,7 @@ public class OrderToPacsConverterTest {
 
         when(emrProperties.getOrderingProviderEncounterRole()).thenReturn(clinicialEncounterRole);
         when(radiologyProperties.getXrayOrderablesConcept()).thenReturn(testXrayConceptSet);
+        when(radiologyProperties.getCTScanOrderablesConcept()).thenReturn(testCTConceptSet);
 
         converter = new OrderToPacsConverter();
         converter.setPatientService(patientService);
@@ -160,7 +184,7 @@ public class OrderToPacsConverterTest {
     }
 
     @Test
-    public void shouldGenerateMessageFromAnOrder() throws Exception {
+    public void shouldGenerateMessageFromAnXRayOrder() throws Exception {
         RadiologyOrder order = new RadiologyOrder();
         UUID uuid = UUID.randomUUID();
         order.setAccessionNumber(uuid.toString());
@@ -183,6 +207,33 @@ public class OrderToPacsConverterTest {
         assertThat(hl7Message, containsString("PV1|||ABCDEF^^^^^^^^Radiology|||||123^Joseph^Wayne"));
         assertThat(hl7Message, containsString("ORC|SC\r"));
         assertThat(hl7Message, endsWith("OBR|||" + uuid.toString() + "|123ABC^Left-hand x-ray|||||||||||||||CR||||||||^^^^^STAT||||^Patient fell off horse~^And broke back|||||20120808000000\r"));
+    }
+
+    @Test
+    public void shouldGenerateMessageFromACTOrder() throws Exception {
+
+        RadiologyOrder order = new RadiologyOrder();
+        UUID uuid = UUID.randomUUID();
+        order.setAccessionNumber(uuid.toString());
+        order.setStartDate(new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2012"));
+        order.setPatient(createPatient());
+        order.setConcept(testCTConcept);
+        order.setUrgency(Order.Urgency.STAT);
+        order.setClinicalHistory("Patient fell off horse\r\nAnd broke back");
+        order.setExamLocation(examLocation);
+
+        order.setEncounter(createEncounter());
+        order.getEncounter().addProvider(clinicialEncounterRole, createProvider());
+
+        String hl7Message = converter.convertToPacsFormat(order, "SC");
+
+        assertThat(hl7Message, startsWith("MSH|^~\\&||openmrs_mirebalais|||"));
+        // TODO: test that a valid date is passed
+        assertThat(hl7Message, containsString("||ORM^O01||P|2.3\r"));
+        assertThat(hl7Message, containsString("PID|||6TS-4||Chebaskwony^Collet||19760825000000|F\r"));
+        assertThat(hl7Message, containsString("PV1|||ABCDEF^^^^^^^^Radiology|||||123^Joseph^Wayne"));
+        assertThat(hl7Message, containsString("ORC|SC\r"));
+        assertThat(hl7Message, endsWith("OBR|||" + uuid.toString() + "|456DEF^Head without contrast|||||||||||||||CT||||||||^^^^^STAT||||^Patient fell off horse~^And broke back|||||20120808000000\r"));
     }
 
     @Test
