@@ -37,6 +37,7 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.module.emrapi.EmrApiProperties;
+import org.openmrs.module.radiologyapp.RadiologyConstants;
 import org.openmrs.module.radiologyapp.RadiologyOrder;
 import org.openmrs.module.radiologyapp.RadiologyProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
@@ -165,10 +166,10 @@ public class OrderToPacsConverter {
         }
 
         if (radiologyProperties.getXrayOrderablesConcept().getSetMembers().contains(order.getConcept())) {
-            return PacsIntegrationConstants.XRAY_MODALITY_CODE;
+            return RadiologyConstants.XRAY_MODALITY_CODE;
         }
         if (radiologyProperties.getCTScanOrderablesConcept().getSetMembers().contains(order.getConcept())) {
-            return PacsIntegrationConstants.CT_SCAN_MODALITY_CODE;
+            return RadiologyConstants.CT_SCAN_MODALITY_CODE;
         }
         else {
             // TODO: double-check if McKesson PACS will have problem if no modality code is set

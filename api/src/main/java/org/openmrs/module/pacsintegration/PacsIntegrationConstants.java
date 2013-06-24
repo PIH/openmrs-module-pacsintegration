@@ -24,10 +24,6 @@ public class PacsIntegrationConstants {
     public static final String GP_LOCATION_CODE_ATTRIBUTE_TYPE_UUID = "pacsintegration.locationCodeAttributeTypeUuid";
     public static final String GP_HL7_LISTENER_PORT = "pacsintegration.hl7ListenerPort";
 
-    public static final String XRAY_MODALITY_CODE = "CR";
-
-    public static final String CT_SCAN_MODALITY_CODE = "CT";
-
     public static final String SAME_AS_CONCEPT_MAP_TYPE_UUID = "35543629-7d8c-11e1-909d-c80aa9edcf4e";
 	
 }
