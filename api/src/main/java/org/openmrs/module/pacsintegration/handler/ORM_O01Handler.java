@@ -46,8 +46,11 @@ public class ORM_O01Handler extends HL7Handler implements Application {
             String eventType = getEventType(ormO01.getORDER().getORDER_DETAIL());
 
             // we are triggering the create of a RadiologyStudy on reception of a "Reviewed" event, which
-            // means that the technologist has marked the study as reviewed
-            if (StringUtils.isNotBlank(eventType) && eventType.equalsIgnoreCase("REVIEWED")) {
+            // means that the technologist has marked the study as reviewed, or a "Reported" event, which
+            // means that the study has been reported on; we only create an study once, so if both REVIEWED
+            // and REPORTED events are received (likely) it won't create a dup or throw and error
+            if (StringUtils.isNotBlank(eventType) &&
+                    (eventType.equalsIgnoreCase("REVIEWED") || eventType.equalsIgnoreCase("REPORTED"))) {
 
                 String accessionNumber = ormO01.getORDER().getORDER_DETAIL().getOBR().getFillerOrderNumber().getEntityIdentifier().getValue();
 
