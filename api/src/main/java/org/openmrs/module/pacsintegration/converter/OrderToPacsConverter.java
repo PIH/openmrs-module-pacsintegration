@@ -171,6 +171,9 @@ public class OrderToPacsConverter {
         if (radiologyProperties.getCTScanOrderablesConcept().getSetMembers().contains(order.getConcept())) {
             return RadiologyConstants.CT_SCAN_MODALITY_CODE;
         }
+        if (radiologyProperties.getUltrasoundOrderablesConcept().getSetMembers().contains(order.getConcept())) {
+            return RadiologyConstants.ULTRASOUND_MODALITY_CODE;
+        }
         else {
             // TODO: double-check if McKesson PACS will have problem if no modality code is set
             return "";

@@ -79,6 +79,10 @@ public class OrderToPacsConverterTest {
 
     private Concept testCTConceptSet;
 
+    private Concept testUSConcept;
+
+    private Concept testUSConceptSet;
+
     private EncounterRole clinicialEncounterRole;
 
     private Location examLocation;
@@ -135,6 +139,25 @@ public class OrderToPacsConverterTest {
         testCTConceptSet = new Concept();
         testCTConceptSet.addSetMember(testCTConcept);
 
+        ConceptName testUSConceptName = new ConceptName();
+        testUSConceptName.setName("blah");
+        testUSConceptName.setLocale(new Locale("en"));
+
+        ConceptReferenceTerm testUSConceptReferenceTerm = new ConceptReferenceTerm();
+        testUSConceptReferenceTerm.setCode("789GHI");
+        testUSConceptReferenceTerm.setConceptSource(procedureCodeConceptSource);
+
+        ConceptMap sameAsConceptUSMap = new ConceptMap();
+        sameAsConceptUSMap.setConceptMapType(sameAsConceptMapType);
+        sameAsConceptUSMap.setConceptReferenceTerm(testUSConceptReferenceTerm);
+
+        testUSConcept = new Concept();
+        testUSConcept.addName(testUSConceptName);
+        testUSConcept.addConceptMapping(sameAsConceptUSMap);
+
+        testUSConceptSet = new Concept();
+        testUSConceptSet.addSetMember(testUSConcept);
+
         clinicialEncounterRole = new EncounterRole();
 
         examLocation = new Location();
@@ -172,6 +195,7 @@ public class OrderToPacsConverterTest {
         when(emrProperties.getOrderingProviderEncounterRole()).thenReturn(clinicialEncounterRole);
         when(radiologyProperties.getXrayOrderablesConcept()).thenReturn(testXrayConceptSet);
         when(radiologyProperties.getCTScanOrderablesConcept()).thenReturn(testCTConceptSet);
+        when(radiologyProperties.getUltrasoundOrderablesConcept()).thenReturn(testUSConceptSet);
 
         converter = new OrderToPacsConverter();
         converter.setPatientService(patientService);
@@ -235,6 +259,34 @@ public class OrderToPacsConverterTest {
         assertThat(hl7Message, containsString("ORC|SC\r"));
         assertThat(hl7Message, endsWith("OBR|||" + uuid.toString() + "|456DEF^Head without contrast|||||||||||||||CT||||||||^^^^^STAT||||^Patient fell off horse~^And broke back|||||20120808000000\r"));
     }
+
+    @Test
+    public void shouldGenerateMessageFromAUSOrder() throws Exception {
+
+        RadiologyOrder order = new RadiologyOrder();
+        UUID uuid = UUID.randomUUID();
+        order.setAccessionNumber(uuid.toString());
+        order.setStartDate(new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2012"));
+        order.setPatient(createPatient());
+        order.setConcept(testUSConcept);
+        order.setUrgency(Order.Urgency.STAT);
+        order.setClinicalHistory("Patient fell off horse\r\nAnd broke back");
+        order.setExamLocation(examLocation);
+
+        order.setEncounter(createEncounter());
+        order.getEncounter().addProvider(clinicialEncounterRole, createProvider());
+
+        String hl7Message = converter.convertToPacsFormat(order, "SC");
+
+        assertThat(hl7Message, startsWith("MSH|^~\\&||openmrs_mirebalais|||"));
+        // TODO: test that a valid date is passed
+        assertThat(hl7Message, containsString("||ORM^O01||P|2.3\r"));
+        assertThat(hl7Message, containsString("PID|||6TS-4||Chebaskwony^Collet||19760825000000|F\r"));
+        assertThat(hl7Message, containsString("PV1|||ABCDEF^^^^^^^^Radiology|||||123^Joseph^Wayne"));
+        assertThat(hl7Message, containsString("ORC|SC\r"));
+        assertThat(hl7Message, endsWith("OBR|||" + uuid.toString() + "|789GHI^blah|||||||||||||||US||||||||^^^^^STAT||||^Patient fell off horse~^And broke back|||||20120808000000\r"));
+    }
+
 
     @Test
     public void shouldGenerateMessageForAnonymousPatient() throws Exception {

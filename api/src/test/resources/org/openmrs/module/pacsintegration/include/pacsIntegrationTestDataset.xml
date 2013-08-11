@@ -22,6 +22,8 @@
                      uuid="7abcc666-7227-4581-8c00-2b4bbb4f888a"/>     <!-- just assigning this to a concept set in the core data -->
     <global_property property="emr.ctScanOrderablesConcept" property_value="96408258-000b-424e-af1a-403919332938"
                      uuid="6abcc777-7227-4581-8c00-2b4bbb4f888a"/>     <!-- just assigning this to a concept set in the core data -->
+    <global_property property="emr.ultrasoundOrderablesConcept" property_value="96408258-000b-424e-af1a-403919332938"
+                     uuid="6abcc888-7227-4581-8c00-2b4bbb4f888a"/>     <!-- just assigning this to a concept set in the core data -->
     <global_property property="emr.primaryIdentifierType" property_value="1a339fe9-38bc-4ab3-b180-320988c0b968"
                      uuid="7abcc666-7227-4581-8c00-2b4ccb4f888a"/>      <!-- just assigning this to patient identifier 1 in the core data set -->
 
