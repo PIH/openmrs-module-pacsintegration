@@ -86,7 +86,8 @@ public class ORU_R01Handler extends HL7Handler implements Application {
             ORU_R01_OBSERVATION obs = obsSet.getOBSERVATION(i);
 
             if (obs.getOBX().getObservationValue().length > 0 &&
-                    obs.getOBX().getObservationValue()[0].getData() != null) {
+                    obs.getOBX().getObservationValue()[0].getData() != null &&
+                    obs.getOBX().getObservationValue()[0].getData().toString() != null) {
                 reportBody.append(obs.getOBX().getObservationValue()[0].getData().toString());
             }
 

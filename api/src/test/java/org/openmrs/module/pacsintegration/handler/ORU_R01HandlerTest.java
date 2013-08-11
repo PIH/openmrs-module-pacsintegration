@@ -130,7 +130,7 @@ public class ORU_R01HandlerTest {
                 "OBX|8|TX|36554-4&BODY^CHEST||lungs are well inflated.  No infiltrate, pneumonia, or pulmonary edema is ||||||F\r" +
                 "OBX|9|TX|36554-4&BODY^CHEST||present.  The cardiac and mediastinal structures appear normal.  The pleural ||||||F\r" +
                 "OBX|10|TX|36554-4&BODY^CHEST||spaces and bony structures are normal.||||||F\r" +
-                "OBX|11|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|11|TX|36554-4&BODY^CHEST||        ||||||F\r" +
                 "OBX|12|TX|36554-4&BODY^CHEST||Summary:  Normal chest radiographs.||||||F\r";
 
         ACK ack = (ACK) handler.processMessage(parseMessage(message));
@@ -160,7 +160,7 @@ public class ORU_R01HandlerTest {
                 "OBX|8|TX|36554-4&BODY^CHEST||lungs are well inflated.  No infiltrate, pneumonia, or pulmonary edema is ||||||F\r" +
                 "OBX|9|TX|36554-4&BODY^CHEST||present.  The cardiac and mediastinal structures appear normal.  The pleural ||||||F\r" +
                 "OBX|10|TX|36554-4&BODY^CHEST||spaces and bony structures are normal.||||||F\r" +
-                "OBX|11|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|11|TX|36554-4&BODY^CHEST||        ||||||F\r" +
                 "OBX|12|TX|36554-4&BODY^CHEST||Summary:  Normal chest radiographs.||||||F\r";
 
         ACK ack = (ACK) handler.processMessage(parseMessage(message));
@@ -197,7 +197,7 @@ public class ORU_R01HandlerTest {
                 "OBX|8|TX|36554-4&BODY^CHEST||lungs are well inflated.  No infiltrate, pneumonia, or pulmonary edema is ||||||F\r" +
                 "OBX|9|TX|36554-4&BODY^CHEST||present.  The cardiac and mediastinal structures appear normal.  The pleural ||||||F\r" +
                 "OBX|10|TX|36554-4&BODY^CHEST||spaces and bony structures are normal.||||||F\r" +
-                "OBX|11|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|11|TX|36554-4&BODY^CHEST||        ||||||F\r" +
                 "OBX|12|TX|36554-4&BODY^CHEST||Summary:  Normal chest radiographs.||||||F\r";
 
         ACK ack = (ACK) handler.processMessage(parseMessage(message));
@@ -232,7 +232,7 @@ public class ORU_R01HandlerTest {
                 "OBX|8|TX|36554-4&BODY^CHEST||lungs are well inflated.  No infiltrate, pneumonia, or pulmonary edema is ||||||F\r" +
                 "OBX|9|TX|36554-4&BODY^CHEST||present.  The cardiac and mediastinal structures appear normal.  The pleural ||||||F\r" +
                 "OBX|10|TX|36554-4&BODY^CHEST||spaces and bony structures are normal.||||||F\r" +
-                "OBX|11|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|11|TX|36554-4&BODY^CHEST||        ||||||F\r" +
                 "OBX|12|TX|36554-4&BODY^CHEST||Summary:  Normal chest radiographs.||||||F\r";
 
         ACK ack = (ACK) handler.processMessage(parseMessage(message));
@@ -271,7 +271,7 @@ public class ORU_R01HandlerTest {
                 "OBX|8|TX|36554-4&BODY^CHEST||lungs are well inflated.  No infiltrate, pneumonia, or pulmonary edema is ||||||F\r" +
                 "OBX|9|TX|36554-4&BODY^CHEST||present.  The cardiac and mediastinal structures appear normal.  The pleural ||||||F\r" +
                 "OBX|10|TX|36554-4&BODY^CHEST||spaces and bony structures are normal.||||||F\r" +
-                "OBX|11|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|11|TX|36554-4&BODY^CHEST||        ||||||F\r" +
                 "OBX|12|TX|36554-4&BODY^CHEST||Summary:  Normal chest radiographs.||||||F\r";
 
         ACK ack = (ACK) handler.processMessage(parseMessage(message));
@@ -331,7 +331,7 @@ public class ORU_R01HandlerTest {
                 "OBX|8|TX|36554-4&BODY^CHEST||lungs are well inflated.  No infiltrate, pneumonia, or pulmonary edema is ||||||F\r" +
                 "OBX|9|TX|36554-4&BODY^CHEST||present.  The cardiac and mediastinal structures appear normal.  The pleural ||||||F\r" +
                 "OBX|10|TX|36554-4&BODY^CHEST||spaces and bony structures are normal.||||||F\r" +
-                "OBX|11|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|11|TX|36554-4&BODY^CHEST||        ||||||F\r" +
                 "OBX|12|TX|36554-4&BODY^CHEST||Summary:  Normal chest radiographs.||||||F\r";
 
         ACK ack = (ACK) handler.processMessage(parseMessage(message));
@@ -398,7 +398,7 @@ public class ORU_R01HandlerTest {
                 "OBX|8|TX|36554-4&BODY^CHEST||lungs are well inflated.  No infiltrate, pneumonia, or pulmonary edema is ||||||F\r" +
                 "OBX|9|TX|36554-4&BODY^CHEST||present.  The cardiac and mediastinal structures appear normal.  The pleural ||||||F\r" +
                 "OBX|10|TX|36554-4&BODY^CHEST||spaces and bony structures are normal.||||||F\r" +
-                "OBX|11|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|11|TX|36554-4&BODY^CHEST||        ||||||F\r" +
                 "OBX|12|TX|36554-4&BODY^CHEST||Summary:  Normal chest radiographs.||||||F\r";
 
         ACK ack = (ACK) handler.processMessage(parseMessage(message));
@@ -435,7 +435,7 @@ public class ORU_R01HandlerTest {
                 "OBX|8|TX|36554-4&BODY^CHEST||lungs are well inflated.  No infiltrate, pneumonia, or pulmonary edema is ||||||F\r" +
                 "OBX|9|TX|36554-4&BODY^CHEST||present.  The cardiac and mediastinal structures appear normal.  The pleural ||||||F\r" +
                 "OBX|10|TX|36554-4&BODY^CHEST||spaces and bony structures are normal.||||||F\r" +
-                "OBX|11|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|11|TX|36554-4&BODY^CHEST||        ||||||F\r" +
                 "OBX|12|TX|36554-4&BODY^CHEST||Summary:  Normal chest radiographs.||||||F\r";
 
         ACK ack = (ACK) handler.processMessage(parseMessage(message));
@@ -464,7 +464,7 @@ public class ORU_R01HandlerTest {
                 "present.  The cardiac and mediastinal structures appear normal.  The pleural \r\n" +
                 "spaces and bony structures are normal.\r\n" +
                 "\r\n" +
-                "Summary:  Normal chest radiographs.\r\n";
+                "Summary:  Normal chest radiographs.\r\n" ;
     }
 
     public class IsExpectedRadiologyReport extends ArgumentMatcher<RadiologyReport> {
