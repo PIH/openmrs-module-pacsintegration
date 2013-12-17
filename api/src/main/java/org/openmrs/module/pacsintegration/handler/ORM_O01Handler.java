@@ -47,10 +47,14 @@ public class ORM_O01Handler extends HL7Handler implements Application {
 
             // we are triggering the create of a RadiologyStudy on reception of a "Reviewed" event, which
             // means that the technologist has marked the study as reviewed, or a "Reported" event, which
-            // means that the study has been reported on; we only create an study once, so if both REVIEWED
-            // and REPORTED events are received (likely) it won't create a dup or throw and error
+            // means that the study has been reported on, or a "Needs Overread" event which means that an
+            // overread from BOston is requested;
+            // we only create an study once, so if multiple REVIEWED/REPORTED/NEEDS OVERREAD
+            // events are received (likely) it won't create a dup or throw and error
+
             if (StringUtils.isNotBlank(eventType) &&
-                    (eventType.equalsIgnoreCase("REVIEWED") || eventType.equalsIgnoreCase("REPORTED"))) {
+                    (eventType.equalsIgnoreCase("REVIEWED") || eventType.equalsIgnoreCase("REPORTED")
+                    || eventType.equalsIgnoreCase("NEEDSOVERREAD"))) {
 
                 String accessionNumber = ormO01.getORDER().getORDER_DETAIL().getOBR().getFillerOrderNumber().getEntityIdentifier().getValue();
 
