@@ -6,6 +6,8 @@ import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.v23.message.ACK;
 import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.parser.PipeParser;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,19 +25,22 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.radiologyapp.RadiologyOrder;
-import org.openmrs.module.radiologyapp.RadiologyService;
-import org.openmrs.module.radiologyapp.RadiologyStudy;
 import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
+import org.openmrs.module.radiologyapp.RadiologyOrder;
+import org.openmrs.module.radiologyapp.RadiologyService;
+import org.openmrs.module.radiologyapp.RadiologyStudy;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -48,7 +53,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(Context.class)
-public class ORM_O01HandlerTest {
+public class ORM_O01HandlerTest  {
 
     private ORM_O01Handler handler;
 
@@ -517,6 +522,82 @@ public class ORM_O01HandlerTest {
         verify(radiologyService).saveRadiologyStudy(argThat(new IsExpectedRadiologyStudy(expectedStudy)));
     }
 
+    @Test
+    public void  shouldNotFailIfDatetimeInFutureByLessThanFifteenMinutes() throws HL7Exception, ApplicationException {
+
+        Patient patient = new Patient(1);
+        RadiologyOrder radiologyOrder = new RadiologyOrder();
+        radiologyOrder.setPatient(patient);
+        Concept procedure = new Concept();
+        Provider radiologyTechnician = new Provider();
+
+        when(radiologyService.getRadiologyStudyByAccessionNumber("0000001297")).thenReturn(null);
+        when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true))
+                .thenReturn(Collections.singletonList(patient));
+        when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(radiologyOrder);
+        when(conceptService.getConceptByMapping("36554-4", "LOINC")).thenReturn(procedure);
+        when(providerService.getProviderByIdentifier("1435")).thenReturn(radiologyTechnician);
+
+        // create a report time that is 14 minutes in the future
+        DateTime date = new DateTime();
+        DateTime futureTime = date.plusMinutes(14);
+        String futureTimeString = DateTimeFormat.forPattern("yyyyMMddHHmmss").print(futureTime);
+
+        String message = "MSH|^~\\&|HMI|Mirebalais Hospital|RAD|REPORTS|20130228174643||ORM^O01|RTS01CE16057B105AC0|P|2.3|\r" +
+                "PID|1||GG2F98||Patient^Test^||19770222|M||||||||||\r" +
+                "ORC|\r" +
+                "OBR|1||0000001297|36554-4^CHEST|||" + futureTimeString + "||||||||||||MBL^CR||||||P|||||||&Goodrich&Mark&&&&^||||20130228170350\r" +
+                "OBX|1|RP|DummyNotEventType||||||||F\r" +
+                "OBX|2|TX|EventType^EventType|1|REPORTED\r" +
+                "OBX|3|CN|Technologist^Technologist|1|1435^Duck^Donald\r" +
+                "OBX|4|TX|ExamRoom^ExamRoom|1|100AcreWoods\r" +
+                "OBX|5|TS|StartDateTime^StartDateTime|1|" + futureTimeString + "\r" +
+                "OBX|6|TS|StopDateTime^StopDateTime|1|20111009215817\r" +
+                "OBX|7|TX|ImagesAvailable^ImagesAvailable|1|1\r" +
+                "ZDS|2.16.840.1.113883.3.234.1.3.101.1.2.1013.2011.15607503.2^HMI^Application^DICOM\r";
+
+        ACK ack = (ACK) handler.processMessage(parseMessage(message));
+
+        assertThat(ack.getMSA().getAcknowledgementCode().getValue(), is("AA"));
+        verify(radiologyService).saveRadiologyStudy(argThat(new HasDatePerformedBetween(date.toDate(), new Date())));
+    }
+
+
+    @Test
+    public void shouldReturnErrorACKIfDateMoreThanFifteenMinutesInFuture() throws HL7Exception, ApplicationException {
+
+        Patient patient = new Patient(1);
+        RadiologyOrder radiologyOrder = new RadiologyOrder();
+        radiologyOrder.setPatient(patient);
+        Concept procedure = new Concept();
+        Provider radiologyTechnician = new Provider();
+
+        when(radiologyService.getRadiologyStudyByAccessionNumber("0000001297")).thenReturn(null);
+        when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true))
+                .thenReturn(Collections.singletonList(patient));
+        when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(radiologyOrder);
+        when(conceptService.getConceptByMapping("36554-4", "LOINC")).thenReturn(procedure);
+        when(providerService.getProviderByIdentifier("1435")).thenReturn(radiologyTechnician);
+
+        String message = "MSH|^~\\&|HMI|Mirebalais Hospital|RAD|REPORTS|20130228174643||ORM^O01|RTS01CE16057B105AC0|P|2.3|\r" +
+                "PID|1||GG2F98||Patient^Test^||19770222|M||||||||||\r" +
+                "ORC|\r" +
+                "OBR|1||0000001297|36554-4^CHEST|||20130228170350||||||||||||MBL^CR||||||P|||||||&Goodrich&Mark&&&&^||||20130228170350\r" +
+                "OBX|1|RP|DummyNotEventType||||||||F\r" +
+                "OBX|2|TX|EventType^EventType|1|REPORTED\r" +
+                "OBX|3|CN|Technologist^Technologist|1|1435^Duck^Donald\r" +
+                "OBX|4|TX|ExamRoom^ExamRoom|1|100AcreWoods\r" +
+                "OBX|5|TS|StartDateTime^StartDateTime|1|30001009215317\r" +
+                "OBX|6|TS|StopDateTime^StopDateTime|1|30001009215817\r" +
+                "OBX|7|TX|ImagesAvailable^ImagesAvailable|1|1\r" +
+                "ZDS|2.16.840.1.113883.3.234.1.3.101.1.2.1013.2011.15607503.2^HMI^Application^DICOM\r";
+
+        ACK ack = (ACK) handler.processMessage(parseMessage(message));
+
+        assertThat(ack.getMSA().getAcknowledgementCode().getValue(), is("AR"));
+        assertThat(ack.getMSA().getTextMessage().getValue(), is("Date cannot be more than 15 minutes in the future."));
+    }
+
     private Message parseMessage(String message) throws HL7Exception {
         Parser parser = new PipeParser();
         return parser.parse(message);
@@ -547,6 +628,30 @@ public class ORM_O01HandlerTest {
         }
 
     }
+
+    public class HasDatePerformedBetween extends ArgumentMatcher<RadiologyStudy> {
+
+        private Date lowerRange;
+
+        private Date upperRange;
+
+        public HasDatePerformedBetween(Date lowerRange, Date upperRange) {
+            this.lowerRange = lowerRange;
+            this.upperRange = upperRange;
+        }
+
+        @Override
+        public boolean matches(Object o) {
+            RadiologyStudy study = (RadiologyStudy) o;
+
+            assertThat(study.getDatePerformed(), greaterThan(lowerRange));
+            assertThat(study.getDatePerformed(), lessThan(upperRange));
+
+            return true;
+        }
+
+    }
+
 
 
 }

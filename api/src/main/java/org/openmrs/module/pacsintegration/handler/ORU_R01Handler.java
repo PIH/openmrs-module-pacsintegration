@@ -9,14 +9,11 @@ import ca.uhn.hl7v2.model.v23.message.ORU_R01;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.joda.time.DateTime;
 import org.openmrs.Concept;
 import org.openmrs.Provider;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.pacsintegration.util.HL7Utils;
 import org.openmrs.module.radiologyapp.RadiologyReport;
-
-import java.util.Date;
 
 import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_PASSWORD;
 import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_USERNAME;
@@ -50,7 +47,7 @@ public class ORU_R01Handler extends HL7Handler implements Application {
 
             report.setAccessionNumber(oruR01.getRESPONSE().getORDER_OBSERVATION().getOBR().getFillerOrderNumber().getEntityIdentifier().getValue());
             report.setPatient(getPatient(patientIdentifier));
-            report.setReportDate(syncReportTimeWithCurrentServerTime(HL7Utils.getHl7DateFormat().parse(oruR01.getRESPONSE().getORDER_OBSERVATION().getOBR()
+            report.setReportDate(syncTimeWithCurrentServerTime(HL7Utils.getHl7DateFormat().parse(oruR01.getRESPONSE().getORDER_OBSERVATION().getOBR()
                     .getObservationDateTime().getTimeOfAnEvent().getValue())));
             report.setAssociatedRadiologyOrder(getRadiologyOrder(report.getAccessionNumber(), report.getPatient()));
             report.setProcedure(getProcedure(oruR01.getRESPONSE().getORDER_OBSERVATION().getOBR().getUniversalServiceIdentifier().getIdentifier().getValue()));
@@ -122,26 +119,4 @@ public class ORU_R01Handler extends HL7Handler implements Application {
         return null;
     }
 
-    // this method is used to handle issues caused by slight time differences between OpenMRS and the source server
-    // if the passed time is in the future, but less than 5 minutes in the future, return the current time (because
-    // OpenMRS can't accept encounter dates in the future); if it is more than 5 minutes in the future, throw
-    // an exception
-    private Date syncReportTimeWithCurrentServerTime(Date reportDate) {
-
-        DateTime now = new DateTime();
-        DateTime reportDateTime = new DateTime(reportDate);
-
-        // just return the passed-in date if it is in the past
-        if (reportDateTime.isBefore(now)) {
-            return reportDateTime.toDate();
-        }
-        else {
-            if (reportDateTime.minusMinutes(5).isBefore(now)) {
-                return now.toDate();
-            }
-            else {
-                throw new IllegalArgumentException("Date cannot be more than 5 minutes in the future.");
-            }
-        }
-    }
 }

@@ -362,7 +362,7 @@ public class ORU_R01HandlerTest {
 
     @Test
     // to handle time synchronization issues that may exist between PACS and OpenMRS
-    public void shouldNotFailIfDatetimeInFutureByLessThanFiveMinutes() throws HL7Exception, ApplicationException {
+    public void shouldNotFailIfDatetimeInFutureByLessThanFifteenMinutes() throws HL7Exception, ApplicationException {
 
         Patient patient = new Patient(1);
         RadiologyOrder radiologyOrder = new RadiologyOrder();
@@ -379,9 +379,9 @@ public class ORU_R01HandlerTest {
         when(providerService.getProviderByIdentifier("M123")).thenReturn(null);
         when(locationService.getLocation("Mirebalais Hospital")).thenReturn(null);
 
-        // create a report time that is 4 minutes in the future
+        // create a report time that is 14 minutes in the future
         DateTime date = new DateTime();
-        DateTime futureTime = date.plusMinutes(4);
+        DateTime futureTime = date.plusMinutes(14);
         String futureTimeString = DateTimeFormat.forPattern("yyyyMMddHHmmss").print(futureTime);
 
         String message = "MSH|^~\\&|HMI||RAD|REPORTS|20130228174549||ORU^R01|RTS01CE16055AAF5290|P|2.3|\r" +
@@ -410,7 +410,7 @@ public class ORU_R01HandlerTest {
 
 
     @Test
-    public void shouldReturnErrorACKIfReportDateMoreThanFiveMinutesInFuture() throws HL7Exception, ApplicationException {
+    public void shouldReturnErrorACKIfReportDateMoreThanFifteenMinutesInFuture() throws HL7Exception, ApplicationException {
 
         Patient patient = new Patient(1);
         RadiologyOrder radiologyOrder = new RadiologyOrder();
@@ -441,7 +441,7 @@ public class ORU_R01HandlerTest {
         ACK ack = (ACK) handler.processMessage(parseMessage(message));
 
         assertThat(ack.getMSA().getAcknowledgementCode().getValue(), is("AR"));
-        assertThat(ack.getMSA().getTextMessage().getValue(), is("Date cannot be more than 5 minutes in the future."));
+        assertThat(ack.getMSA().getTextMessage().getValue(), is("Date cannot be more than 15 minutes in the future."));
     }
 
 

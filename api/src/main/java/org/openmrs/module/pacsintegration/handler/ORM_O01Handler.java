@@ -70,7 +70,7 @@ public class ORM_O01Handler extends HL7Handler implements Application {
                     radiologyStudy.setAssociatedRadiologyOrder(getRadiologyOrder(radiologyStudy.getAccessionNumber(), radiologyStudy.getPatient()));
                     radiologyStudy.setProcedure(getProcedure(ormO01.getORDER().getORDER_DETAIL().getOBR().getUniversalServiceIdentifier().getIdentifier().getValue()));
                     radiologyStudy.setTechnician(getTechnologist(ormO01.getORDER().getORDER_DETAIL()));
-                    radiologyStudy.setDatePerformed(getDatePerformed(ormO01.getORDER().getORDER_DETAIL()));
+                    radiologyStudy.setDatePerformed(syncTimeWithCurrentServerTime(getDatePerformed(ormO01.getORDER().getORDER_DETAIL())));
                     radiologyStudy.setImagesAvailable(areImagesAvailable(ormO01.getORDER().getORDER_DETAIL()));
                     radiologyStudy.setStudyLocation(getLocationByName(ormO01.getMSH().getSendingFacility().getNamespaceID().getValue()));
 

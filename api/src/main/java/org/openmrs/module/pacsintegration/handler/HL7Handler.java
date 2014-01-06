@@ -1,6 +1,7 @@
 package org.openmrs.module.pacsintegration.handler;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Patient;
@@ -17,6 +18,7 @@ import org.openmrs.module.pacsintegration.PacsIntegrationException;
 import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 abstract public class HL7Handler {
@@ -93,6 +95,29 @@ abstract public class HL7Handler {
 
     protected Location getLocationByName(String name) {
         return locationService.getLocation(name);
+    }
+
+    // this method is used to handle issues caused by slight time differences between OpenMRS and the source server
+    // if the passed time is in the future, but less than 15 minutes in the future, return the current time (because
+    // OpenMRS can't accept encounter dates in the future); if it is more than 15 minutes in the future, throw
+    // an exception
+    protected Date syncTimeWithCurrentServerTime(Date date) {
+
+        DateTime now = new DateTime();
+        DateTime dateTime = new DateTime(date);
+
+        // just return the passed-in date if it is in the past
+        if (dateTime.isBefore(now)) {
+            return dateTime.toDate();
+        }
+        else {
+            if (dateTime.minusMinutes(15).isBefore(now)) {
+                return now.toDate();
+            }
+            else {
+                throw new IllegalArgumentException("Date cannot be more than 15 minutes in the future.");
+            }
+        }
     }
 
 
