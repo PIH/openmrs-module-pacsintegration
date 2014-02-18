@@ -37,7 +37,7 @@
         <springVersion>3.0.5.RELEASE</springVersion>
         <openMRSVersion>1.9.4</openMRSVersion>
         <emrVersion>2.0-SNAPSHOT</emrVersion>
-        <emrapiVersion>1.1-SNAPSHOT</emrapiVersion>
+        <emrapiVersion>1.2-SNAPSHOT</emrapiVersion>
         <radiologyappVersion>1.0-SNAPSHOT</radiologyappVersion>
         <paperrecordVersion>1.0-SNAPSHOT</paperrecordVersion>
         <metadatasharingVersion>1.1.8</metadatasharingVersion>
