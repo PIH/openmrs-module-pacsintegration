@@ -49,6 +49,7 @@
         <reportingVersion>0.7.6</reportingVersion>
         <serializationxstreamVersion>0.2.7</serializationxstreamVersion>
         <calculationVersion>1.0</calculationVersion>
+        <appframeworkVersion>2.1-SNAPSHOT</appframeworkVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -150,8 +151,8 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- the following are a transitive dependency, required by the emr module. We don't directly require it ourselves,
-             so it's not mentioned in config.xml  We need to add them here so that we can properly fire up the handler context during testing -->
+        <!-- the following are transitive dependency, required by the emr module and others. We don't directly require them ourselves,
+             so they are not mentioned in config.xml  We need to add them here so that we can properly fire up the handler context during testing -->
         <dependency>
             <groupId>org.openmrs.module</groupId>
             <artifactId>uiframework-api</artifactId>
@@ -198,6 +199,13 @@
             <groupId>org.openmrs.module</groupId>
             <artifactId>paperrecord-api</artifactId>
             <version>${paperrecordVersion}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>appframework-api</artifactId>
+            <version>${appframeworkVersion}</version>
             <scope>test</scope>
         </dependency>
 
