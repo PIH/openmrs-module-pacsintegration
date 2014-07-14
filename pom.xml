@@ -37,9 +37,8 @@
         <springVersion>3.0.5.RELEASE</springVersion>
         <openMRSVersion>1.9.4</openMRSVersion>
         <emrVersion>2.0-SNAPSHOT</emrVersion>
-        <emrapiVersion>1.2-SNAPSHOT</emrapiVersion>
+        <emrapiVersion>1.3-SNAPSHOT</emrapiVersion>
         <radiologyappVersion>1.0-SNAPSHOT</radiologyappVersion>
-        <paperrecordVersion>1.0-SNAPSHOT</paperrecordVersion>
         <metadatasharingVersion>1.1.8</metadatasharingVersion>
         <eventVersion>2.1</eventVersion>
         <uiframeworkVersion>2.5.1</uiframeworkVersion>
@@ -192,13 +191,6 @@
             <groupId>org.openmrs.module</groupId>
             <artifactId>metadatasharing-api</artifactId>
             <version>${metadatasharingVersion}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.openmrs.module</groupId>
-            <artifactId>paperrecord-api</artifactId>
-            <version>${paperrecordVersion}</version>
             <scope>test</scope>
         </dependency>
 
