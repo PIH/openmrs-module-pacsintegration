@@ -54,7 +54,8 @@
     <global_property property="emr.orderingProviderEncounterRole" property_value="a0b03050-c99b-11e0-9572-080020000a66" uuid="696cb344-9e66-6666-8f03-2a0c1e9ca2a8"/>
     <global_property property="emr.radiologyTestOrderType" property_value="f149b5e1-4314-4d0d-a95f-1c4f8031161d" uuid="677cb344-9e66-6666-8f03-2a0c1e9ca2a8"/>
 
-    <global_property property="emr.unknownLocation" property_value="dc5c1fcc-0459-4201-bf70-0b90535ba362" uuid="6977b3c3-9e66-42c6-8f03-2a0c1e9ca2a8"/>
+   <!-- maps to unknown location in the core test dataset -->
+    <global_property property="emr.unknownLocation" property_value="8d6c993e-c2cc-11de-8d13-0010c6dffd0f" uuid="6977b3c3-9e66-42c6-8f03-2a0c1e9ca2a8"/>
     <global_property property="emr.unknownProvider" property_value="c2299800-cca9-11e0-9572-0800200c9a66" uuid="6988b3c3-9e66-42c6-8f03-2a0c1e9ca2a8"/>
 
     <!-- define the metadata for the Radiology Study -->
