@@ -85,7 +85,7 @@ public class HL7ListenerComponentTest extends BaseModuleContextSensitiveTest {
                     "OBR|1||0000001297|127689^SOME_X-RAY|||20130228170556||||||||||||MBL^CR||||||F|||||||M123&Goodrich&Mark&&&&||||20130228170556\r" +
                     "OBX|1|TX|127689^SOME_X-RAY||Clinical Indication: ||||||F\r";
 
-            Thread.sleep(1000);    // give the simple server time to start
+            Thread.sleep(2000);    // give the simple server time to start
 
             Socket socket = new Socket("127.0.0.1", 6665);
 
@@ -96,7 +96,7 @@ public class HL7ListenerComponentTest extends BaseModuleContextSensitiveTest {
             writer.print(trailer +"\r");
             writer.flush();
 
-            Thread.sleep(1000);
+            Thread.sleep(2000);
 
             // confirm that report encounter has been created and has obs (we more thoroughly test the handler in the ORU_R01 handler and Radiology Service (in emr module) tests)
             encounters = encounterService.getEncounters(patient, null, null, null, null, Collections.singletonList(radiologyProperties.getRadiologyReportEncounterType()),
@@ -119,7 +119,6 @@ public class HL7ListenerComponentTest extends BaseModuleContextSensitiveTest {
 
         ModuleActivator activator = new PacsIntegrationActivator();
         activator.started();
-
 
         List<Patient> patients = patientService.getPatients(null, "101-6", Collections.singletonList(emrApiProperties.getPrimaryIdentifierType()), true);
         assertThat(patients.size(), is(1));  // sanity check
@@ -144,7 +143,7 @@ public class HL7ListenerComponentTest extends BaseModuleContextSensitiveTest {
                     "OBX|7|TX|ImagesAvailable^ImagesAvailable|1|1\r" +
                     "ZDS|2.16.840.1.113883.3.234.1.3.101.1.2.1013.2011.15607503.2^HMI^Application^DICOM\r";
 
-            Thread.sleep(1000);    // give the simple server time to start
+            Thread.sleep(2000);    // give the simple server time to start
 
             Socket socket = new Socket("127.0.0.1", 6665);
 
@@ -155,7 +154,7 @@ public class HL7ListenerComponentTest extends BaseModuleContextSensitiveTest {
             writer.print(trailer +"\r");
             writer.flush();
 
-            Thread.sleep(1000);
+            Thread.sleep(2000);
 
             // confirm that study encounter has been created and has obs (we more thoroughly test the handler in the ORU_R01 handler and Radiology Service (in emr module) tests)
             encounters = encounterService.getEncounters(patient, null, null, null, null, Collections.singletonList(radiologyProperties.getRadiologyStudyEncounterType()),
@@ -202,7 +201,7 @@ public class HL7ListenerComponentTest extends BaseModuleContextSensitiveTest {
                     "OBX|7|TX|ImagesAvailable^ImagesAvailable|1|1\r" +
                     "ZDS|2.16.840.1.113883.3.234.1.3.101.1.2.1013.2011.15607503.2^HMI^Application^DICOM\r";
 
-            Thread.sleep(1000);    // give the simple server time to start
+            Thread.sleep(2000);    // give the simple server time to start
 
             Socket socket = new Socket("127.0.0.1", 6665);
 
@@ -216,7 +215,7 @@ public class HL7ListenerComponentTest extends BaseModuleContextSensitiveTest {
                 writer.flush();
             }
 
-            Thread.sleep(1000);
+            Thread.sleep(2000);
 
             // confirm that only one encounter has been created
             encounters = encounterService.getEncounters(patient, null, null, null, null, Collections.singletonList(radiologyProperties.getRadiologyStudyEncounterType()),
