@@ -41,7 +41,7 @@
         <metadatasharingVersion>1.1.8</metadatasharingVersion>
         <eventVersion>2.1</eventVersion>
         <uiframeworkVersion>3.3-SNAPSHOT</uiframeworkVersion>
-        <idgenVersion>2.8</idgenVersion>
+        <idgenVersion>2.9.1</idgenVersion>
         <htmlformentryVersion>2.4-SNAPSHOT</htmlformentryVersion>
         <providermanagementVersion>2.1</providermanagementVersion>
         <reportingVersion>0.9.3-SNAPSHOT</reportingVersion>
