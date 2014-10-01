@@ -21,15 +21,15 @@ import org.openmrs.api.OrderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.event.Event;
 import org.openmrs.event.SubscribableEventListener;
-import org.openmrs.module.emr.order.EmrOrderService;
-import org.openmrs.module.radiologyapp.RadiologyOrder;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.converter.OrderToPacsConverter;
+import org.openmrs.module.radiologyapp.RadiologyOrder;
+import org.openmrs.module.radiologyapp.RadiologyService;
 
-import javax.jms.MapMessage;
-import javax.jms.Message;
 import java.util.Arrays;
 import java.util.List;
+import javax.jms.MapMessage;
+import javax.jms.Message;
 
 import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_PASSWORD;
 import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_USERNAME;
@@ -42,7 +42,7 @@ public class OrderEventListener implements SubscribableEventListener {
 
     private AdministrationService adminService;
 
-    private EmrOrderService emrOrderService;
+    private RadiologyService radiologyService;
 
     private OrderToPacsConverter converter;
 
@@ -62,7 +62,7 @@ public class OrderEventListener implements SubscribableEventListener {
 				if (order == null) {
 					throw new RuntimeException("Could not find the order this event tells us about! uuid=" + uuid);
 				}
-                emrOrderService.ensureAccessionNumberAssignedTo(order);
+                radiologyService.ensureAccessionNumberAssignedToOrder(order);
                 orderService.saveOrder(order);
 
 			    pacsIntegrationService.sendMessageToPacs(converter.convertToPacsFormat((RadiologyOrder) order, "NW"));
@@ -107,8 +107,7 @@ public class OrderEventListener implements SubscribableEventListener {
         this.adminService = adminService;
     }
 
-    public void setEmrOrderService(EmrOrderService emrOrderService) {
-        this.emrOrderService = emrOrderService;
+    public void setRadiologyService(RadiologyService radiologyService) {
+        this.radiologyService = radiologyService;
     }
-
 }

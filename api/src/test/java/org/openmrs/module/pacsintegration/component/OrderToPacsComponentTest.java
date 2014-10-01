@@ -14,18 +14,6 @@
 
 package org.openmrs.module.pacsintegration.component;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.timeout;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
@@ -39,13 +27,25 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.OrderService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.emr.order.EmrOrderService;
-import org.openmrs.module.radiologyapp.RadiologyOrder;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.listener.OrderEventListener;
+import org.openmrs.module.radiologyapp.RadiologyOrder;
+import org.openmrs.module.radiologyapp.RadiologyService;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.NotTransactional;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
 
 public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 
@@ -64,9 +64,9 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
     @Autowired
     private OrderEventListener orderEventListener;
 
-    private PacsIntegrationService pacsIntegrationService;
+    private RadiologyService radiologyService;
 
-    private EmrOrderService emrOrderService;
+    private PacsIntegrationService pacsIntegrationService;
 
 	protected final Log log = LogFactory.getLog(getClass());
     protected static final String XML_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset.xml";
@@ -82,8 +82,8 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 	public void setupDatabase() throws Exception {
 
         pacsIntegrationService = mock(PacsIntegrationService.class);
-        emrOrderService = mock(EmrOrderService.class);
-        orderEventListener.setEmrOrderService(emrOrderService);
+        radiologyService= mock(RadiologyService.class);
+        orderEventListener.setRadiologyService(radiologyService);
         orderEventListener.setPacsIntegrationService(pacsIntegrationService);
 
 		executeDataSet(XML_DATASET);
@@ -100,7 +100,7 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 		order.setStartDate(new Date());
         orderService.saveOrder(order);
 
-        Mockito.verify(emrOrderService, timeout(5000)).ensureAccessionNumberAssignedTo(order);
+        Mockito.verify(radiologyService, timeout(5000)).ensureAccessionNumberAssignedToOrder(order);
 		Mockito.verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs(any(String.class));
 
 	}
@@ -121,7 +121,7 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
         encounter.addOrder(order);
         encounterService.saveEncounter(encounter);
 
-        Mockito.verify(emrOrderService, timeout(5000)).ensureAccessionNumberAssignedTo(order);
+        Mockito.verify(radiologyService, timeout(5000)).ensureAccessionNumberAssignedToOrder(order);
         Mockito.verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs(any(String.class));
 
     }
@@ -138,7 +138,7 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 
         orderService.saveOrder(order);
 
-        Mockito.verify(emrOrderService, timeout(10000).never()).ensureAccessionNumberAssignedTo(order);
+        Mockito.verify(radiologyService, timeout(10000).never()).ensureAccessionNumberAssignedToOrder(order);
         Mockito.verify(pacsIntegrationService, timeout(10000).never()).sendMessageToPacs(any(String.class));
     }
 
