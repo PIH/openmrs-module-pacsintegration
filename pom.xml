@@ -36,13 +36,13 @@
     <properties>
         <openMRSVersion>1.9.8</openMRSVersion>
         <emrVersion>2.0-SNAPSHOT</emrVersion>
-        <emrapiVersion>1.4-SNAPSHOT</emrapiVersion>
+        <emrapiVersion>1.5-SNAPSHOT</emrapiVersion>
         <radiologyappVersion>1.0-SNAPSHOT</radiologyappVersion>
         <metadatasharingVersion>1.1.8</metadatasharingVersion>
         <eventVersion>2.1</eventVersion>
         <uiframeworkVersion>3.3-SNAPSHOT</uiframeworkVersion>
         <idgenVersion>2.9.1</idgenVersion>
-        <htmlformentryVersion>2.4-SNAPSHOT</htmlformentryVersion>
+        <htmlformentryVersion>2.4</htmlformentryVersion>
         <providermanagementVersion>2.1</providermanagementVersion>
         <reportingVersion>0.9.3-SNAPSHOT</reportingVersion>
         <serializationxstreamVersion>0.2.7</serializationxstreamVersion>
