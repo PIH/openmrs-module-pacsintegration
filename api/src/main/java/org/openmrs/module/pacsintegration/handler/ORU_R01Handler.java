@@ -7,8 +7,6 @@ import ca.uhn.hl7v2.model.v23.group.ORU_R01_OBSERVATION;
 import ca.uhn.hl7v2.model.v23.group.ORU_R01_ORDER_OBSERVATION;
 import ca.uhn.hl7v2.model.v23.message.ORU_R01;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.Provider;
 import org.openmrs.api.context.Context;
@@ -19,8 +17,6 @@ import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LIS
 import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_USERNAME;
 
 public class ORU_R01Handler extends HL7Handler implements Application {
-
-    protected final Log log = LogFactory.getLog(this.getClass());
 
     public ORU_R01Handler() {
     }

@@ -11,13 +11,11 @@ import ca.uhn.hl7v2.model.v23.group.ORM_O01_OBSERVATION;
 import ca.uhn.hl7v2.model.v23.group.ORM_O01_ORDER_DETAIL;
 import ca.uhn.hl7v2.model.v23.message.ORM_O01;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openmrs.Provider;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.radiologyapp.RadiologyStudy;
 import org.openmrs.module.pacsintegration.PacsIntegrationException;
 import org.openmrs.module.pacsintegration.util.HL7Utils;
+import org.openmrs.module.radiologyapp.RadiologyStudy;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -26,8 +24,6 @@ import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LIS
 import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_USERNAME;
 
 public class ORM_O01Handler extends HL7Handler implements Application {
-
-    protected final Log log = LogFactory.getLog(this.getClass());;
 
     @Override
     public Message processMessage(Message message) throws HL7Exception {

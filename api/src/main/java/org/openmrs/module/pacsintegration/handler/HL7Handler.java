@@ -1,6 +1,8 @@
 package org.openmrs.module.pacsintegration.handler;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 import org.openmrs.Concept;
 import org.openmrs.Location;
@@ -22,6 +24,8 @@ import java.util.Date;
 import java.util.List;
 
 abstract public class HL7Handler {
+
+    protected final Log log = LogFactory.getLog(this.getClass());
 
     protected PatientService patientService;
 
@@ -83,7 +87,7 @@ abstract public class HL7Handler {
         Concept procedure = conceptService.getConceptByMapping(procedureCode, pacsIntegrationProperties.getProcedureCodesConceptSource().getName());
 
         if (procedure == null) {
-            throw new PacsIntegrationException("Cannot import message. Procedure code not recognized.");
+            log.error("Unknown or missing procedure code specified in Radiology Report. Will still attempt to import report.");
         }
 
         return procedure;

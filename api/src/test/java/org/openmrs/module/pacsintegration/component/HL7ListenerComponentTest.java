@@ -115,6 +115,58 @@ public class HL7ListenerComponentTest extends BaseModuleContextSensitiveTest {
     }
 
     @Test
+    public void shouldListenForAndParseORU_R01MessageMissingProcedureCode() throws Exception {
+
+        ModuleActivator activator = new PacsIntegrationActivator();
+        activator.started();
+
+
+        List<Patient> patients = patientService.getPatients(null, "101-6", Collections.singletonList(emrApiProperties.getPrimaryIdentifierType()), true);
+        assertThat(patients.size(), is(1));  // sanity check
+        Patient patient = patients.get(0);
+        List<Encounter> encounters = encounterService.getEncounters(patient, null, null, null, null, Collections.singletonList(radiologyProperties.getRadiologyReportEncounterType()),
+                null, null, null, false);
+        assertThat(encounters.size(), is(0));  // sanity check
+
+
+        try {
+            String message = "MSH|^~\\&|HMI|Mirebalais Hospital|RAD|REPORTS|20130228174549||ORU^R01|RTS01CE16055AAF5290|P|2.3|\r" +
+                    "PID|1||101-6||Patient^Test^||19770222|M||||||||||\r" +
+                    "PV1|1||||||||||||||||||\r" +
+                    "OBR|1||0000001297||||20130228170556||||||||||||MBL^CR||||||F|||||||M123&Goodrich&Mark&&&&||||20130228170556\r" +
+                    "OBX|1|TX|127689^SOME_X-RAY||Clinical Indication: ||||||F\r";
+
+            Thread.sleep(2000);    // give the simple server time to start
+
+            Socket socket = new Socket("127.0.0.1", 6665);
+
+            PrintStream writer = new PrintStream(socket.getOutputStream());
+            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            writer.print(header);
+            writer.print(message);
+            writer.print(trailer +"\r");
+            writer.flush();
+
+            Thread.sleep(2000);
+
+            // confirm that report encounter has been created and has obs (we more thoroughly test the handler in the ORU_R01 handler and Radiology Service (in emr module) tests)
+            encounters = encounterService.getEncounters(patient, null, null, null, null, Collections.singletonList(radiologyProperties.getRadiologyReportEncounterType()),
+                    null, null, null, false);
+            assertThat(encounters.size(), is(1));
+            assertThat(encounters.get(0).getObs().size(), is(3));  // only 3 because no procedure obs
+
+            // confirm that the proper ack is sent out
+            String response = reader.readLine();
+            assertThat(response, containsString("|ACK|"));
+        }
+        finally {
+            activator.stopped();
+        }
+
+    }
+
+
+    @Test
     public void shouldListenForAndParseORM_001Message() throws Exception {
 
         ModuleActivator activator = new PacsIntegrationActivator();

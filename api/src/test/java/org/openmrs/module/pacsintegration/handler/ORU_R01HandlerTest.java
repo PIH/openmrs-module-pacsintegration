@@ -207,41 +207,6 @@ public class ORU_R01HandlerTest {
     }
 
     @Test
-    public void shouldReturnErrorACKIfProcedureNotFound() throws HL7Exception, ApplicationException {
-
-        Patient patient = new Patient(1);
-        RadiologyOrder radiologyOrder = new RadiologyOrder();
-        radiologyOrder.setPatient(patient);
-
-        when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true))
-                .thenReturn(Collections.singletonList(patient));
-        when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(radiologyOrder);
-        when(conceptService.getConceptByMapping("36554-4", "LOINC")).thenReturn(null);
-
-        String message = "MSH|^~\\&|HMI||RAD|REPORTS|20130228174549||ORU^R01|RTS01CE16055AAF5290|P|2.3|\r" +
-                "PID|1||GG2F98||Patient^Test^||19770222|M||||||||||\r" +
-                "PV1|1||||||||||||||||||\r" +
-                "OBR|1||0000001297|36554-4^CHEST|||20130228170556||||||||||||MBL^CR||||||F|||||||M123&Goodrich&Mark&&&&||||20130228170556\r" +
-                "OBX|1|TX|36554-4&BODY^CHEST||||||||F\r" +
-                "OBX|2|TX|36554-4&BODY^CHEST||Clinical Indication: ||||||F\r" +
-                "OBX|3|TX|36554-4&BODY^CHEST||test x-ray.||||||F\r" +
-                "OBX|4|TX|36554-4&BODY^CHEST||||||||F\r" +
-                "OBX|5|TX|36554-4&BODY^CHEST||A test final report!!||||||F\r" +
-                "OBX|6|TX|36554-4&BODY^CHEST||||||||F\r" +
-                "OBX|7|TX|36554-4&BODY^CHEST||Findings:  Posteroanterior and lateral chest radiographs were obtained.  The ||||||F\r" +
-                "OBX|8|TX|36554-4&BODY^CHEST||lungs are well inflated.  No infiltrate, pneumonia, or pulmonary edema is ||||||F\r" +
-                "OBX|9|TX|36554-4&BODY^CHEST||present.  The cardiac and mediastinal structures appear normal.  The pleural ||||||F\r" +
-                "OBX|10|TX|36554-4&BODY^CHEST||spaces and bony structures are normal.||||||F\r" +
-                "OBX|11|TX|36554-4&BODY^CHEST||        ||||||F\r" +
-                "OBX|12|TX|36554-4&BODY^CHEST||Summary:  Normal chest radiographs.||||||F\r";
-
-        ACK ack = (ACK) handler.processMessage(parseMessage(message));
-
-        assertThat(ack.getMSA().getAcknowledgementCode().getValue(), is("AR"));
-        assertThat(ack.getMSA().getTextMessage().getValue(), is("Cannot import message. Procedure code not recognized."));
-    }
-
-    @Test
     public void shouldSaveReportEncounterAndSendACK() throws HL7Exception, ApplicationException {
 
         Patient patient = new Patient(1);
@@ -298,6 +263,117 @@ public class ORU_R01HandlerTest {
 
         verify(radiologyService).saveRadiologyReport(argThat(new IsExpectedRadiologyReport(expectedReport)));
     }
+
+    @Test
+    public void shouldNotFailIfUnknownProcedureCodeSpecified() throws HL7Exception, ApplicationException {
+
+        Patient patient = new Patient(1);
+        RadiologyOrder radiologyOrder = new RadiologyOrder();
+        radiologyOrder.setPatient(patient);
+        Location reportLocation = new Location();
+
+        when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true))
+                .thenReturn(Collections.singletonList(patient));
+        when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(radiologyOrder);
+        when(providerService.getProviderByIdentifier("M123")).thenReturn(principalResultsInterpreter);
+        when(locationService.getLocation("Mirebalais Hospital")).thenReturn(reportLocation);
+
+        String message = "MSH|^~\\&|HMI|Mirebalais Hospital|RAD|REPORTS|20130228174549||ORU^R01|RTS01CE16055AAF5290|P|2.3|\r" +
+                "PID|1||GG2F98||Patient^Test^||19770222|M||||||||||\r" +
+                "PV1|1||||||||||||||||||\r" +
+                "OBR|1||0000001297|123^UNKNOWN|||20130228170556||||||||||||MBL^CR||||||F|||||||M123&Goodrich&Mark&&&&||||20130228170556\r" +
+                "OBX|1|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|2|TX|36554-4&BODY^CHEST||Clinical Indication: ||||||F\r" +
+                "OBX|3|TX|36554-4&BODY^CHEST||test x-ray.||||||F\r" +
+                "OBX|4|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|5|TX|36554-4&BODY^CHEST||A test final report!!||||||F\r" +
+                "OBX|6|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|7|TX|36554-4&BODY^CHEST||Findings:  Posteroanterior and lateral chest radiographs were obtained.  The ||||||F\r" +
+                "OBX|8|TX|36554-4&BODY^CHEST||lungs are well inflated.  No infiltrate, pneumonia, or pulmonary edema is ||||||F\r" +
+                "OBX|9|TX|36554-4&BODY^CHEST||present.  The cardiac and mediastinal structures appear normal.  The pleural ||||||F\r" +
+                "OBX|10|TX|36554-4&BODY^CHEST||spaces and bony structures are normal.||||||F\r" +
+                "OBX|11|TX|36554-4&BODY^CHEST||        ||||||F\r" +
+                "OBX|12|TX|36554-4&BODY^CHEST||Summary:  Normal chest radiographs.||||||F\r";
+
+        ACK ack = (ACK) handler.processMessage(parseMessage(message));
+
+        assertThat(ack.getMSA().getAcknowledgementCode().getValue(), is("AA"));
+
+        RadiologyReport expectedReport = new RadiologyReport();
+        expectedReport.setPatient(patient);
+        expectedReport.setAccessionNumber("0000001297");
+        expectedReport.setAssociatedRadiologyOrder(radiologyOrder);
+        expectedReport.setPrincipalResultsInterpreter(principalResultsInterpreter);
+        expectedReport.setReportType(reportTypeFinal);
+        expectedReport.setReportLocation(reportLocation);
+        expectedReport.setReportBody(buildExpectedReportBody());
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(2013,1,28);
+        cal.set(Calendar.HOUR_OF_DAY, 17);
+        cal.set(Calendar.MINUTE, 05);
+        cal.set(Calendar.SECOND, 56);
+        cal.set(Calendar.MILLISECOND, 00);
+        expectedReport.setReportDate(cal.getTime()) ;
+
+        verify(radiologyService).saveRadiologyReport(argThat(new IsExpectedRadiologyReport(expectedReport)));
+    }
+
+    @Test
+    public void shouldNotFailIfNoProcedureCodeSpecified() throws HL7Exception, ApplicationException {
+
+        Patient patient = new Patient(1);
+        RadiologyOrder radiologyOrder = new RadiologyOrder();
+        radiologyOrder.setPatient(patient);
+        Location reportLocation = new Location();
+
+        when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true))
+                .thenReturn(Collections.singletonList(patient));
+        when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(radiologyOrder);
+        when(providerService.getProviderByIdentifier("M123")).thenReturn(principalResultsInterpreter);
+        when(locationService.getLocation("Mirebalais Hospital")).thenReturn(reportLocation);
+
+        String message = "MSH|^~\\&|HMI|Mirebalais Hospital|RAD|REPORTS|20130228174549||ORU^R01|RTS01CE16055AAF5290|P|2.3|\r" +
+                "PID|1||GG2F98||Patient^Test^||19770222|M||||||||||\r" +
+                "PV1|1||||||||||||||||||\r" +
+                "OBR|1||0000001297||||20130228170556||||||||||||MBL^CR||||||F|||||||M123&Goodrich&Mark&&&&||||20130228170556\r" +
+                "OBX|1|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|2|TX|36554-4&BODY^CHEST||Clinical Indication: ||||||F\r" +
+                "OBX|3|TX|36554-4&BODY^CHEST||test x-ray.||||||F\r" +
+                "OBX|4|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|5|TX|36554-4&BODY^CHEST||A test final report!!||||||F\r" +
+                "OBX|6|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|7|TX|36554-4&BODY^CHEST||Findings:  Posteroanterior and lateral chest radiographs were obtained.  The ||||||F\r" +
+                "OBX|8|TX|36554-4&BODY^CHEST||lungs are well inflated.  No infiltrate, pneumonia, or pulmonary edema is ||||||F\r" +
+                "OBX|9|TX|36554-4&BODY^CHEST||present.  The cardiac and mediastinal structures appear normal.  The pleural ||||||F\r" +
+                "OBX|10|TX|36554-4&BODY^CHEST||spaces and bony structures are normal.||||||F\r" +
+                "OBX|11|TX|36554-4&BODY^CHEST||        ||||||F\r" +
+                "OBX|12|TX|36554-4&BODY^CHEST||Summary:  Normal chest radiographs.||||||F\r";
+
+        ACK ack = (ACK) handler.processMessage(parseMessage(message));
+
+        assertThat(ack.getMSA().getAcknowledgementCode().getValue(), is("AA"));
+
+        RadiologyReport expectedReport = new RadiologyReport();
+        expectedReport.setPatient(patient);
+        expectedReport.setAccessionNumber("0000001297");
+        expectedReport.setAssociatedRadiologyOrder(radiologyOrder);
+        expectedReport.setPrincipalResultsInterpreter(principalResultsInterpreter);
+        expectedReport.setReportType(reportTypeFinal);
+        expectedReport.setReportLocation(reportLocation);
+        expectedReport.setReportBody(buildExpectedReportBody());
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(2013,1,28);
+        cal.set(Calendar.HOUR_OF_DAY, 17);
+        cal.set(Calendar.MINUTE, 05);
+        cal.set(Calendar.SECOND, 56);
+        cal.set(Calendar.MILLISECOND, 00);
+        expectedReport.setReportDate(cal.getTime()) ;
+
+        verify(radiologyService).saveRadiologyReport(argThat(new IsExpectedRadiologyReport(expectedReport)));
+    }
+
 
     @Test
     public void shouldNotFailIfProviderOrLocationOrOrderIsNotFound() throws HL7Exception, ApplicationException {
