@@ -8,6 +8,7 @@ import ca.uhn.hl7v2.model.v23.segment.MSH;
 import ca.uhn.hl7v2.model.v23.segment.PID;
 import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.parser.PipeParser;
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.AdministrationService;
@@ -64,8 +65,8 @@ public class PatientToPacsConverter {
     private void populatePIDSegment(PID pidSegment, Patient patient) throws HL7Exception {
         // Populate the PID Segment
         pidSegment.getPatientIDInternalID(0).getID().setValue(patient.getPatientIdentifier(getPatientIdentifierType()).getIdentifier());
-        pidSegment.getPatientName().getFamilyName().setValue(patient.getFamilyName());
-        pidSegment.getPatientName().getGivenName().setValue(patient.getGivenName());
+        pidSegment.getPatientName().getFamilyName().setValue(StringUtils.substring(patient.getFamilyName(), 0, PacsIntegrationConstants.MAX_LENGTH_FAMILY_NAME));
+        pidSegment.getPatientName().getGivenName().setValue(StringUtils.substring(patient.getGivenName(), 0, PacsIntegrationConstants.MAX_LENGTH_GIVEN_NAME));
         pidSegment.getDateOfBirth().getTimeOfAnEvent().setValue(HL7Utils.getHl7DateFormat().format(patient.getBirthdate()));
         pidSegment.getSex().setValue(patient.getGender());
     }

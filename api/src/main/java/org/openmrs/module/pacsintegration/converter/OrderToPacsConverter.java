@@ -80,8 +80,8 @@ public class OrderToPacsConverter {
         // handle the patient component
         PID pid = message.getPATIENT().getPID();
         pid.getPatientIDInternalID(0).getID().setValue(order.getPatient().getPatientIdentifier(getPatientIdentifierType()).getIdentifier());
-        pid.getPatientName().getFamilyName().setValue(order.getPatient().getFamilyName());
-        pid.getPatientName().getGivenName().setValue(order.getPatient().getGivenName());
+        pid.getPatientName().getFamilyName().setValue(StringUtils.substring(order.getPatient().getFamilyName(), 0, PacsIntegrationConstants.MAX_LENGTH_FAMILY_NAME));
+        pid.getPatientName().getGivenName().setValue(StringUtils.substring(order.getPatient().getGivenName(), 0, PacsIntegrationConstants.MAX_LENGTH_GIVEN_NAME));
         pid.getDateOfBirth().getTimeOfAnEvent().setValue(order.getPatient().getBirthdate() != null
                 ? HL7Utils.getHl7DateFormat().format(order.getPatient().getBirthdate()) : "");
         pid.getSex().setValue(order.getPatient().getGender());
@@ -119,7 +119,8 @@ public class OrderToPacsConverter {
         obr.getFillerOrderNumber().getEntityIdentifier().setValue(order.getAccessionNumber());
         obr.getUniversalServiceIdentifier().getIdentifier().setValue(getProcedureCode(order));
 
-        obr.getUniversalServiceIdentifier().getText().setValue(order.getConcept().getFullySpecifiedName(getDefaultLocale()).getName());
+        obr.getUniversalServiceIdentifier().getText()
+                .setValue(StringUtils.substring(order.getConcept().getFullySpecifiedName(getDefaultLocale()).getName(), 0, PacsIntegrationConstants.MAX_LENGTH_PROCEDURE_TYPE_DESCRIPTION));
 
         // note that we are just sending modality here, not the device location
         obr.getPlacerField2().setValue(getModalityCode(order));

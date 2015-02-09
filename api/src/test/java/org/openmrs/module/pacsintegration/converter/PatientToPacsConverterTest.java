@@ -86,4 +86,28 @@ public class PatientToPacsConverterTest {
         assertThat(hl7Message, endsWith("PID|||PATIENT_IDENTIFIER||Doe^John||19790827000000|M\r"));
 
     }
+
+    @Test
+    public void shouldTruncateLongPatientName() throws HL7Exception, ParseException {
+        PatientIdentifier patientIdentifier = new PatientIdentifier();
+        patientIdentifier.setIdentifier("PATIENT_IDENTIFIER");
+        patientIdentifier.setIdentifierType(patientIdentifierType);
+
+        PersonName patientName = new PersonName();
+        patientName.setFamilyName("Super Duper Long Name Crazy Long Name");
+        patientName.setGivenName("Even My Given Name Is Longer Than You Would Believe");
+
+        Patient patient = new Patient();
+        patient.addIdentifier(patientIdentifier);
+        patient.addName(patientName);
+        Date birthDate = new SimpleDateFormat("MM-dd-yyyy").parse("08-27-1979");
+        patient.setBirthdate(birthDate);
+        patient.setGender("M");
+
+        String hl7Message = converter.convertToAdmitMessage(patient);
+
+        assertThat(hl7Message, startsWith("MSH|^~\\&|||||||ADT^A01||P|2.3\r"));
+        assertThat(hl7Message, endsWith("PID|||PATIENT_IDENTIFIER||Super Duper Long Name Crazy Lon^Even My Given Name Is Longer Th||19790827000000|M\r"));
+
+    }
 }

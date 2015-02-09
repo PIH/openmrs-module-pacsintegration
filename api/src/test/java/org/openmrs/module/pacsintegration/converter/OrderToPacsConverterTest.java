@@ -311,6 +311,33 @@ public class OrderToPacsConverterTest {
         assertThat(hl7Message, endsWith("OBR|||" + uuid.toString() + "|123ABC^Left-hand x-ray|||||||||||||||CR||||||||||||^Patient fell off horse|||||20120808000000\r"));
     }
 
+    @Test
+    public void shouldTruncateLogPatientName() throws Exception {
+        RadiologyOrder order = new RadiologyOrder();
+
+        UUID uuid = UUID.randomUUID();
+        order.setAccessionNumber(uuid.toString());
+        order.setStartDate(new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2012"));
+        order.setPatient(createPatientWithLongName());
+        order.setConcept(testXrayConcept);
+        order.setUrgency(Order.Urgency.STAT);
+        order.setClinicalHistory("Patient fell off horse\r\nAnd broke back");
+        order.setExamLocation(examLocation);
+
+        order.setEncounter(createEncounter());
+        order.getEncounter().addProvider(clinicialEncounterRole, createProvider());
+
+        String hl7Message = converter.convertToPacsFormat(order, "SC");
+
+        assertThat(hl7Message, startsWith("MSH|^~\\&||openmrs_mirebalais|||"));
+        // TODO: test that a valid date is passed
+        assertThat(hl7Message, containsString("||ORM^O01||P|2.3\r"));
+        assertThat(hl7Message, containsString("PID|||6TS-4||Super Duper Long Name Crazy Lon^Even My Given Name Is Longer Th||19760825000000|F\r"));
+        assertThat(hl7Message, containsString("PV1|||ABCDEF^^^^^^^^Radiology|||||123^Joseph^Wayne"));
+        assertThat(hl7Message, containsString("ORC|SC\r"));
+        assertThat(hl7Message, endsWith("OBR|||" + uuid.toString() + "|123ABC^Left-hand x-ray|||||||||||||||CR||||||||^^^^^STAT||||^Patient fell off horse~^And broke back|||||20120808000000\r"));
+    }
+
 
     private Patient createPatient() throws ParseException {
         PatientIdentifier patientIdentifier = new PatientIdentifier();
@@ -320,6 +347,24 @@ public class OrderToPacsConverterTest {
         PersonName patientName = new PersonName();
         patientName.setFamilyName("Chebaskwony");
         patientName.setGivenName("Collet");
+
+        Patient patient = new Patient();
+        patient.addIdentifier(patientIdentifier);
+        patient.addName(patientName);
+        Date birthDate = new SimpleDateFormat("MM-dd-yyyy").parse("08-25-1976");
+        patient.setBirthdate(birthDate);
+        patient.setGender("F");
+        return patient;
+    }
+
+    private Patient createPatientWithLongName() throws ParseException {
+        PatientIdentifier patientIdentifier = new PatientIdentifier();
+        patientIdentifier.setIdentifier("6TS-4");
+        patientIdentifier.setIdentifierType(patientIdentifierType);
+
+        PersonName patientName = new PersonName();
+        patientName.setFamilyName("Super Duper Long Name Crazy Long Name");
+        patientName.setGivenName("Even My Given Name Is Longer Than You Would Believe");
 
         Patient patient = new Patient();
         patient.addIdentifier(patientIdentifier);

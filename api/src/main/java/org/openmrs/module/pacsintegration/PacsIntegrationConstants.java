@@ -25,5 +25,12 @@ public class PacsIntegrationConstants {
     public static final String GP_HL7_LISTENER_PORT = "pacsintegration.hl7ListenerPort";
 
     public static final String SAME_AS_CONCEPT_MAP_TYPE_UUID = "35543629-7d8c-11e1-909d-c80aa9edcf4e";
+
+    // in McKesson PACS, name fields have a max size of 31 characters
+    public static final Integer MAX_LENGTH_FAMILY_NAME = 31;
+    public static final Integer MAX_LENGTH_GIVEN_NAME = 31;
+
+    // in McKesson PACS, order description field has a max size of 65 characters
+    public static final Integer MAX_LENGTH_PROCEDURE_TYPE_DESCRIPTION = 65;
 	
 }
