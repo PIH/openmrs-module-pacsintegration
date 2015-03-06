@@ -38,7 +38,7 @@
         <emrVersion>2.0-SNAPSHOT</emrVersion>
         <emrapiVersion>1.5-SNAPSHOT</emrapiVersion>
         <radiologyappVersion>1.0-SNAPSHOT</radiologyappVersion>
-        <metadatasharingVersion>1.1.8</metadatasharingVersion>
+        <metadatasharingVersion>1.1.9</metadatasharingVersion>
         <eventVersion>2.1</eventVersion>
         <uiframeworkVersion>3.3-SNAPSHOT</uiframeworkVersion>
         <idgenVersion>3.2</idgenVersion>
