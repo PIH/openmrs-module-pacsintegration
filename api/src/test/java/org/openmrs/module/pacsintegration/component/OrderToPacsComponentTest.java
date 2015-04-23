@@ -89,21 +89,6 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 		executeDataSet(XML_DATASET);
     }
 
-	@Test
-	@NotTransactional
-	public void testPlacingRadiologyOrderShouldTriggerOutgoingMessage() throws Exception {
-
-        RadiologyOrder order = new RadiologyOrder();
-		order.setOrderType(Context.getOrderService().getOrderType(1001));
-		order.setPatient(Context.getPatientService().getPatient(7));
-		order.setConcept(Context.getConceptService().getConcept(18));
-		order.setStartDate(new Date());
-        orderService.saveOrder(order);
-
-        Mockito.verify(radiologyService, timeout(5000)).ensureAccessionNumberAssignedToOrder(order);
-		Mockito.verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs(any(String.class));
-
-	}
 
     @Test
     @NotTransactional
@@ -113,7 +98,8 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
         order.setOrderType(Context.getOrderService().getOrderType(1001));
         order.setPatient(Context.getPatientService().getPatient(7));
         order.setConcept(Context.getConceptService().getConcept(18));
-        order.setStartDate(new Date());
+        order.setCareSetting(Context.getOrderService().getCareSetting(1));
+        order.setOrderer(Context.getProviderService().getProvider(1));
 
         Encounter encounter = new Encounter();
         encounter.setPatient(Context.getPatientService().getPatient(7));
@@ -121,7 +107,6 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
         encounter.addOrder(order);
         encounterService.saveEncounter(encounter);
 
-        Mockito.verify(radiologyService, timeout(5000)).ensureAccessionNumberAssignedToOrder(order);
         Mockito.verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs(any(String.class));
 
     }
@@ -131,14 +116,18 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
     public void testSendingTestOrderShouldNotTriggerOutgoingMessage() throws Exception {
 
         TestOrder order = new TestOrder();
-        order.setOrderType(Context.getOrderService().getOrderType(1001));
+        order.setOrderType(Context.getOrderService().getOrderType(2));
         order.setPatient(Context.getPatientService().getPatient(7));
         order.setConcept(Context.getConceptService().getConcept(18));
-        order.setStartDate(new Date());
+        order.setCareSetting(Context.getOrderService().getCareSetting(1));
+        order.setOrderer(Context.getProviderService().getProvider(1));
 
-        orderService.saveOrder(order);
+        Encounter encounter = new Encounter();
+        encounter.setPatient(Context.getPatientService().getPatient(7));
+        encounter.setEncounterDatetime(new Date());
+        encounter.addOrder(order);
+        encounterService.saveEncounter(encounter);
 
-        Mockito.verify(radiologyService, timeout(10000).never()).ensureAccessionNumberAssignedToOrder(order);
         Mockito.verify(pacsIntegrationService, timeout(10000).never()).sendMessageToPacs(any(String.class));
     }
 
@@ -150,13 +139,14 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
         order.setOrderType(Context.getOrderService().getOrderType(1001));
         order.setPatient(Context.getPatientService().getPatient(7));
         order.setConcept(Context.getConceptService().getConcept(18));
-        order.setStartDate(new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2012"));
-        order.setAccessionNumber("A1B2C3");
+        order.setDateActivated(new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2012"));
         order.setExamLocation(locationService.getLocation(1));
+        order.setCareSetting(Context.getOrderService().getCareSetting(1));
+        order.setOrderer(Context.getProviderService().getProvider(1));
 
         Encounter encounter = new Encounter();
         encounter.setPatient(Context.getPatientService().getPatient(7));
-        encounter.setEncounterDatetime(new Date());
+        encounter.setEncounterDatetime(new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2012"));
         encounter.addOrder(order);
         encounter.addProvider(encounterService.getEncounterRole(1003), providerService.getProvider(1));
         encounterService.saveEncounter(encounter);
@@ -178,7 +168,7 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
             assertThat(hl7Message, containsString("PID|||6TS-4||Chebaskwony^Collet||19760825000000|F\r"));
             assertThat(hl7Message, containsString("PV1|||1FED2^^^^^^^^Unknown Location|||||Test^User^Super\r"));
             assertThat(hl7Message, containsString("ORC|NW\r"));
-            assertThat(hl7Message, endsWith("OBR|||A1B2C3|127689^FOOD ASSISTANCE||||||||||||||||||||||||||||||||20120808000000\r"));
+            assertThat(hl7Message, endsWith("OBR|||ORD-1|127689^FOOD ASSISTANCE||||||||||||||||||||||||||||||||20120808000000\r"));
 
             return true;
         }

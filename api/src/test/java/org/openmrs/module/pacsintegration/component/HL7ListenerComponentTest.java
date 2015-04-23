@@ -225,7 +225,7 @@ public class HL7ListenerComponentTest extends BaseModuleContextSensitiveTest {
     }
 
     @Test
-    public void shouldNotImportORM_001MessageWithDuplicateAccessionNumber() throws Exception {
+    public void shouldNotImportORM_001MessageWithDuplicateOrderNumber() throws Exception {
 
         ModuleActivator activator = new PacsIntegrationActivator();
         activator.started();

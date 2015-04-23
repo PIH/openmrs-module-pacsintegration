@@ -23,7 +23,7 @@ import org.openmrs.module.pacsintegration.util.HL7Utils;
 public class ORMMessage extends Message {
 	
 	private String orderControl;
-	private String accessionNumber;
+	private String orderNumber;
 	private String patientId;
 	private String familyName;
 	private String givenName;
@@ -38,13 +38,13 @@ public class ORMMessage extends Message {
 
     public ORMMessage(Order order, String orderControl) {
         this.orderControl = orderControl;
-        this.accessionNumber = order.getAccessionNumber();
+        this.orderNumber = order.getOrderNumber();
         this.patientId = order.getPatient().getPatientIdentifier().getIdentifier();
         this.familyName = order.getPatient().getFamilyName();
         this.givenName = order.getPatient().getGivenName();
         this.dateOfBirth = HL7Utils.getHl7DateFormat().format(order.getPatient().getBirthdate());
         this.patientSex = order.getPatient().getGender();
-        this.scheduledExamDatetime = HL7Utils.getHl7DateFormat().format(order.getStartDate());
+        this.scheduledExamDatetime = HL7Utils.getHl7DateFormat().format(order.getDateActivated());
         // TODO: ormMessage.setDeviceLocation();
         // TODO: ormMessage.setModality();
         // TODO: we should set this to specific identifier that is configured, not just the preferred one?

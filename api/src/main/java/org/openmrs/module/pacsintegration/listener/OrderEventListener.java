@@ -62,8 +62,6 @@ public class OrderEventListener implements SubscribableEventListener {
 				if (order == null) {
 					throw new RuntimeException("Could not find the order this event tells us about! uuid=" + uuid);
 				}
-                radiologyService.ensureAccessionNumberAssignedToOrder(order);
-                orderService.saveOrder(order);
 
 			    pacsIntegrationService.sendMessageToPacs(converter.convertToPacsFormat((RadiologyOrder) order, "NW"));
 			}

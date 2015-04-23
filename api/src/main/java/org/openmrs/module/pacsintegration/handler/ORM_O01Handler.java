@@ -52,18 +52,18 @@ public class ORM_O01Handler extends HL7Handler implements Application {
                     (eventType.equalsIgnoreCase("REVIEWED") || eventType.equalsIgnoreCase("REPORTED")
                     || eventType.equalsIgnoreCase("NEEDSOVERREAD"))) {
 
-                String accessionNumber = ormO01.getORDER().getORDER_DETAIL().getOBR().getFillerOrderNumber().getEntityIdentifier().getValue();
+                String orderNumber = ormO01.getORDER().getORDER_DETAIL().getOBR().getFillerOrderNumber().getEntityIdentifier().getValue();
 
                 // only create this study if it doesn't already exist
-                if (radiologyService.getRadiologyStudyByAccessionNumber(accessionNumber) == null) {
+                if (radiologyService.getRadiologyStudyByOrderNumber(orderNumber) == null) {
 
                     String patientIdentifier = ormO01.getPATIENT().getPID().getPatientIDInternalID(0).getID().getValue();
 
                     RadiologyStudy radiologyStudy = new RadiologyStudy();
 
                     radiologyStudy.setPatient(getPatient(patientIdentifier));
-                    radiologyStudy.setAccessionNumber(accessionNumber);
-                    radiologyStudy.setAssociatedRadiologyOrder(getRadiologyOrder(radiologyStudy.getAccessionNumber(), radiologyStudy.getPatient()));
+                    radiologyStudy.setOrderNumber(orderNumber);
+                    radiologyStudy.setAssociatedRadiologyOrder(getRadiologyOrder(radiologyStudy.getOrderNumber(), radiologyStudy.getPatient()));
                     radiologyStudy.setProcedure(getProcedure(ormO01.getORDER().getORDER_DETAIL().getOBR().getUniversalServiceIdentifier().getIdentifier().getValue()));
                     radiologyStudy.setTechnician(getTechnologist(ormO01.getORDER().getORDER_DETAIL()));
                     radiologyStudy.setDatePerformed(syncTimeWithCurrentServerTime(getDatePerformed(ormO01.getORDER().getORDER_DETAIL())));

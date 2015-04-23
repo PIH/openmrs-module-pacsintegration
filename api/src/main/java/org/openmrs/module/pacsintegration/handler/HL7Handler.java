@@ -63,18 +63,18 @@ abstract public class HL7Handler {
         return patientList.get(0);
     }
 
-    protected RadiologyOrder getRadiologyOrder(String accessionNumber, Patient patient) {
+    protected RadiologyOrder getRadiologyOrder(String orderNumber, Patient patient) {
 
-        // if no accession number, no order to associate with
-        if (StringUtils.isBlank(accessionNumber)) {
+        // if no order number, no order to associate with
+        if (StringUtils.isBlank(orderNumber)) {
             return null;
         }
 
-        // try to fetch the order by accession number
-        RadiologyOrder radiologyOrder = radiologyService.getRadiologyOrderByAccessionNumber(accessionNumber);
+        // try to fetch the order by order number
+        RadiologyOrder radiologyOrder = radiologyService.getRadiologyOrderByOrderNumber(orderNumber);
 
         // if there is an existing order, make sure the patients match
-        // (note that we are allowing incoming obs with accession numbers that don't match anything in the system)
+        // (note that we are allowing incoming obs with order numbers that don't match anything in the system)
         if (radiologyOrder != null && !radiologyOrder.getPatient().equals(patient)) {
             throw new PacsIntegrationException("Cannot import message. Patient referenced in message different from patient attached to existing order.");
 

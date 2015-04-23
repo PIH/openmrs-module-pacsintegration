@@ -116,7 +116,7 @@ public class ORM_O01HandlerTest  {
     @Test
     public void shouldReturnACKButNotSaveRadiologyStudyIfNotReviewedOrReportedEventType() throws HL7Exception, ApplicationException {
 
-        when(radiologyService.getRadiologyStudyByAccessionNumber("0000001297")).thenReturn(null);
+        when(radiologyService.getRadiologyStudyByOrderNumber("0000001297")).thenReturn(null);
 
         String message = "MSH|^~\\&|HMI|Mirebalais Hospital|RAD|REPORTS|20130228174643||ORM^O01|RTS01CE16057B105AC0|P|2.3|\r" +
                 "PID|1||GG2F98||Patient^Test^||19770222|M||||||||||\r" +
@@ -138,10 +138,10 @@ public class ORM_O01HandlerTest  {
     }
 
     @Test
-    public void shouldReturnACKButNotSaveRadiologyStudyIfStudyAlreadyExistsWithThatAccessionNumberType() throws HL7Exception, ApplicationException {
+    public void shouldReturnACKButNotSaveRadiologyStudyIfStudyAlreadyExistsWithThatOrderNumberType() throws HL7Exception, ApplicationException {
 
         // note that we are actually returning a study here, not null
-        when(radiologyService.getRadiologyStudyByAccessionNumber("0000001297")).thenReturn(new RadiologyStudy());
+        when(radiologyService.getRadiologyStudyByOrderNumber("0000001297")).thenReturn(new RadiologyStudy());
 
         String message = "MSH|^~\\&|HMI|Mirebalais Hospital|RAD|REPORTS|20130228174643||ORM^O01|RTS01CE16057B105AC0|P|2.3|\r" +
                 "PID|1||GG2F98||Patient^Test^||19770222|M||||||||||\r" +
@@ -165,7 +165,7 @@ public class ORM_O01HandlerTest  {
     @Test
     public void shouldReturnErrorACKIfNoPatientIdentifierInResponse() throws HL7Exception, ApplicationException {
 
-        when(radiologyService.getRadiologyStudyByAccessionNumber("0000001297")).thenReturn(null);
+        when(radiologyService.getRadiologyStudyByOrderNumber("0000001297")).thenReturn(null);
 
         String message = "MSH|^~\\&|HMI|Mirebalais Hospital|RAD|REPORTS|20130228174643||ORM^O01|RTS01CE16057B105AC0|P|2.3|\r" +
                 "PID|1||||Patient^Test^||19770222|M||||||||||\r" +
@@ -188,7 +188,7 @@ public class ORM_O01HandlerTest  {
     @Test
     public void shouldReturnErrorACKIfNoPatientWithIdentifier() throws HL7Exception, ApplicationException {
 
-        when(radiologyService.getRadiologyStudyByAccessionNumber("0000001297")).thenReturn(null);
+        when(radiologyService.getRadiologyStudyByOrderNumber("0000001297")).thenReturn(null);
 
         when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true))
                 .thenReturn(new ArrayList<Patient>());
@@ -212,7 +212,7 @@ public class ORM_O01HandlerTest  {
     }
 
     @Test
-    public void shouldReturnErrorACKIfPatientIdentifierAndAccessionNumberDontMatchSamePatient() throws HL7Exception, ApplicationException {
+    public void shouldReturnErrorACKIfPatientIdentifierAndOrderNumberDontMatchSamePatient() throws HL7Exception, ApplicationException {
 
         Patient patient = new Patient(1);
         Patient anotherPatient = new Patient(2);
@@ -221,11 +221,11 @@ public class ORM_O01HandlerTest  {
         RadiologyOrder radiologyOrder = new RadiologyOrder();
         radiologyOrder.setPatient(anotherPatient);
 
-        when(radiologyService.getRadiologyStudyByAccessionNumber("0000001297")).thenReturn(null);
+        when(radiologyService.getRadiologyStudyByOrderNumber("0000001297")).thenReturn(null);
         when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true))
                 .thenReturn(Collections.singletonList(patient));
 
-        when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(radiologyOrder);
+        when(radiologyService.getRadiologyOrderByOrderNumber("0000001297")).thenReturn(radiologyOrder);
         when(conceptService.getConceptByMapping("36554-4", "LOINC")).thenReturn(procedure);
 
 
@@ -256,10 +256,10 @@ public class ORM_O01HandlerTest  {
         Concept procedure = new Concept();
         Provider radiologyTechnician = new Provider();
 
-        when(radiologyService.getRadiologyStudyByAccessionNumber("0000001297")).thenReturn(null);
+        when(radiologyService.getRadiologyStudyByOrderNumber("0000001297")).thenReturn(null);
         when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true))
                 .thenReturn(Collections.singletonList(patient));
-        when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(radiologyOrder);
+        when(radiologyService.getRadiologyOrderByOrderNumber("0000001297")).thenReturn(radiologyOrder);
         when(conceptService.getConceptByMapping("36554-4", "LOINC")).thenReturn(procedure);
         when(providerService.getProviderByIdentifier("1435")).thenReturn(radiologyTechnician);
 
@@ -290,10 +290,10 @@ public class ORM_O01HandlerTest  {
         Concept procedure = new Concept();
         Provider radiologyTechnician = new Provider();
 
-        when(radiologyService.getRadiologyStudyByAccessionNumber("0000001297")).thenReturn(null);
+        when(radiologyService.getRadiologyStudyByOrderNumber("0000001297")).thenReturn(null);
         when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true))
                 .thenReturn(Collections.singletonList(patient));
-        when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(radiologyOrder);
+        when(radiologyService.getRadiologyOrderByOrderNumber("0000001297")).thenReturn(radiologyOrder);
         when(conceptService.getConceptByMapping("36554-4", "LOINC")).thenReturn(procedure);
         when(providerService.getProviderByIdentifier("1435")).thenReturn(radiologyTechnician);
 
@@ -319,7 +319,7 @@ public class ORM_O01HandlerTest  {
         expectedStudy.setProcedure(procedure);
         expectedStudy.setAssociatedRadiologyOrder(radiologyOrder);
         expectedStudy.setTechnician(radiologyTechnician);
-        expectedStudy.setAccessionNumber("0000001297");
+        expectedStudy.setOrderNumber("0000001297");
         expectedStudy.setStudyLocation(mirebalaisHospital);
         expectedStudy.setImagesAvailable(true);
 
@@ -343,10 +343,10 @@ public class ORM_O01HandlerTest  {
         Concept procedure = new Concept();
         Provider radiologyTechnician = new Provider();
 
-        when(radiologyService.getRadiologyStudyByAccessionNumber("0000001297")).thenReturn(null);
+        when(radiologyService.getRadiologyStudyByOrderNumber("0000001297")).thenReturn(null);
         when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true))
                 .thenReturn(Collections.singletonList(patient));
-        when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(radiologyOrder);
+        when(radiologyService.getRadiologyOrderByOrderNumber("0000001297")).thenReturn(radiologyOrder);
         when(conceptService.getConceptByMapping("36554-4", "LOINC")).thenReturn(procedure);
         when(providerService.getProviderByIdentifier("1435")).thenReturn(radiologyTechnician);
 
@@ -372,7 +372,7 @@ public class ORM_O01HandlerTest  {
         expectedStudy.setProcedure(procedure);
         expectedStudy.setAssociatedRadiologyOrder(radiologyOrder);
         expectedStudy.setTechnician(radiologyTechnician);
-        expectedStudy.setAccessionNumber("0000001297");
+        expectedStudy.setOrderNumber("0000001297");
         expectedStudy.setStudyLocation(mirebalaisHospital);
         expectedStudy.setImagesAvailable(true);
 
@@ -397,10 +397,10 @@ public class ORM_O01HandlerTest  {
         Concept procedure = new Concept();
         Provider radiologyTechnician = new Provider();
 
-        when(radiologyService.getRadiologyStudyByAccessionNumber("0000001297")).thenReturn(null);
+        when(radiologyService.getRadiologyStudyByOrderNumber("0000001297")).thenReturn(null);
         when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true))
                 .thenReturn(Collections.singletonList(patient));
-        when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(radiologyOrder);
+        when(radiologyService.getRadiologyOrderByOrderNumber("0000001297")).thenReturn(radiologyOrder);
         when(conceptService.getConceptByMapping("36554-4", "LOINC")).thenReturn(procedure);
         when(providerService.getProviderByIdentifier("1435")).thenReturn(radiologyTechnician);
 
@@ -426,7 +426,7 @@ public class ORM_O01HandlerTest  {
         expectedStudy.setProcedure(procedure);
         expectedStudy.setAssociatedRadiologyOrder(radiologyOrder);
         expectedStudy.setTechnician(radiologyTechnician);
-        expectedStudy.setAccessionNumber("0000001297");
+        expectedStudy.setOrderNumber("0000001297");
         expectedStudy.setStudyLocation(mirebalaisHospital);
         expectedStudy.setImagesAvailable(true);
 
@@ -449,10 +449,10 @@ public class ORM_O01HandlerTest  {
         radiologyOrder.setPatient(patient);
         Provider radiologyTechnician = new Provider();
 
-        when(radiologyService.getRadiologyStudyByAccessionNumber("0000001297")).thenReturn(null);
+        when(radiologyService.getRadiologyStudyByOrderNumber("0000001297")).thenReturn(null);
         when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true))
                 .thenReturn(Collections.singletonList(patient));
-        when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(radiologyOrder);
+        when(radiologyService.getRadiologyOrderByOrderNumber("0000001297")).thenReturn(radiologyOrder);
         when(providerService.getProviderByIdentifier("1435")).thenReturn(radiologyTechnician);
 
         String message = "MSH|^~\\&|HMI|Mirebalais Hospital|RAD|REPORTS|20130228174643||ORM^O01|RTS01CE16057B105AC0|P|2.3|\r" +
@@ -476,7 +476,7 @@ public class ORM_O01HandlerTest  {
         expectedStudy.setPatient(patient);
         expectedStudy.setAssociatedRadiologyOrder(radiologyOrder);
         expectedStudy.setTechnician(radiologyTechnician);
-        expectedStudy.setAccessionNumber("0000001297");
+        expectedStudy.setOrderNumber("0000001297");
         expectedStudy.setStudyLocation(mirebalaisHospital);
         expectedStudy.setImagesAvailable(true);
 
@@ -500,11 +500,11 @@ public class ORM_O01HandlerTest  {
         radiologyOrder.setPatient(patient);
         Concept procedure = new Concept();
 
-        when(radiologyService.getRadiologyStudyByAccessionNumber("0000001297")).thenReturn(null);
+        when(radiologyService.getRadiologyStudyByOrderNumber("0000001297")).thenReturn(null);
         when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true))
                 .thenReturn(Collections.singletonList(patient));
         when(conceptService.getConceptByMapping("36554-4", "LOINC")).thenReturn(procedure);
-        when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(null);
+        when(radiologyService.getRadiologyOrderByOrderNumber("0000001297")).thenReturn(null);
 
         String message = "MSH|^~\\&|HMI|Mirebalais Hospital|RAD|REPORTS|20130228174643||ORM^O01|RTS01CE16057B105AC0|P|2.3|\r" +
                 "PID|1||GG2F98||Patient^Test^||19770222|M||||||||||\r" +
@@ -526,7 +526,7 @@ public class ORM_O01HandlerTest  {
         expectedStudy.setProcedure(procedure);
         expectedStudy.setAssociatedRadiologyOrder(null);
         expectedStudy.setTechnician(null);
-        expectedStudy.setAccessionNumber("0000001297");
+        expectedStudy.setOrderNumber("0000001297");
         expectedStudy.setStudyLocation(mirebalaisHospital);
         expectedStudy.setImagesAvailable(null);
 
@@ -550,10 +550,10 @@ public class ORM_O01HandlerTest  {
         Concept procedure = new Concept();
         Provider radiologyTechnician = new Provider();
 
-        when(radiologyService.getRadiologyStudyByAccessionNumber("0000001297")).thenReturn(null);
+        when(radiologyService.getRadiologyStudyByOrderNumber("0000001297")).thenReturn(null);
         when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true))
                 .thenReturn(Collections.singletonList(patient));
-        when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(radiologyOrder);
+        when(radiologyService.getRadiologyOrderByOrderNumber("0000001297")).thenReturn(radiologyOrder);
         when(conceptService.getConceptByMapping("36554-4", "LOINC")).thenReturn(procedure);
         when(providerService.getProviderByIdentifier("1435")).thenReturn(radiologyTechnician);
 
@@ -591,10 +591,10 @@ public class ORM_O01HandlerTest  {
         Concept procedure = new Concept();
         Provider radiologyTechnician = new Provider();
 
-        when(radiologyService.getRadiologyStudyByAccessionNumber("0000001297")).thenReturn(null);
+        when(radiologyService.getRadiologyStudyByOrderNumber("0000001297")).thenReturn(null);
         when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true))
                 .thenReturn(Collections.singletonList(patient));
-        when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(radiologyOrder);
+        when(radiologyService.getRadiologyOrderByOrderNumber("0000001297")).thenReturn(radiologyOrder);
         when(conceptService.getConceptByMapping("36554-4", "LOINC")).thenReturn(procedure);
         when(providerService.getProviderByIdentifier("1435")).thenReturn(radiologyTechnician);
 
@@ -634,7 +634,7 @@ public class ORM_O01HandlerTest  {
         public boolean matches(Object o) {
             RadiologyStudy study = (RadiologyStudy) o;
 
-            assertThat(study.getAccessionNumber(), is(expectedStudy.getAccessionNumber()));
+            assertThat(study.getOrderNumber(), is(expectedStudy.getOrderNumber()));
             assertThat(study.getAssociatedRadiologyOrder(), is(expectedStudy.getAssociatedRadiologyOrder()));
             assertThat(study.getProcedure(), is(expectedStudy.getProcedure()));
             assertThat(study.getDatePerformed(), is(expectedStudy.getDatePerformed()));

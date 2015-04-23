@@ -170,7 +170,7 @@ public class ORU_R01HandlerTest {
     }
 
     @Test
-    public void shouldReturnErrorACKIfPatientIdentifierAndAccessionNumberDontMatchSamePatient() throws HL7Exception, ApplicationException {
+    public void shouldReturnErrorACKIfPatientIdentifierAndOrderNumberDontMatchSamePatient() throws HL7Exception, ApplicationException {
 
         Patient patient = new Patient(1);
         Patient anotherPatient = new Patient(2);
@@ -181,7 +181,7 @@ public class ORU_R01HandlerTest {
         when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true))
                 .thenReturn(Collections.singletonList(patient));
 
-        when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(radiologyOrder);
+        when(radiologyService.getRadiologyOrderByOrderNumber("0000001297")).thenReturn(radiologyOrder);
 
         String message = "MSH|^~\\&|HMI||RAD|REPORTS|20130228174549||ORU^R01|RTS01CE16055AAF5290|P|2.3|\r" +
                 "PID|1||GG2F98||Patient^Test^||19770222|M||||||||||\r" +
@@ -217,7 +217,7 @@ public class ORU_R01HandlerTest {
 
         when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true))
                 .thenReturn(Collections.singletonList(patient));
-        when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(radiologyOrder);
+        when(radiologyService.getRadiologyOrderByOrderNumber("0000001297")).thenReturn(radiologyOrder);
         when(conceptService.getConceptByMapping("36554-4", "LOINC")).thenReturn(procedure);
         when(providerService.getProviderByIdentifier("M123")).thenReturn(principalResultsInterpreter);
         when(locationService.getLocation("Mirebalais Hospital")).thenReturn(reportLocation);
@@ -245,7 +245,7 @@ public class ORU_R01HandlerTest {
 
         RadiologyReport expectedReport = new RadiologyReport();
         expectedReport.setPatient(patient);
-        expectedReport.setAccessionNumber("0000001297");
+        expectedReport.setOrderNumber("0000001297");
         expectedReport.setAssociatedRadiologyOrder(radiologyOrder);
         expectedReport.setPrincipalResultsInterpreter(principalResultsInterpreter);
         expectedReport.setProcedure(procedure);
@@ -274,7 +274,7 @@ public class ORU_R01HandlerTest {
 
         when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true))
                 .thenReturn(Collections.singletonList(patient));
-        when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(radiologyOrder);
+        when(radiologyService.getRadiologyOrderByOrderNumber("0000001297")).thenReturn(radiologyOrder);
         when(providerService.getProviderByIdentifier("M123")).thenReturn(principalResultsInterpreter);
         when(locationService.getLocation("Mirebalais Hospital")).thenReturn(reportLocation);
 
@@ -301,7 +301,7 @@ public class ORU_R01HandlerTest {
 
         RadiologyReport expectedReport = new RadiologyReport();
         expectedReport.setPatient(patient);
-        expectedReport.setAccessionNumber("0000001297");
+        expectedReport.setOrderNumber("0000001297");
         expectedReport.setAssociatedRadiologyOrder(radiologyOrder);
         expectedReport.setPrincipalResultsInterpreter(principalResultsInterpreter);
         expectedReport.setReportType(reportTypeFinal);
@@ -329,7 +329,7 @@ public class ORU_R01HandlerTest {
 
         when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true))
                 .thenReturn(Collections.singletonList(patient));
-        when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(radiologyOrder);
+        when(radiologyService.getRadiologyOrderByOrderNumber("0000001297")).thenReturn(radiologyOrder);
         when(providerService.getProviderByIdentifier("M123")).thenReturn(principalResultsInterpreter);
         when(locationService.getLocation("Mirebalais Hospital")).thenReturn(reportLocation);
 
@@ -356,7 +356,7 @@ public class ORU_R01HandlerTest {
 
         RadiologyReport expectedReport = new RadiologyReport();
         expectedReport.setPatient(patient);
-        expectedReport.setAccessionNumber("0000001297");
+        expectedReport.setOrderNumber("0000001297");
         expectedReport.setAssociatedRadiologyOrder(radiologyOrder);
         expectedReport.setPrincipalResultsInterpreter(principalResultsInterpreter);
         expectedReport.setReportType(reportTypeFinal);
@@ -389,7 +389,7 @@ public class ORU_R01HandlerTest {
         when(conceptService.getConceptByMapping("36554-4", "LOINC")).thenReturn(procedure);
 
         // mimick not finding a matching provider, location or order
-        when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(null);
+        when(radiologyService.getRadiologyOrderByOrderNumber("0000001297")).thenReturn(null);
         when(providerService.getProviderByIdentifier("M123")).thenReturn(null);
         when(locationService.getLocation("Mirebalais Hospital")).thenReturn(null);
 
@@ -416,7 +416,7 @@ public class ORU_R01HandlerTest {
 
         RadiologyReport expectedReport = new RadiologyReport();
         expectedReport.setPatient(patient);
-        expectedReport.setAccessionNumber("0000001297");
+        expectedReport.setOrderNumber("0000001297");
         expectedReport.setAssociatedRadiologyOrder(null);
         expectedReport.setPrincipalResultsInterpreter(null);
         expectedReport.setProcedure(procedure);
@@ -451,7 +451,7 @@ public class ORU_R01HandlerTest {
         when(conceptService.getConceptByMapping("36554-4", "LOINC")).thenReturn(procedure);
 
         // mimick not finding a matching provider, location or order
-        when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(null);
+        when(radiologyService.getRadiologyOrderByOrderNumber("0000001297")).thenReturn(null);
         when(providerService.getProviderByIdentifier("M123")).thenReturn(null);
         when(locationService.getLocation("Mirebalais Hospital")).thenReturn(null);
 
@@ -494,7 +494,7 @@ public class ORU_R01HandlerTest {
 
         when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true))
                 .thenReturn(Collections.singletonList(patient));
-        when(radiologyService.getRadiologyOrderByAccessionNumber("0000001297")).thenReturn(radiologyOrder);
+        when(radiologyService.getRadiologyOrderByOrderNumber("0000001297")).thenReturn(radiologyOrder);
         when(conceptService.getConceptByMapping("36554-4", "LOINC")).thenReturn(null);
 
         String message = "MSH|^~\\&|HMI||RAD|REPORTS|20130228174549||ORU^R01|RTS01CE16055AAF5290|P|2.3|\r" +
@@ -556,7 +556,7 @@ public class ORU_R01HandlerTest {
             RadiologyReport report = (RadiologyReport) o;
 
             assertThat(report.getPatient(), is(expectedReport.getPatient()));
-            assertThat(report.getAccessionNumber(), is(expectedReport.getAccessionNumber()));
+            assertThat(report.getOrderNumber(), is(expectedReport.getOrderNumber()));
             assertThat(report.getAssociatedRadiologyOrder(), is(expectedReport.getAssociatedRadiologyOrder()));
             assertThat(report.getProcedure(), is(expectedReport.getProcedure()));
             assertThat(report.getReportDate(), is(expectedReport.getReportDate()));

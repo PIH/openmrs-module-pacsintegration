@@ -34,7 +34,7 @@
     </modules>
 
     <properties>
-        <openMRSVersion>1.9.8</openMRSVersion>
+        <openMRSVersion>1.10.1</openMRSVersion>
         <emrVersion>2.0-SNAPSHOT</emrVersion>
         <emrapiVersion>1.7-SNAPSHOT</emrapiVersion>
         <radiologyappVersion>1.0-SNAPSHOT</radiologyappVersion>
@@ -101,7 +101,7 @@
 
         <dependency>
             <groupId>org.openmrs.module</groupId>
-            <artifactId>emrapi-api-1.9</artifactId>
+            <artifactId>emrapi-api-1.10</artifactId>
             <version>${emrapiVersion}</version>
             <scope>provided</scope>
         </dependency>
@@ -168,6 +168,13 @@
         <dependency>
             <groupId>org.openmrs.module</groupId>
             <artifactId>htmlformentry-api</artifactId>
+            <version>${htmlformentryVersion}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>htmlformentry-api-1.10</artifactId>
             <version>${htmlformentryVersion}</version>
             <scope>test</scope>
         </dependency>

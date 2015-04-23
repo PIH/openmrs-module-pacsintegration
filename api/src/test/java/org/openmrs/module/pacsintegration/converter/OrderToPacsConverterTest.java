@@ -209,18 +209,21 @@ public class OrderToPacsConverterTest {
 
     @Test
     public void shouldGenerateMessageFromAnXRayOrder() throws Exception {
-        RadiologyOrder order = new RadiologyOrder();
-        UUID uuid = UUID.randomUUID();
-        order.setAccessionNumber(uuid.toString());
-        order.setStartDate(new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2012"));
-        order.setPatient(createPatient());
-        order.setConcept(testXrayConcept);
-        order.setUrgency(Order.Urgency.STAT);
-        order.setClinicalHistory("Patient fell off horse\r\nAnd broke back");
-        order.setExamLocation(examLocation);
 
-        order.setEncounter(createEncounter());
-        order.getEncounter().addProvider(clinicialEncounterRole, createProvider());
+        RadiologyOrder order = mock(RadiologyOrder.class);
+        UUID uuid = UUID.randomUUID();
+        Patient patient = createPatient();
+        Encounter encounter = createEncounter();
+        encounter.addProvider(clinicialEncounterRole, createProvider());
+
+        when(order.getOrderNumber()).thenReturn(uuid.toString());
+        when(order.getDateActivated()).thenReturn((new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2012")));
+        when(order.getPatient()).thenReturn(patient);
+        when(order.getConcept()).thenReturn(testXrayConcept);
+        when(order.getUrgency()).thenReturn(Order.Urgency.STAT);
+        when(order.getClinicalHistory()).thenReturn("Patient fell off horse\r\nAnd broke back");
+        when(order.getExamLocation()).thenReturn(examLocation);
+        when(order.getEncounter()).thenReturn(encounter);
 
         String hl7Message = converter.convertToPacsFormat(order, "SC");
 
@@ -236,18 +239,21 @@ public class OrderToPacsConverterTest {
     @Test
     public void shouldGenerateMessageFromACTOrder() throws Exception {
 
-        RadiologyOrder order = new RadiologyOrder();
+        RadiologyOrder order = mock(RadiologyOrder.class);
         UUID uuid = UUID.randomUUID();
-        order.setAccessionNumber(uuid.toString());
-        order.setStartDate(new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2012"));
-        order.setPatient(createPatient());
-        order.setConcept(testCTConcept);
-        order.setUrgency(Order.Urgency.STAT);
-        order.setClinicalHistory("Patient fell off horse\r\nAnd broke back");
-        order.setExamLocation(examLocation);
+        Patient patient = createPatient();
+        Encounter encounter = createEncounter();
+        encounter.addProvider(clinicialEncounterRole, createProvider());
 
-        order.setEncounter(createEncounter());
-        order.getEncounter().addProvider(clinicialEncounterRole, createProvider());
+        when(order.getOrderNumber()).thenReturn(uuid.toString());
+        when(order.getDateActivated()).thenReturn((new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2012")));
+        when(order.getPatient()).thenReturn(patient);
+        when(order.getConcept()).thenReturn(testCTConcept);
+        when(order.getUrgency()).thenReturn(Order.Urgency.STAT);
+        when(order.getClinicalHistory()).thenReturn("Patient fell off horse\r\nAnd broke back");
+        when(order.getExamLocation()).thenReturn(examLocation);
+        when(order.getEncounter()).thenReturn(encounter);
+
 
         String hl7Message = converter.convertToPacsFormat(order, "SC");
 
@@ -263,18 +269,20 @@ public class OrderToPacsConverterTest {
     @Test
     public void shouldGenerateMessageFromAUSOrder() throws Exception {
 
-        RadiologyOrder order = new RadiologyOrder();
+        RadiologyOrder order = mock(RadiologyOrder.class);
         UUID uuid = UUID.randomUUID();
-        order.setAccessionNumber(uuid.toString());
-        order.setStartDate(new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2012"));
-        order.setPatient(createPatient());
-        order.setConcept(testUSConcept);
-        order.setUrgency(Order.Urgency.STAT);
-        order.setClinicalHistory("Patient fell off horse\r\nAnd broke back");
-        order.setExamLocation(examLocation);
+        Patient patient = createPatient();
+        Encounter encounter = createEncounter();
+        encounter.addProvider(clinicialEncounterRole, createProvider());
 
-        order.setEncounter(createEncounter());
-        order.getEncounter().addProvider(clinicialEncounterRole, createProvider());
+        when(order.getOrderNumber()).thenReturn(uuid.toString());
+        when(order.getDateActivated()).thenReturn((new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2012")));
+        when(order.getPatient()).thenReturn(patient);
+        when(order.getConcept()).thenReturn(testUSConcept);
+        when(order.getUrgency()).thenReturn(Order.Urgency.STAT);
+        when(order.getClinicalHistory()).thenReturn("Patient fell off horse\r\nAnd broke back");
+        when(order.getExamLocation()).thenReturn(examLocation);
+        when(order.getEncounter()).thenReturn(encounter);
 
         String hl7Message = converter.convertToPacsFormat(order, "SC");
 
@@ -290,16 +298,19 @@ public class OrderToPacsConverterTest {
 
     @Test
     public void shouldGenerateMessageForAnonymousPatient() throws Exception {
-        RadiologyOrder order = new RadiologyOrder();
+        RadiologyOrder order = mock(RadiologyOrder.class);
         UUID uuid = UUID.randomUUID();
-        order.setAccessionNumber(uuid.toString());
-        order.setStartDate(new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2012"));
-        order.setPatient(createAnonymousPatient());
-        order.setConcept(testXrayConcept);
-        order.setUrgency(Order.Urgency.ROUTINE);
-        order.setClinicalHistory("Patient fell off horse");
+        Patient patient = createAnonymousPatient();
+        Encounter encounter = createEncounter();
 
-        order.setEncounter(createEncounter());
+        when(order.getOrderNumber()).thenReturn(uuid.toString());
+        when(order.getDateActivated()).thenReturn((new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2012")));
+        when(order.getPatient()).thenReturn(patient);
+        when(order.getConcept()).thenReturn(testXrayConcept);
+        when(order.getUrgency()).thenReturn(Order.Urgency.ROUTINE);
+        when(order.getClinicalHistory()).thenReturn("Patient fell off horse");
+        when(order.getExamLocation()).thenReturn(examLocation);
+        when(order.getEncounter()).thenReturn(encounter);
 
         String hl7Message = converter.convertToPacsFormat(order, "SC");
 
@@ -313,19 +324,21 @@ public class OrderToPacsConverterTest {
 
     @Test
     public void shouldTruncateLogPatientName() throws Exception {
-        RadiologyOrder order = new RadiologyOrder();
 
+        RadiologyOrder order = mock(RadiologyOrder.class);
         UUID uuid = UUID.randomUUID();
-        order.setAccessionNumber(uuid.toString());
-        order.setStartDate(new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2012"));
-        order.setPatient(createPatientWithLongName());
-        order.setConcept(testXrayConcept);
-        order.setUrgency(Order.Urgency.STAT);
-        order.setClinicalHistory("Patient fell off horse\r\nAnd broke back");
-        order.setExamLocation(examLocation);
+        Patient patient = createPatientWithLongName();
+        Encounter encounter = createEncounter();
+        encounter.addProvider(clinicialEncounterRole, createProvider());
 
-        order.setEncounter(createEncounter());
-        order.getEncounter().addProvider(clinicialEncounterRole, createProvider());
+        when(order.getOrderNumber()).thenReturn(uuid.toString());
+        when(order.getDateActivated()).thenReturn((new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2012")));
+        when(order.getPatient()).thenReturn(patient);
+        when(order.getConcept()).thenReturn(testXrayConcept);
+        when(order.getUrgency()).thenReturn(Order.Urgency.STAT);
+        when(order.getClinicalHistory()).thenReturn("Patient fell off horse\r\nAnd broke back");
+        when(order.getExamLocation()).thenReturn(examLocation);
+        when(order.getEncounter()).thenReturn(encounter);
 
         String hl7Message = converter.convertToPacsFormat(order, "SC");
 
