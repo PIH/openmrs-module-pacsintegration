@@ -34,7 +34,7 @@
     </modules>
 
     <properties>
-        <openMRSVersion>1.10.1</openMRSVersion>
+        <openMRSVersion>1.10.2</openMRSVersion>
         <emrVersion>2.0-SNAPSHOT</emrVersion>
         <emrapiVersion>1.7-SNAPSHOT</emrapiVersion>
         <radiologyappVersion>1.0-SNAPSHOT</radiologyappVersion>
