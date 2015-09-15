@@ -26,7 +26,7 @@ import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LIS
 public class ORM_O01Handler extends HL7Handler implements Application {
 
     @Override
-    public Message processMessage(Message message) throws HL7Exception {
+    public synchronized Message processMessage(Message message) throws HL7Exception {
 
         ORM_O01 ormO01 = (ORM_O01) message;
         String messageControlID = ormO01.getMSH().getMessageControlID().getValue();
@@ -44,7 +44,7 @@ public class ORM_O01Handler extends HL7Handler implements Application {
             // we are triggering the create of a RadiologyStudy on reception of a "Reviewed" event, which
             // means that the technologist has marked the study as reviewed, or a "Reported" event, which
             // means that the study has been reported on, or a "Needs Overread" event which means that an
-            // overread from BOston is requested;
+            // overread from Boston is requested;
             // we only create an study once, so if multiple REVIEWED/REPORTED/NEEDS OVERREAD
             // events are received (likely) it won't create a dup or throw and error
 

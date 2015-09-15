@@ -15,16 +15,16 @@
 package org.openmrs.module.pacsintegration.component;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.module.ModuleActivator;
-import org.openmrs.module.radiologyapp.RadiologyProperties;
 import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationActivator;
+import org.openmrs.module.radiologyapp.RadiologyProperties;
+import org.openmrs.module.radiologyapp.RadiologyService;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -51,6 +51,9 @@ public class HL7ListenerComponentTest extends BaseModuleContextSensitiveTest {
 
     @Autowired
     private EncounterService encounterService;
+
+    @Autowired
+    private RadiologyService radiologyService;
 
     @Autowired
     private EmrApiProperties emrApiProperties;
@@ -243,7 +246,7 @@ public class HL7ListenerComponentTest extends BaseModuleContextSensitiveTest {
             String message = "MSH|^~\\&|HMI||RAD|REPORTS|20130228174643||ORM^O01|RTS01CE16057B105AC0|P|2.3|\r" +
                     "PID|1||101-6||Patient^Test^||19770222|M||||||||||\r" +
                     "ORC|\r" +
-                    "OBR|1||0000001297|127689^SOME_X-RAY|||20130228170350||||||||||||MBL^CR||||||P|||||||&Goodrich&Mark&&&&^||||20130228170350\r" +
+                    "OBR|1||0000001297|127689^SOME_X-RAY|||20130228170350||||||||||||MBL^CR||||||P|||||||&Goodrich&Mark&&&&||||20130228170350\r" +
                     "OBX|1|RP|||||||||F\r" +
                     "OBX|2|TX|EventType^EventType|1|REVIEWED\r" +
                     "OBX|3|CN|Technologist^Technologist|1|1435^Duck^Donald\r" +
@@ -281,5 +284,113 @@ public class HL7ListenerComponentTest extends BaseModuleContextSensitiveTest {
         }
 
     }
+
+
+    @Test
+    public void shouldNotCreateDuplicateReport() throws Exception {
+
+        ModuleActivator activator = new PacsIntegrationActivator();
+        activator.started();
+
+
+        List<Patient> patients = patientService.getPatients(null, "101-6", Collections.singletonList(emrApiProperties.getPrimaryIdentifierType()), true);
+        assertThat(patients.size(), is(1));  // sanity check
+        Patient patient = patients.get(0);
+        List<Encounter> encounters = encounterService.getEncounters(patient, null, null, null, null, Collections.singletonList(radiologyProperties.getRadiologyReportEncounterType()),
+                null, null, null, false);
+        assertThat(encounters.size(), is(0));  // sanity check
+
+
+        try {
+            String message = "MSH|^~\\&|HMI|Mirebalais Hospital|RAD|REPORTS|20130228174549||ORU^R01|RTS01CE16055AAF5290|P|2.3|\r" +
+                    "PID|1||101-6||Patient^Test^||19770222|M||||||||||\r" +
+                    "PV1|1||||||||||||||||||\r" +
+                    "OBR|1||0000001297|127689^SOME_X-RAY|||20130228170556||||||||||||MBL^CR||||||F|||||||Test&Goodrich&Mark&&&&||||20130228170556\r" +
+                    "OBX|1|TX|127689^SOME_X-RAY||Clinical Indication: ||||||F\r";
+
+            Thread.sleep(2000);    // give the simple server time to start
+
+            Socket socket = new Socket("127.0.0.1", 6665);
+
+            PrintStream writer = new PrintStream(socket.getOutputStream());
+
+            for (int i = 0; i < 2; i++) {
+                writer.print(header);
+                writer.print(message);
+                writer.print(trailer + "\r");
+                writer.flush();
+            }
+
+            Thread.sleep(2000);
+
+            encounters = encounterService.getEncounters(patient, null, null, null, null, Collections.singletonList(radiologyProperties.getRadiologyReportEncounterType()),
+                    null, null, null, false);
+            assertThat(encounters.size(), is(1));
+            assertThat(encounters.get(0).getObs().size(), is(4));
+
+        }
+        finally {
+            activator.stopped();
+        }
+
+    }
+
+    @Test
+    public void shouldCreateTwoReportsIfBodyDifferent() throws Exception {
+
+        ModuleActivator activator = new PacsIntegrationActivator();
+        activator.started();
+
+
+        List<Patient> patients = patientService.getPatients(null, "101-6", Collections.singletonList(emrApiProperties.getPrimaryIdentifierType()), true);
+        assertThat(patients.size(), is(1));  // sanity check
+        Patient patient = patients.get(0);
+        List<Encounter> encounters = encounterService.getEncounters(patient, null, null, null, null, Collections.singletonList(radiologyProperties.getRadiologyReportEncounterType()),
+                null, null, null, false);
+        assertThat(encounters.size(), is(0));  // sanity check
+
+
+        try {
+            String message1 = "MSH|^~\\&|HMI|Mirebalais Hospital|RAD|REPORTS|20130228174549||ORU^R01|RTS01CE16055AAF5290|P|2.3|\r" +
+                    "PID|1||101-6||Patient^Test^||19770222|M||||||||||\r" +
+                    "PV1|1||||||||||||||||||\r" +
+                    "OBR|1||0000001297|127689^SOME_X-RAY|||20130228170556||||||||||||MBL^CR||||||F|||||||Test&Goodrich&Mark&&&&||||20130228170556\r" +
+                    "OBX|1|TX|127689^SOME_X-RAY||Clinical Indication: ||||||F\r";
+
+            String message2 = "MSH|^~\\&|HMI|Mirebalais Hospital|RAD|REPORTS|20130228174549||ORU^R01|RTS01CE16055AAF5290|P|2.3|\r" +
+                    "PID|1||101-6||Patient^Test^||19770222|M||||||||||\r" +
+                    "PV1|1||||||||||||||||||\r" +
+                    "OBR|1||0000001297|127689^SOME_X-RAY|||20130228170556||||||||||||MBL^CR||||||F|||||||Test&Goodrich&Mark&&&&||||20130228170556\r" +
+                    "OBX|1|TX|127689^SOME_X-RAY||Another Clinical Indication: ||||||F\r";
+
+            Thread.sleep(2000);    // give the simple server time to start
+
+            Socket socket = new Socket("127.0.0.1", 6665);
+
+            PrintStream writer = new PrintStream(socket.getOutputStream());
+
+            writer.print(header);
+            writer.print(message1);
+            writer.print(trailer + "\r");
+            writer.flush();
+
+            writer.print(header);
+            writer.print(message2);
+            writer.print(trailer + "\r");
+            writer.flush();
+
+            Thread.sleep(2000);
+
+            encounters = encounterService.getEncounters(patient, null, null, null, null, Collections.singletonList(radiologyProperties.getRadiologyReportEncounterType()),
+                    null, null, null, false);
+            assertThat(encounters.size(), is(2));
+
+        }
+        finally {
+            activator.stopped();
+        }
+
+    }
+
 
 }

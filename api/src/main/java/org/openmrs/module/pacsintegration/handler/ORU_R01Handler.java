@@ -12,6 +12,9 @@ import org.openmrs.Provider;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.pacsintegration.util.HL7Utils;
 import org.openmrs.module.radiologyapp.RadiologyReport;
+import org.openmrs.util.OpenmrsUtil;
+
+import java.util.List;
 
 import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_PASSWORD;
 import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_USERNAME;
@@ -22,7 +25,7 @@ public class ORU_R01Handler extends HL7Handler implements Application {
     }
 
     @Override
-    public Message processMessage(Message message) throws HL7Exception {
+    public synchronized Message processMessage(Message message) throws HL7Exception {
 
         ORU_R01 oruR01 = (ORU_R01) message;
         String messageControlID = oruR01.getMSH().getMessageControlID().getValue();
@@ -52,7 +55,12 @@ public class ORU_R01Handler extends HL7Handler implements Application {
             report.setReportLocation(getLocationByName(oruR01.getMSH().getSendingFacility().getNamespaceID().getValue()));
             report.setReportBody(getReportBody(oruR01.getRESPONSE().getORDER_OBSERVATION()));
 
-            radiologyService.saveRadiologyReport(report);
+            if (!isDuplicate(report)) {
+                radiologyService.saveRadiologyReport(report);
+            }
+            else {
+                log.warn("Duplicate report for order number " + report.getOrderNumber() + ", not saving");
+            }
         }
         catch (Exception e) {
             log.error("Unable to parse incoming ORU_RO1 message", e);
@@ -61,7 +69,7 @@ public class ORU_R01Handler extends HL7Handler implements Application {
         }
         finally {
             Context.closeSession();
-        }
+       }
 
         return HL7Utils.generateACK(oruR01.getMSH().getMessageControlID().getValue(), sendingFacility);
     }
@@ -69,6 +77,27 @@ public class ORU_R01Handler extends HL7Handler implements Application {
     @Override
     public boolean canProcess(Message message) {
         return message != null && "ORM_O01".equals(message.getName());
+    }
+
+    // test for duplicates, which can happen when PACS sends the same message twice; we consider a report
+    // a duplicate if order number, report type, principal results interpreter, date and body are all the same
+    // (we shouldn't need to check patient or study type, since we have checked order number)
+    private Boolean isDuplicate(RadiologyReport report) {
+        List<RadiologyReport> reports = radiologyService.getRadiologyReportsByOrderNumber(report.getOrderNumber());  // TODO obviously, change this to not be hardcoded!!!
+        if (reports == null || reports.size() == 0) {
+            return false;
+        }
+        else {
+            for (RadiologyReport r : reports) {
+                if (OpenmrsUtil.nullSafeEquals(r.getReportType(), report.getReportType()) &&
+                        OpenmrsUtil.nullSafeEquals(r.getPrincipalResultsInterpreter(), report.getPrincipalResultsInterpreter()) &&
+                        OpenmrsUtil.nullSafeEquals(r.getReportBody().trim(), report.getReportBody().trim()) &&
+                        OpenmrsUtil.compare(report.getReportDate(), r.getReportDate()) == 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private String getReportBody(ORU_R01_ORDER_OBSERVATION obsSet) throws HL7Exception {
@@ -114,5 +143,4 @@ public class ORU_R01Handler extends HL7Handler implements Application {
 
         return null;
     }
-
 }
