@@ -44,10 +44,10 @@
         <idgenVersion>4.0</idgenVersion>
         <htmlformentryVersion>2.7-SNAPSHOT</htmlformentryVersion>
         <providermanagementVersion>2.3</providermanagementVersion>
-        <reportingVersion>0.9.7-SNAPSHOT</reportingVersion>
+        <reportingVersion>0.9.7</reportingVersion>
         <serializationxstreamVersion>0.2.8</serializationxstreamVersion>
         <calculationVersion>1.1</calculationVersion>
-        <appframeworkVersion>2.4-SNAPSHOT</appframeworkVersion>
+        <appframeworkVersion>2.4</appframeworkVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
