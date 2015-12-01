@@ -38,14 +38,14 @@
         <emrVersion>2.0-SNAPSHOT</emrVersion>
         <emrapiVersion>1.13-SNAPSHOT</emrapiVersion>
         <radiologyappVersion>1.0-SNAPSHOT</radiologyappVersion>
-        <metadatasharingVersion>1.1.9</metadatasharingVersion>
+        <metadatasharingVersion>1.1.10</metadatasharingVersion>
         <eventVersion>2.2.1</eventVersion>
         <uiframeworkVersion>3.5-SNAPSHOT</uiframeworkVersion>
         <idgenVersion>4.2</idgenVersion>
         <htmlformentryVersion>2.7-SNAPSHOT</htmlformentryVersion>
         <providermanagementVersion>2.3</providermanagementVersion>
         <reportingVersion>0.9.9-SNAPSHOT</reportingVersion>
-        <serializationxstreamVersion>0.2.10-SNAPSHOT</serializationxstreamVersion>
+        <serializationxstreamVersion>0.2.10</serializationxstreamVersion>
         <calculationVersion>1.1</calculationVersion>
         <appframeworkVersion>2.5-SNAPSHOT</appframeworkVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
