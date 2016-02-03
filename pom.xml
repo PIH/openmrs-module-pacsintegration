@@ -37,7 +37,7 @@
         <openMRSVersion>1.10.2</openMRSVersion>
         <emrVersion>2.0-SNAPSHOT</emrVersion>
         <emrapiVersion>1.13-SNAPSHOT</emrapiVersion>
-        <radiologyappVersion>1.0-SNAPSHOT</radiologyappVersion>
+        <radiologyappVersion>1.1-SNAPSHOT</radiologyappVersion>
         <metadatasharingVersion>1.1.10</metadatasharingVersion>
         <eventVersion>2.2.1</eventVersion>
         <uiframeworkVersion>3.5</uiframeworkVersion>
