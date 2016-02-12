@@ -35,7 +35,7 @@
     </modules>
 
     <properties>
-        <openMRSVersion>1.10.4-SNAPSHOT</openMRSVersion>
+        <openMRSVersion>1.10.4</openMRSVersion>
         <emrVersion>2.0</emrVersion>
         <emrapiVersion>1.12</emrapiVersion>
         <radiologyappVersion>1.0</radiologyappVersion>
@@ -328,58 +328,6 @@
                             <name>openMRSwebVersion</name>
                             <version>[1.9.0,1.10.0-!)</version>
                         </property>
-                        <property>
-                            <name>htmlwidgetsVersion</name>
-                            <banSnapshots>true</banSnapshots>
-                        </property>
-                        <property>
-                            <name>metadatasharingVersion</name>
-                            <banSnapshots>true</banSnapshots>
-                        </property>
-                        <property>
-                            <name>metadatamappingVersion</name>
-                            <banSnapshots>true</banSnapshots>
-                        </property>
-                        <property>
-                            <name>calculationVersion</name>
-                            <banSnapshots>true</banSnapshots>
-                        </property>
-                        <property>
-                            <name>namephoneticsVersion</name>
-                            <banSnapshots>true</banSnapshots>
-                        </property>
-                        <property>
-                            <name>addresshierarchyVersion</name>
-                            <banSnapshots>true</banSnapshots>
-                        </property>
-                        <property>
-                            <name>providermanagementVersion</name>
-                            <banSnapshots>true</banSnapshots>
-                        </property>
-                        <property>
-                            <name>eventVersion</name>
-                            <banSnapshots>true</banSnapshots>
-                        </property>
-                        <property>
-                            <name>logicVersion</name>
-                            <banSnapshots>true</banSnapshots>
-                        </property>
-                        <property>
-                            <name>chartsearchVersion</name>
-                            <banSnapshots>true</banSnapshots>
-                        </property>
-                        <property>
-                            <name>metadatadeployVersion</name>
-                            <banSnapshots>true</banSnapshots>
-                        </property>
-                        <property>
-                            <name>idgenVersion</name>
-                            <banSnapshots>true</banSnapshots>
-                        </property>
-                        <!--      <property>
-                                  <name>webservicesRestVersion</name>
-                                  <banSnapshots>true</banSnapshots>
-                              </property>-->
                     </properties>
                 </configuration>
             </plugin>
