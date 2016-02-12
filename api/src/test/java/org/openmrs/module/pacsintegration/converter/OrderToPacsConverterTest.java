@@ -345,7 +345,7 @@ public class OrderToPacsConverterTest {
         assertThat(hl7Message, startsWith("MSH|^~\\&||openmrs_mirebalais|||"));
         // TODO: test that a valid date is passed
         assertThat(hl7Message, containsString("||ORM^O01||P|2.3\r"));
-        assertThat(hl7Message, containsString("PID|||6TS-4||Super Duper Long Name Crazy Lon^Even My Given Name Is Longer Th||19760825000000|F\r"));
+        assertThat(hl7Message, containsString("PID|||6TS-4||Super Duper Long Name Crazy Lo^Even My Given Name Is Longer T||19760825000000|F\r"));
         assertThat(hl7Message, containsString("PV1|||ABCDEF^^^^^^^^Radiology|||||123^Joseph^Wayne"));
         assertThat(hl7Message, containsString("ORC|SC\r"));
         assertThat(hl7Message, endsWith("OBR|||" + uuid.toString() + "|123ABC^Left-hand x-ray|||||||||||||||CR||||||||^^^^^STAT||||^Patient fell off horse~^And broke back|||||20120808000000\r"));

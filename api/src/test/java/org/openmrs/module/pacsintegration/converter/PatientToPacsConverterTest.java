@@ -107,7 +107,7 @@ public class PatientToPacsConverterTest {
         String hl7Message = converter.convertToAdmitMessage(patient);
 
         assertThat(hl7Message, startsWith("MSH|^~\\&|||||||ADT^A01||P|2.3\r"));
-        assertThat(hl7Message, endsWith("PID|||PATIENT_IDENTIFIER||Super Duper Long Name Crazy Lon^Even My Given Name Is Longer Th||19790827000000|M\r"));
+        assertThat(hl7Message, endsWith("PID|||PATIENT_IDENTIFIER||Super Duper Long Name Crazy Lo^Even My Given Name Is Longer T||19790827000000|M\r"));
 
     }
 }
