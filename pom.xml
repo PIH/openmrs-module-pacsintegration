@@ -40,13 +40,13 @@
         <emrapiVersion>1.12</emrapiVersion>
         <radiologyappVersion>1.0</radiologyappVersion>
         <metadatasharingVersion>1.1.10</metadatasharingVersion>
-        <eventVersion>2.2.1</eventVersion>
+        <eventVersion>2.3</eventVersion>
         <uiframeworkVersion>3.6</uiframeworkVersion>
         <idgenVersion>4.2</idgenVersion>
         <htmlformentryVersion>3.1</htmlformentryVersion>
         <providermanagementVersion>2.4</providermanagementVersion>
         <reportingVersion>0.9.8.1</reportingVersion>
-        <serializationxstreamVersion>0.2.10</serializationxstreamVersion>
+        <serializationxstreamVersion>0.2.11</serializationxstreamVersion>
         <calculationVersion>1.1</calculationVersion>
         <appframeworkVersion>2.8</appframeworkVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
