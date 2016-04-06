@@ -105,6 +105,8 @@ abstract public class HL7Handler {
     // if the passed time is in the future, but less than 15 minutes in the future, return the current time (because
     // OpenMRS can't accept encounter dates in the future); if it is more than 15 minutes in the future, throw
     // an exception
+
+    // NOTE: added a hack and increassed the acceptable difference from 15 minutes to 75 minutes to account for daylight saving time difference between Boston and Haiti
     protected Date syncTimeWithCurrentServerTime(Date date) {
 
         DateTime now = new DateTime();
@@ -115,7 +117,7 @@ abstract public class HL7Handler {
             return dateTime.toDate();
         }
         else {
-            if (dateTime.minusMinutes(15).isBefore(now)) {
+            if (dateTime.minusMinutes(75).isBefore(now)) {
                 return now.toDate();
             }
             else {
