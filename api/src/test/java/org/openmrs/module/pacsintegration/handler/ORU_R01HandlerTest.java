@@ -484,7 +484,7 @@ public class ORU_R01HandlerTest {
         verify(radiologyService).saveRadiologyReport(argThat(new HasReportDateBetween(date.toDate(), new Date()))) ;
     }
 
-
+    // TODO change back to 15 minutes after we find a better fix for UHM-2434
     @Test
     public void shouldReturnErrorACKIfReportDateMoreThanFifteenMinutesInFuture() throws HL7Exception, ApplicationException {
 
@@ -517,7 +517,7 @@ public class ORU_R01HandlerTest {
         ACK ack = (ACK) handler.processMessage(parseMessage(message));
 
         assertThat(ack.getMSA().getAcknowledgementCode().getValue(), is("AR"));
-        assertThat(ack.getMSA().getTextMessage().getValue(), is("Date cannot be more than 15 minutes in the future."));
+        assertThat(ack.getMSA().getTextMessage().getValue(), is("Date cannot be more than 75 minutes in the future."));
     }
 
 

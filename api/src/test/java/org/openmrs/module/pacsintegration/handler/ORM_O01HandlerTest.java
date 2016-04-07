@@ -582,8 +582,9 @@ public class ORM_O01HandlerTest  {
     }
 
 
+    // TODO change back to 15 minutes after we find a better fix for UHM-2434
     @Test
-    public void shouldReturnErrorACKIfDateMoreThanFifteenMinutesInFuture() throws HL7Exception, ApplicationException {
+    public void shouldReturnErrorACKIfDateMoreThanSeventyFiveMinutesInFuture() throws HL7Exception, ApplicationException {
 
         Patient patient = new Patient(1);
         RadiologyOrder radiologyOrder = new RadiologyOrder();
@@ -614,7 +615,7 @@ public class ORM_O01HandlerTest  {
         ACK ack = (ACK) handler.processMessage(parseMessage(message));
 
         assertThat(ack.getMSA().getAcknowledgementCode().getValue(), is("AR"));
-        assertThat(ack.getMSA().getTextMessage().getValue(), is("Date cannot be more than 15 minutes in the future."));
+        assertThat(ack.getMSA().getTextMessage().getValue(), is("Date cannot be more than 75 minutes in the future."));
     }
 
     private Message parseMessage(String message) throws HL7Exception {
