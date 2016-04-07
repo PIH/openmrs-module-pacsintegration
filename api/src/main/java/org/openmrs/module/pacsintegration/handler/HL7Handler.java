@@ -107,6 +107,7 @@ abstract public class HL7Handler {
     // an exception
 
     // NOTE: added a hack and increassed the acceptable difference from 15 minutes to 75 minutes to account for daylight saving time difference between Boston and Haiti
+
     protected Date syncTimeWithCurrentServerTime(Date date) {
 
         DateTime now = new DateTime();
@@ -121,7 +122,7 @@ abstract public class HL7Handler {
                 return now.toDate();
             }
             else {
-                throw new IllegalArgumentException("Date cannot be more than 15 minutes in the future.");
+                throw new IllegalArgumentException("Date cannot be more than 75 minutes in the future.");
             }
         }
     }
