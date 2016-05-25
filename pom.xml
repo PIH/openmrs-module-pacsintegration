@@ -45,7 +45,7 @@
         <idgenVersion>4.3</idgenVersion>
         <htmlformentryVersion>3.2</htmlformentryVersion>
         <providermanagementVersion>2.4</providermanagementVersion>
-        <reportingVersion>0.9.9</reportingVersion>
+        <reportingVersion>0.10.0</reportingVersion>
         <serializationxstreamVersion>0.2.11</serializationxstreamVersion>
         <calculationVersion>1.1</calculationVersion>
         <appframeworkVersion>2.8</appframeworkVersion>
