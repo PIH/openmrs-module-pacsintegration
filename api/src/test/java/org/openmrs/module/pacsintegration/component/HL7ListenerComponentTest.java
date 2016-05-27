@@ -20,9 +20,11 @@ import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.ModuleActivator;
 import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationActivator;
+import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.radiologyapp.RadiologyProperties;
 import org.openmrs.module.radiologyapp.RadiologyService;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
@@ -71,7 +73,7 @@ public class HL7ListenerComponentTest extends BaseModuleContextSensitiveTest {
 
         ModuleActivator activator = new PacsIntegrationActivator();
         activator.started();
-
+        Context.getService(PacsIntegrationService.class).initializeHL7Listener();
 
         List<Patient> patients = patientService.getPatients(null, "101-6", Collections.singletonList(emrApiProperties.getPrimaryIdentifierType()), true);
         assertThat(patients.size(), is(1));  // sanity check
@@ -122,6 +124,7 @@ public class HL7ListenerComponentTest extends BaseModuleContextSensitiveTest {
 
         ModuleActivator activator = new PacsIntegrationActivator();
         activator.started();
+        Context.getService(PacsIntegrationService.class).initializeHL7Listener();
 
 
         List<Patient> patients = patientService.getPatients(null, "101-6", Collections.singletonList(emrApiProperties.getPrimaryIdentifierType()), true);
@@ -174,6 +177,7 @@ public class HL7ListenerComponentTest extends BaseModuleContextSensitiveTest {
 
         ModuleActivator activator = new PacsIntegrationActivator();
         activator.started();
+        Context.getService(PacsIntegrationService.class).initializeHL7Listener();
 
         List<Patient> patients = patientService.getPatients(null, "101-6", Collections.singletonList(emrApiProperties.getPrimaryIdentifierType()), true);
         assertThat(patients.size(), is(1));  // sanity check
@@ -232,6 +236,7 @@ public class HL7ListenerComponentTest extends BaseModuleContextSensitiveTest {
 
         ModuleActivator activator = new PacsIntegrationActivator();
         activator.started();
+        Context.getService(PacsIntegrationService.class).initializeHL7Listener();
 
         List<Patient> patients = patientService.getPatients(null, "101-6", Collections.singletonList(emrApiProperties.getPrimaryIdentifierType()), true);
         assertThat(patients.size(), is(1));  // sanity check
@@ -291,7 +296,7 @@ public class HL7ListenerComponentTest extends BaseModuleContextSensitiveTest {
 
         ModuleActivator activator = new PacsIntegrationActivator();
         activator.started();
-
+        Context.getService(PacsIntegrationService.class).initializeHL7Listener();
 
         List<Patient> patients = patientService.getPatients(null, "101-6", Collections.singletonList(emrApiProperties.getPrimaryIdentifierType()), true);
         assertThat(patients.size(), is(1));  // sanity check
@@ -340,7 +345,7 @@ public class HL7ListenerComponentTest extends BaseModuleContextSensitiveTest {
 
         ModuleActivator activator = new PacsIntegrationActivator();
         activator.started();
-
+        Context.getService(PacsIntegrationService.class).initializeHL7Listener();
 
         List<Patient> patients = patientService.getPatients(null, "101-6", Collections.singletonList(emrApiProperties.getPrimaryIdentifierType()), true);
         assertThat(patients.size(), is(1));  // sanity check
