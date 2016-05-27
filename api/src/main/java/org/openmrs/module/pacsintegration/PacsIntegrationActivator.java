@@ -52,8 +52,9 @@ public class PacsIntegrationActivator implements ModuleActivator {
 	 */
 	public void started() {
 		log.info("PACS Integration Module started");
-        Context.getService(PacsIntegrationService.class).initializeHL7Listener();
-    }
+		// we are now starting this via the PIH Core module activator so that we can determine whether to start or not based on configuratio
+		//Context.getService(PacsIntegrationService.class).initializeHL7Listener();
+	}
 	
 	/**
 	 * @see ModuleActivator#willStop()

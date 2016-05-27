@@ -47,7 +47,9 @@ public class HL7Listener {
     }
 
     public void stop() {
-        hl7Service.stop();
+        if (hl7Service != null) {
+            hl7Service.stop();
+        }
     }
 
     /**
