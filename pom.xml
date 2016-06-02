@@ -37,7 +37,7 @@
     <properties>
         <openMRSVersion>1.10.4</openMRSVersion>
         <emrVersion>2.0</emrVersion>
-        <emrapiVersion>1.13</emrapiVersion>
+        <emrapiVersion>1.14</emrapiVersion>
         <radiologyappVersion>1.0</radiologyappVersion>
         <metadatasharingVersion>1.2</metadatasharingVersion>
         <eventVersion>2.4</eventVersion>
