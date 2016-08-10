@@ -39,7 +39,7 @@
         <emrVersion>2.0</emrVersion>
         <emrapiVersion>1.16</emrapiVersion>
         <radiologyappVersion>1.0</radiologyappVersion>
-        <metadatasharingVersion>1.2</metadatasharingVersion>
+        <metadatasharingVersion>1.2.1</metadatasharingVersion>
         <eventVersion>2.4</eventVersion>
         <uiframeworkVersion>3.7</uiframeworkVersion>
         <idgenVersion>4.3</idgenVersion>
