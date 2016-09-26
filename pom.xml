@@ -42,7 +42,7 @@
         <metadatasharingVersion>1.2.2</metadatasharingVersion>
         <eventVersion>2.4</eventVersion>
         <uiframeworkVersion>3.7</uiframeworkVersion>
-        <idgenVersion>4.3</idgenVersion>
+        <idgenVersion>4.4.0</idgenVersion>
         <htmlformentryVersion>3.2</htmlformentryVersion>
         <providermanagementVersion>2.4</providermanagementVersion>
         <reportingVersion>0.10.2</reportingVersion>
