@@ -27,14 +27,12 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.metadatamapping.api.MetadataMappingService;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.listener.OrderEventListener;
 import org.openmrs.module.radiologyapp.RadiologyOrder;
 import org.openmrs.module.radiologyapp.RadiologyService;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.NotTransactional;
 
 import java.text.SimpleDateFormat;
@@ -65,11 +63,6 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 
     @Autowired
     private OrderEventListener orderEventListener;
-
-    @Autowired
-    @Qualifier("metadatamapping.MetadataMappingService")
-    private MetadataMappingService metadataMappingService;
-
 
     private RadiologyService radiologyService;
 

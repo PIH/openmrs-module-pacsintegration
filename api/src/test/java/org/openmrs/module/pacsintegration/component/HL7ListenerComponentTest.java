@@ -23,13 +23,11 @@ import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ModuleActivator;
 import org.openmrs.module.emrapi.EmrApiProperties;
-import org.openmrs.module.metadatamapping.api.MetadataMappingService;
 import org.openmrs.module.pacsintegration.PacsIntegrationActivator;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.radiologyapp.RadiologyProperties;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -54,10 +52,6 @@ public class HL7ListenerComponentTest extends BaseModuleContextSensitiveTest {
 
     @Autowired
     private EncounterService encounterService;
-
-    @Autowired
-    @Qualifier("metadatamapping.MetadataMappingService")
-    private MetadataMappingService metadataMappingService;
 
     @Autowired
     private EmrApiProperties emrApiProperties;
