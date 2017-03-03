@@ -27,8 +27,6 @@ import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.emrapi.EmrApiConstants;
-import org.openmrs.module.metadatamapping.MetadataSource;
 import org.openmrs.module.metadatamapping.api.MetadataMappingService;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.listener.OrderEventListener;
@@ -91,23 +89,11 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 	public void setupDatabase() throws Exception {
 
         pacsIntegrationService = mock(PacsIntegrationService.class);
-        radiologyService= mock(RadiologyService.class);
+        radiologyService = mock(RadiologyService.class);
         orderEventListener.setRadiologyService(radiologyService);
         orderEventListener.setPacsIntegrationService(pacsIntegrationService);
 
-		executeDataSet(XML_DATASET);
-
-        // setup the EMR API metadata mapping source
-        MetadataSource source = new MetadataSource();
-        source.setName(EmrApiConstants.EMR_METADATA_SOURCE_NAME);
-        source.setDescription(EmrApiConstants.EMR_METADATA_SOURCE_DESCRIPTION);
-        metadataMappingService.saveMetadataSource(source);
-
-        // set up metadata mappings used (generally just using some random types from the test dataset -->
-        metadataMappingService.mapMetadataItem(locationService.getLocationByUuid("8d6c993e-c2cc-11de-8d13-0010c6dffd0f"), EmrApiConstants.EMR_METADATA_SOURCE_NAME, EmrApiConstants.GP_UNKNOWN_LOCATION);
-        metadataMappingService.mapMetadataItem(providerService.getProviderByUuid("c2299800-cca9-11e0-9572-0800200c9a66"), EmrApiConstants.EMR_METADATA_SOURCE_NAME, EmrApiConstants.GP_UNKNOWN_PROVIDER);
-        metadataMappingService.mapMetadataItem(encounterService.getEncounterRoleByUuid("a0b03050-c99b-11e0-9572-0800200c9a66" ), EmrApiConstants.EMR_METADATA_SOURCE_NAME, EmrApiConstants.GP_ORDERING_PROVIDER_ENCOUNTER_ROLE);
-        metadataMappingService.mapMetadataItem(patientService.getPatientIdentifierTypeByUuid("1a339fe9-38bc-4ab3-b180-320988c0b968"), EmrApiConstants.EMR_METADATA_SOURCE_NAME, EmrApiConstants.PRIMARY_IDENTIFIER_TYPE);
+        executeDataSet(XML_DATASET);
     }
 
 
