@@ -19,16 +19,21 @@ import org.junit.Test;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.api.EncounterService;
+import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.ModuleActivator;
+import org.openmrs.module.emrapi.EmrApiConstants;
 import org.openmrs.module.emrapi.EmrApiProperties;
+import org.openmrs.module.metadatamapping.MetadataSource;
+import org.openmrs.module.metadatamapping.api.MetadataMappingService;
 import org.openmrs.module.pacsintegration.PacsIntegrationActivator;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.radiologyapp.RadiologyProperties;
-import org.openmrs.module.radiologyapp.RadiologyService;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -55,7 +60,14 @@ public class HL7ListenerComponentTest extends BaseModuleContextSensitiveTest {
     private EncounterService encounterService;
 
     @Autowired
-    private RadiologyService radiologyService;
+    private LocationService locationService;
+
+    @Autowired
+    private ProviderService providerService;
+
+    @Autowired
+    @Qualifier("metadatamapping.MetadataMappingService")
+    private MetadataMappingService metadataMappingService;
 
     @Autowired
     private EmrApiProperties emrApiProperties;
@@ -66,6 +78,18 @@ public class HL7ListenerComponentTest extends BaseModuleContextSensitiveTest {
     @Before
     public void setup() throws Exception {
         executeDataSet(XML_DATASET);
+
+        // setup the EMR API metadata mapping source
+        MetadataSource source = new MetadataSource();
+        source.setName(EmrApiConstants.EMR_METADATA_SOURCE_NAME);
+        source.setDescription(EmrApiConstants.EMR_METADATA_SOURCE_DESCRIPTION);
+        metadataMappingService.saveMetadataSource(source);
+
+        // set up metadata mappings used (generally just using some random types from the test dataset -->
+        metadataMappingService.mapMetadataItem(locationService.getLocationByUuid("8d6c993e-c2cc-11de-8d13-0010c6dffd0f"), EmrApiConstants.EMR_METADATA_SOURCE_NAME, EmrApiConstants.GP_UNKNOWN_LOCATION);
+        metadataMappingService.mapMetadataItem(providerService.getProviderByUuid("c2299800-cca9-11e0-9572-0800200c9a66"), EmrApiConstants.EMR_METADATA_SOURCE_NAME, EmrApiConstants.GP_UNKNOWN_PROVIDER);
+        metadataMappingService.mapMetadataItem(encounterService.getEncounterRoleByUuid("a0b03050-c99b-11e0-9572-0800200c9a66" ), EmrApiConstants.EMR_METADATA_SOURCE_NAME, EmrApiConstants.GP_ORDERING_PROVIDER_ENCOUNTER_ROLE);
+        metadataMappingService.mapMetadataItem(patientService.getPatientIdentifierTypeByUuid("1a339fe9-38bc-4ab3-b180-320988c0b968"), EmrApiConstants.EMR_METADATA_SOURCE_NAME, EmrApiConstants.PRIMARY_IDENTIFIER_TYPE);
     }
 
     @Test

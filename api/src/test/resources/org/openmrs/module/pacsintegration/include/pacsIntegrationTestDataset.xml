@@ -24,8 +24,6 @@
                      uuid="6abcc777-7227-4581-8c00-2b4bbb4f888a"/>     <!-- just assigning this to a concept set in the core data -->
     <global_property property="emr.ultrasoundOrderablesConcept" property_value="96408258-000b-424e-af1a-403919332938"
                      uuid="6abcc888-7227-4581-8c00-2b4bbb4f888a"/>     <!-- just assigning this to a concept set in the core data -->
-    <global_property property="emr.primaryIdentifierType" property_value="1a339fe9-38bc-4ab3-b180-320988c0b968"
-                     uuid="7abcc666-7227-4581-8c00-2b4ccb4f888a"/>      <!-- just assigning this to patient identifier 1 in the core data set -->
 
     <concept_reference_term concept_reference_term_id="1011" concept_source_id="2" code="127689" name="some term" description="some term" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="f40666f0-49d5-11e0-8fed-18a905e044dc"/>
     <concept_reference_map concept_map_id="1011" concept_id="18" concept_reference_term_id="1011" concept_map_type_id="2" creator="1" date_created="2004-08-12 00:00:00.0" uuid="23b6e712-49d8-11e0-8fed-18a111e044dc"/>
@@ -53,12 +51,7 @@
 
     <!-- just use a random types from the test dataset -->
     <global_property property="emr.radiologyOrderEncounterType" property_value="61ae96f4-6afe-4351-b6f8-cd4fc383cce1" uuid="696cb344-9e66-42c6-8f03-2a0c1e9ca2a8"/>
-    <global_property property="emr.orderingProviderEncounterRole" property_value="a0b03050-c99b-11e0-9572-080020000a66" uuid="696cb344-9e66-6666-8f03-2a0c1e9ca2a8"/>
     <global_property property="emr.radiologyTestOrderType" property_value="f149b5e1-4314-4d0d-a95f-1c4f8031161d" uuid="677cb344-9e66-6666-8f03-2a0c1e9ca2a8"/>
-
-   <!-- maps to unknown location in the core test dataset -->
-    <global_property property="emr.unknownLocation" property_value="8d6c993e-c2cc-11de-8d13-0010c6dffd0f" uuid="6977b3c3-9e66-42c6-8f03-2a0c1e9ca2a8"/>
-    <global_property property="emr.unknownProvider" property_value="c2299800-cca9-11e0-9572-0800200c9a66" uuid="6988b3c3-9e66-42c6-8f03-2a0c1e9ca2a8"/>
 
     <!-- define the metadata for the Radiology Study -->
     <encounter_type encounter_type_id="1001" name="Radiology Study" description="Radiology Study" creator="1" date_created="2005-02-24 00:00:00.0" retired="false" uuid="77ae96f4-6afe-4351-b6f8-cd4fc383cce1"/>
