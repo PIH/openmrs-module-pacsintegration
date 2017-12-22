@@ -24,12 +24,11 @@ import org.openmrs.event.SubscribableEventListener;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.converter.OrderToPacsConverter;
 import org.openmrs.module.radiologyapp.RadiologyOrder;
-import org.openmrs.module.radiologyapp.RadiologyService;
 
-import java.util.Arrays;
-import java.util.List;
 import javax.jms.MapMessage;
 import javax.jms.Message;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_PASSWORD;
 import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_USERNAME;
@@ -41,8 +40,6 @@ public class OrderEventListener implements SubscribableEventListener {
     private PacsIntegrationService pacsIntegrationService;
 
     private AdministrationService adminService;
-
-    private RadiologyService radiologyService;
 
     private OrderToPacsConverter converter;
 
@@ -103,9 +100,5 @@ public class OrderEventListener implements SubscribableEventListener {
 
     public void setAdminService(AdministrationService adminService) {
         this.adminService = adminService;
-    }
-
-    public void setRadiologyService(RadiologyService radiologyService) {
-        this.radiologyService = radiologyService;
     }
 }

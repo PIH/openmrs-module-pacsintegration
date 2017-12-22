@@ -80,8 +80,8 @@ public class OrderToPacsConverter {
         // handle the patient component
         PID pid = message.getPATIENT().getPID();
         pid.getPatientIDInternalID(0).getID().setValue(order.getPatient().getPatientIdentifier(getPatientIdentifierType()).getIdentifier());
-        pid.getPatientName().getFamilyName().setValue(StringUtils.substring(order.getPatient().getFamilyName(), 0, PacsIntegrationConstants.MAX_LENGTH_FAMILY_NAME));
-        pid.getPatientName().getGivenName().setValue(StringUtils.substring(order.getPatient().getGivenName(), 0, PacsIntegrationConstants.MAX_LENGTH_GIVEN_NAME));
+        pid.getPatientName(0).getFamilyName().setValue(StringUtils.substring(order.getPatient().getFamilyName(), 0, PacsIntegrationConstants.MAX_LENGTH_FAMILY_NAME));
+        pid.getPatientName(0).getGivenName().setValue(StringUtils.substring(order.getPatient().getGivenName(), 0, PacsIntegrationConstants.MAX_LENGTH_GIVEN_NAME));
         pid.getDateOfBirth().getTimeOfAnEvent().setValue(order.getPatient().getBirthdate() != null
                 ? HL7Utils.getHl7DateFormat().format(order.getPatient().getBirthdate()) : "");
         pid.getSex().setValue(order.getPatient().getGender());

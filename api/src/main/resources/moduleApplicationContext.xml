@@ -36,9 +36,6 @@
         <property name="orderService">
             <ref bean="orderService"/>
         </property>
-        <property name="radiologyService">
-            <ref bean="radiologyService"/>
-        </property>
         <property name="pacsIntegrationService">
             <ref bean="pacsIntegrationService"/>
         </property>

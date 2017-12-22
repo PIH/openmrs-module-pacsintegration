@@ -31,8 +31,6 @@ public class ORU_R01Handler extends HL7Handler implements Application {
         String messageControlID = oruR01.getMSH().getMessageControlID().getValue();
         String sendingFacility = null;
 
-        Context.openSession();
-
         try {
             Context.openSession();
             Context.authenticate(adminService.getGlobalProperty(GP_LISTENER_USERNAME),
@@ -76,7 +74,7 @@ public class ORU_R01Handler extends HL7Handler implements Application {
 
     @Override
     public boolean canProcess(Message message) {
-        return message != null && "ORM_O01".equals(message.getName());
+        return  message != null && "ORU_R01".equals(message.getName());
     }
 
     // test for duplicates, which can happen when PACS sends the same message twice; we consider a report

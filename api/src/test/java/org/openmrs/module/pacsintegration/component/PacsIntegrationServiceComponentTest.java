@@ -37,10 +37,14 @@ public class PacsIntegrationServiceComponentTest extends BaseModuleContextSensit
     private PacsIntegrationService pacsIntegrationService;
 
 	protected final Log log = LogFactory.getLog(getClass());
+	protected static final String XML_METADATA_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset-metadata.xml";
+	protected static final String XML_MAPPINGS_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset-mappings.xml";
 	protected static final String XML_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset.xml";
 
 	@Before
 	public void setupDatabase() throws Exception {
+		executeDataSet(XML_METADATA_DATASET);
+		executeDataSet(XML_MAPPINGS_DATASET);
 		executeDataSet(XML_DATASET);
 	}
 	

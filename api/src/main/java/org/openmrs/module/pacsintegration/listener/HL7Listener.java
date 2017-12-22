@@ -17,8 +17,6 @@ package org.openmrs.module.pacsintegration.listener;
 import ca.uhn.hl7v2.app.Application;
 import ca.uhn.hl7v2.app.HL7Service;
 import ca.uhn.hl7v2.app.SimpleServer;
-import ca.uhn.hl7v2.llp.MinLowerLayerProtocol;
-import ca.uhn.hl7v2.parser.PipeParser;
 import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
 
 import java.util.Map;
@@ -33,8 +31,7 @@ public class HL7Listener {
 
     public void initialize() {
 
-        hl7Service = new SimpleServer(pacsIntegrationProperties.getHL7ListenerPort(),
-                new MinLowerLayerProtocol(), new PipeParser());
+        hl7Service = new SimpleServer(pacsIntegrationProperties.getHL7ListenerPort());
 
         for (Map.Entry<String,Application>  entry : handlers.entrySet()) {
             String messageType = entry.getKey().split("_")[0];

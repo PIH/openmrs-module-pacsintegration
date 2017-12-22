@@ -39,9 +39,9 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 
-import static org.hamcrest.core.Is.is;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
@@ -119,7 +119,7 @@ public class ORU_R01HandlerTest {
         String message = "MSH|^~\\&|HMI||RAD|REPORTS|20130228174549||ORU^R01|RTS01CE16055AAF5290|P|2.3|\r" +
                 "PID|1||||Patient^Test^||19770222|M||||||||||\r" +
                 "PV1|1||||||||||||||||||\r" +
-                "OBR|1||0000001297|36554-4^CHEST|||20130228170556||||||||||||MBL^CR||||||F|||||||&Goodrich&Mark&&&&^M123||||20130228170556\r" +
+                "OBR|1||0000001297|36554-4^CHEST|||20130228170556||||||||||||MBL^CR||||||F|||||||&Goodrich&Mark&&&&||||20130228170556\r" +
                 "OBX|1|TX|36554-4&BODY^CHEST||||||||F\r" +
                 "OBX|2|TX|36554-4&BODY^CHEST||Clinical Indication: ||||||F\r" +
                 "OBX|3|TX|36554-4&BODY^CHEST||test x-ray.||||||F\r" +
@@ -149,7 +149,7 @@ public class ORU_R01HandlerTest {
         String message = "MSH|^~\\&|HMI||RAD|REPORTS|20130228174549||ORU^R01|RTS01CE16055AAF5290|P|2.3|\r" +
                 "PID|1||GG2F98||Patient^Test^||19770222|M||||||||||\r" +
                 "PV1|1||||||||||||||||||\r" +
-                "OBR|1||0000001297|36554-4^CHEST|||20130228170556||||||||||||MBL^CR||||||F|||||||&Goodrich&Mark&&&&^M123||||20130228170556\r" +
+                "OBR|1||0000001297|36554-4^CHEST|||20130228170556||||||||||||MBL^CR||||||F|||||||&Goodrich&Mark&&&&||||20130228170556\r" +
                 "OBX|1|TX|36554-4&BODY^CHEST||||||||F\r" +
                 "OBX|2|TX|36554-4&BODY^CHEST||Clinical Indication: ||||||F\r" +
                 "OBX|3|TX|36554-4&BODY^CHEST||test x-ray.||||||F\r" +

@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+    <concept_reference_term concept_reference_term_id="1002" concept_source_id="1001" code="Radiology study construct" description="Radiology Study Set" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="9bc5693a-f556-40c9-8177-145dfe119ca7"/>
+    <concept_reference_map concept_map_id="1002" concept_id="1002" concept_reference_term_id="1002" concept_map_type_id="2" creator="1" date_created="2004-08-12 00:00:00.0" uuid="23b6e712-49d8-11e0-8fed-22a905e044dc"/>
+
+    <concept_reference_term concept_reference_term_id="1003" concept_source_id="1001" code="Radiology procedure performed" description="Radiology Procedure" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="9bc5612a-f551-40c9-8177-145dfe119ca7"/>
+    <concept_reference_map concept_map_id="1003" concept_id="1003" concept_reference_term_id="1003" concept_map_type_id="2" creator="1" date_created="2004-08-12 00:00:00.0" uuid="23b6e712-49d8-22e0-8fed-18a911e044dc"/>
+
+    <concept_reference_term concept_reference_term_id="1004" concept_source_id="1001" code="Radiology accession number" description="Accession Number" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="9bc5693a-f558-4eef-8177-145dfe119ca7"/>
+    <concept_reference_map concept_map_id="1004" concept_id="1004" concept_reference_term_id="1004" concept_map_type_id="2" creator="1" date_created="2004-08-12 00:00:00.0" uuid="23b6e712-49d8-22e0-8fed-18a905e114dc"/>
+
+    <concept_reference_term concept_reference_term_id="1005" concept_source_id="1001" code="Radiology images available" description="Images Available" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="9bc5693a-f558-fdef-8177-145dfe119ca7"/>
+    <concept_reference_map concept_map_id="1005" concept_id="1005" concept_reference_term_id="1005" concept_map_type_id="2" creator="1" date_created="2004-08-12 00:00:00.0" uuid="23b6e712-49d8-22e0-8fed-18a905eas4ee"/>
+
+    <concept_reference_term concept_reference_term_id="1006" concept_source_id="1001" code="Radiology report construct" description="Radiology Study Set" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="9bc5693a-f3546-40c9-8177-145dfe119ca7"/>
+    <concept_reference_map concept_map_id="1006" concept_id="1006" concept_reference_term_id="1006" concept_map_type_id="2" creator="1" date_created="2004-08-12 00:00:00.0" uuid="23b6e712-49d8-11e0-8fed-12a905e044dc"/>
+
+    <concept_reference_term concept_reference_term_id="1007" concept_source_id="1001" code="Type of radiology report" description="Radiology Report Type" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="9bc5612a-f551-40c9-8757-145dfe119ca7"/>
+    <concept_reference_map concept_map_id="1007" concept_id="1007" concept_reference_term_id="1007" concept_map_type_id="2" creator="1" date_created="2004-08-12 00:00:00.0" uuid="23b6e712-49d8-22e0-8fed-18a911e044tf"/>
+
+    <concept_reference_term concept_reference_term_id="1008" concept_source_id="1001" code="Radiology report comments" name="Radiology report body" description="Radiology Report Body" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="9bc5676a-f558-4eef-8177-145dfe119ca7"/>
+    <concept_reference_map concept_map_id="1008" concept_id="1008" concept_reference_term_id="1008" concept_map_type_id="2" creator="1" date_created="2004-08-12 00:00:00.0" uuid="23b6e712-49d8-2440-8fed-18a905e114dc"/>
+
+    <concept_reference_term concept_reference_term_id="1009" concept_source_id="1001" code="Radiology report final" description="Radiology report final" retired="0" creator="1" date_created="2004-08-12 00:00:00.0" uuid="9bc5612a-f551-40c9-8757-145dfe629ca7"/>
+    <concept_reference_map concept_map_id="1009" concept_id="1009" concept_reference_term_id="1009" concept_map_type_id="2" creator="1" date_created="2004-08-12 00:00:00.0" uuid="23b6e712-49d8-22e0-8fed-18a954e044tf"/>
+
+</dataset>

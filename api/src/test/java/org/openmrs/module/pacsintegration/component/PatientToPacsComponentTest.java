@@ -3,7 +3,6 @@ package org.openmrs.module.pacsintegration.component;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -18,8 +17,6 @@ import org.openmrs.module.pacsintegration.converter.PatientToPacsConverter;
 import org.openmrs.module.pacsintegration.listener.PatientEventListener;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.NotTransactional;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,6 +29,8 @@ import static org.mockito.Mockito.when;
 @Ignore     // currently ignoring this test since we aren't supporting sending ADT messages at this point
 public class PatientToPacsComponentTest extends BaseModuleContextSensitiveTest {
 
+    protected static final String XML_METADATA_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset-metadata.xml";
+    protected static final String XML_MAPPINGS_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset-mappings.xml";
     protected static final String XML_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset.xml";
 
     @Autowired
@@ -47,12 +46,13 @@ public class PatientToPacsComponentTest extends BaseModuleContextSensitiveTest {
     @Before
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
+        executeDataSet(XML_METADATA_DATASET);
+        executeDataSet(XML_MAPPINGS_DATASET);
         executeDataSet(XML_DATASET);
     }
 
 
     @Test
-    @NotTransactional
     public void sendsCreatedPatientsToPacs() throws Exception {
         Patient patient = createPatient();
         String hl7Message = "ADT_01";
@@ -64,7 +64,6 @@ public class PatientToPacsComponentTest extends BaseModuleContextSensitiveTest {
     }
 
     @Test
-    @NotTransactional
     public void sendsUpdatedPatientsToPacs() throws Exception {
         Patient patient = patientService.getPatient(2);
         patient.setBirthdate(new Date());

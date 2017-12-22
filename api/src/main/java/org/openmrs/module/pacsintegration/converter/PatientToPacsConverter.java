@@ -65,8 +65,8 @@ public class PatientToPacsConverter {
     private void populatePIDSegment(PID pidSegment, Patient patient) throws HL7Exception {
         // Populate the PID Segment
         pidSegment.getPatientIDInternalID(0).getID().setValue(patient.getPatientIdentifier(getPatientIdentifierType()).getIdentifier());
-        pidSegment.getPatientName().getFamilyName().setValue(StringUtils.substring(patient.getFamilyName(), 0, PacsIntegrationConstants.MAX_LENGTH_FAMILY_NAME));
-        pidSegment.getPatientName().getGivenName().setValue(StringUtils.substring(patient.getGivenName(), 0, PacsIntegrationConstants.MAX_LENGTH_GIVEN_NAME));
+        pidSegment.getPatientName(0).getFamilyName().setValue(StringUtils.substring(patient.getFamilyName(), 0, PacsIntegrationConstants.MAX_LENGTH_FAMILY_NAME));
+        pidSegment.getPatientName(0).getGivenName().setValue(StringUtils.substring(patient.getGivenName(), 0, PacsIntegrationConstants.MAX_LENGTH_GIVEN_NAME));
         pidSegment.getDateOfBirth().getTimeOfAnEvent().setValue(HL7Utils.getHl7DateFormat().format(patient.getBirthdate()));
         pidSegment.getSex().setValue(patient.getGender());
     }
