@@ -44,7 +44,7 @@
         <uiframeworkVersion>3.13.0</uiframeworkVersion>
         <idgenVersion>4.4.1</idgenVersion>
         <htmlformentryVersion>3.4.0</htmlformentryVersion>
-        <providermanagementVersion>2.9.0</providermanagementVersion>
+        <providermanagementVersion>2.10.0</providermanagementVersion>
         <reportingVersion>1.15.0</reportingVersion>
         <serializationxstreamVersion>0.2.13</serializationxstreamVersion>
         <calculationVersion>1.2</calculationVersion>
