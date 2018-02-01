@@ -43,13 +43,13 @@
         <eventVersion>2.5</eventVersion>
         <uiframeworkVersion>3.13.0</uiframeworkVersion>
         <idgenVersion>4.4.1</idgenVersion>
-        <htmlformentryVersion>3.4.0</htmlformentryVersion>
+        <htmlformentryVersion>3.6.0</htmlformentryVersion>
         <providermanagementVersion>2.10.0</providermanagementVersion>
         <reportingVersion>1.15.0</reportingVersion>
         <serializationxstreamVersion>0.2.13</serializationxstreamVersion>
         <calculationVersion>1.2</calculationVersion>
-        <appframeworkVersion>2.10.0</appframeworkVersion>
-        <metadatamappingVersion>1.3.3</metadatamappingVersion>
+        <appframeworkVersion>2.11.0</appframeworkVersion>
+        <metadatamappingVersion>1.3.4</metadatamappingVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
