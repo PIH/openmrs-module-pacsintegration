@@ -16,6 +16,7 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptSource;
 import org.openmrs.Location;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Provider;
 import org.openmrs.User;
@@ -35,6 +36,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -77,6 +79,8 @@ public class ORU_R01HandlerTest {
 
     private Concept reportTypeFinal = new Concept();
 
+    private Patient patient;
+
     @Before
     public void setup() {
 
@@ -111,6 +115,13 @@ public class ORU_R01HandlerTest {
         handler.setLocationService(locationService);
         handler.setEmrApiProperties(emrApiProperties);
         handler.setPacsIntegrationProperties(pacsIntegrationProperties);
+
+        // sample patient for tests
+        patient = new Patient(1);
+        PatientIdentifier identifier = new PatientIdentifier();
+        identifier.setIdentifierType(primaryIdentifierType);
+        identifier.setIdentifier("GG2F98");
+        patient.addIdentifier(identifier);
     }
 
     @Test
@@ -172,7 +183,6 @@ public class ORU_R01HandlerTest {
     @Test
     public void shouldReturnErrorACKIfPatientIdentifierAndOrderNumberDontMatchSamePatient() throws HL7Exception, ApplicationException {
 
-        Patient patient = new Patient(1);
         Patient anotherPatient = new Patient(2);
 
         RadiologyOrder radiologyOrder = new RadiologyOrder();
@@ -209,7 +219,6 @@ public class ORU_R01HandlerTest {
     @Test
     public void shouldSaveReportEncounterAndSendACK() throws HL7Exception, ApplicationException {
 
-        Patient patient = new Patient(1);
         RadiologyOrder radiologyOrder = new RadiologyOrder();
         radiologyOrder.setPatient(patient);
         Concept procedure = new Concept();
@@ -265,9 +274,71 @@ public class ORU_R01HandlerTest {
     }
 
     @Test
+    public void shouldNotFailIfAnotherPatientHasIdenticalIdentifierOfDifferentType() throws HL7Exception, ApplicationException {
+
+        Patient anotherPatient = new Patient(2);
+        PatientIdentifier identifier = new PatientIdentifier();
+        identifier.setIdentifierType(new PatientIdentifierType());
+        identifier.setIdentifier("GG2F98");
+        anotherPatient.addIdentifier(identifier);
+
+        RadiologyOrder radiologyOrder = new RadiologyOrder();
+        radiologyOrder.setPatient(patient);
+        Concept procedure = new Concept();
+        Location reportLocation = new Location();
+
+        when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true))
+                .thenReturn(Arrays.asList(patient, anotherPatient));
+        when(radiologyService.getRadiologyOrderByOrderNumber("0000001297")).thenReturn(radiologyOrder);
+        when(conceptService.getConceptByMapping("36554-4", "LOINC")).thenReturn(procedure);
+        when(providerService.getProviderByIdentifier("M123")).thenReturn(principalResultsInterpreter);
+        when(locationService.getLocation("Mirebalais Hospital")).thenReturn(reportLocation);
+
+        String message = "MSH|^~\\&|HMI|Mirebalais Hospital|RAD|REPORTS|20130228174549||ORU^R01|RTS01CE16055AAF5290|P|2.3|\r" +
+                "PID|1||GG2F98||Patient^Test^||19770222|M||||||||||\r" +
+                "PV1|1||||||||||||||||||\r" +
+                "OBR|1||0000001297|36554-4^CHEST|||20130228170556||||||||||||MBL^CR||||||F|||||||M123&Goodrich&Mark&&&&||||20130228170556\r" +
+                "OBX|1|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|2|TX|36554-4&BODY^CHEST||Clinical Indication: ||||||F\r" +
+                "OBX|3|TX|36554-4&BODY^CHEST||test x-ray.||||||F\r" +
+                "OBX|4|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|5|TX|36554-4&BODY^CHEST||A test final report!!||||||F\r" +
+                "OBX|6|TX|36554-4&BODY^CHEST||||||||F\r" +
+                "OBX|7|TX|36554-4&BODY^CHEST||Findings:  Posteroanterior and lateral chest radiographs were obtained.  The ||||||F\r" +
+                "OBX|8|TX|36554-4&BODY^CHEST||lungs are well inflated.  No infiltrate, pneumonia, or pulmonary edema is ||||||F\r" +
+                "OBX|9|TX|36554-4&BODY^CHEST||present.  The cardiac and mediastinal structures appear normal.  The pleural ||||||F\r" +
+                "OBX|10|TX|36554-4&BODY^CHEST||spaces and bony structures are normal.||||||F\r" +
+                "OBX|11|TX|36554-4&BODY^CHEST||        ||||||F\r" +
+                "OBX|12|TX|36554-4&BODY^CHEST||Summary:  Normal chest radiographs.||||||F\r";
+
+        ACK ack = (ACK) handler.processMessage(parseMessage(message));
+
+        assertThat(ack.getMSA().getAcknowledgementCode().getValue(), is("AA"));
+
+        RadiologyReport expectedReport = new RadiologyReport();
+        expectedReport.setPatient(patient);
+        expectedReport.setOrderNumber("0000001297");
+        expectedReport.setAssociatedRadiologyOrder(radiologyOrder);
+        expectedReport.setPrincipalResultsInterpreter(principalResultsInterpreter);
+        expectedReport.setProcedure(procedure);
+        expectedReport.setReportType(reportTypeFinal);
+        expectedReport.setReportLocation(reportLocation);
+        expectedReport.setReportBody(buildExpectedReportBody());
+
+        Calendar cal = Calendar.getInstance();
+        cal.set(2013,1,28);
+        cal.set(Calendar.HOUR_OF_DAY, 17);
+        cal.set(Calendar.MINUTE, 05);
+        cal.set(Calendar.SECOND, 56);
+        cal.set(Calendar.MILLISECOND, 00);
+        expectedReport.setReportDate(cal.getTime()) ;
+
+        verify(radiologyService).saveRadiologyReport(argThat(new IsExpectedRadiologyReport(expectedReport)));
+    }
+
+    @Test
     public void shouldNotFailIfUnknownProcedureCodeSpecified() throws HL7Exception, ApplicationException {
 
-        Patient patient = new Patient(1);
         RadiologyOrder radiologyOrder = new RadiologyOrder();
         radiologyOrder.setPatient(patient);
         Location reportLocation = new Location();
@@ -322,7 +393,6 @@ public class ORU_R01HandlerTest {
     @Test
     public void shouldNotFailIfNoProcedureCodeSpecified() throws HL7Exception, ApplicationException {
 
-        Patient patient = new Patient(1);
         RadiologyOrder radiologyOrder = new RadiologyOrder();
         radiologyOrder.setPatient(patient);
         Location reportLocation = new Location();
@@ -378,7 +448,6 @@ public class ORU_R01HandlerTest {
     @Test
     public void shouldNotFailIfProviderOrLocationOrOrderIsNotFound() throws HL7Exception, ApplicationException {
 
-        Patient patient = new Patient(1);
         RadiologyOrder radiologyOrder = new RadiologyOrder();
         radiologyOrder.setPatient(patient);
         Concept procedure = new Concept();
@@ -440,7 +509,6 @@ public class ORU_R01HandlerTest {
     // to handle time synchronization issues that may exist between PACS and OpenMRS
     public void shouldNotFailIfDatetimeInFutureByLessThanFifteenMinutes() throws HL7Exception, ApplicationException {
 
-        Patient patient = new Patient(1);
         RadiologyOrder radiologyOrder = new RadiologyOrder();
         radiologyOrder.setPatient(patient);
         Concept procedure = new Concept();
@@ -488,7 +556,6 @@ public class ORU_R01HandlerTest {
     @Test
     public void shouldReturnErrorACKIfReportDateMoreThanFifteenMinutesInFuture() throws HL7Exception, ApplicationException {
 
-        Patient patient = new Patient(1);
         RadiologyOrder radiologyOrder = new RadiologyOrder();
         radiologyOrder.setPatient(patient);
 

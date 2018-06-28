@@ -7,20 +7,24 @@ import org.joda.time.DateTime;
 import org.openmrs.Concept;
 import org.openmrs.Location;
 import org.openmrs.Patient;
+import org.openmrs.PatientIdentifier;
+import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.ProviderService;
-import org.openmrs.module.radiologyapp.RadiologyOrder;
-import org.openmrs.module.radiologyapp.RadiologyService;
 import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationException;
 import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
+import org.openmrs.module.radiologyapp.RadiologyOrder;
+import org.openmrs.module.radiologyapp.RadiologyService;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 abstract public class HL7Handler {
@@ -49,8 +53,20 @@ abstract public class HL7Handler {
             throw new PacsIntegrationException("Cannot import message. No patient identifier specified.");
         }
 
-        List<Patient> patientList = patientService.getPatients(null, patientIdentifier,
-                Collections.singletonList(emrApiProperties.getPrimaryIdentifierType()), true);
+        // we can remove casting to a linked list once we can remove the hack listed below (need linked list to do a i.remove())
+        List<Patient> patientList = new LinkedList<Patient>(patientService.getPatients(null, patientIdentifier,
+                Collections.singletonList(emrApiProperties.getPrimaryIdentifierType()), true));
+
+        // hack to work around https://tickets.pih-emr.org/browse/UHM-3346
+        if (patientList != null) {
+            Iterator<Patient> i = patientList.iterator();
+            while (i.hasNext()) {
+                Patient patient = i.next();
+                if (!hasMatchingIdentifier(patient, patientIdentifier, emrApiProperties.getPrimaryIdentifierType())) {
+                    i.remove();
+                }
+            }
+        }
 
         if (patientList == null || patientList.size() == 0) {
             throw new PacsIntegrationException("Cannot import message. No patient with identifier " + patientIdentifier);
@@ -62,6 +78,18 @@ abstract public class HL7Handler {
 
         return patientList.get(0);
     }
+
+
+    // method used for hack to work around https://tickets.pih-emr.org/browse/UHM-3346
+    private Boolean hasMatchingIdentifier(Patient patient, String patientIdentifier, PatientIdentifierType patientIdentifierType) {
+        for (PatientIdentifier identifier : patient.getActiveIdentifiers()) {
+            if (identifier.getIdentifierType().equals(patientIdentifierType) &&
+                    identifier.getIdentifier().equalsIgnoreCase(patientIdentifier)) {
+                return true;
+            }
+        }
+        return false;
+    };
 
     protected RadiologyOrder getRadiologyOrder(String orderNumber, Patient patient) {
 
