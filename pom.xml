@@ -43,7 +43,7 @@
         <eventVersion>2.5</eventVersion>
         <uiframeworkVersion>3.13.0</uiframeworkVersion>
         <idgenVersion>4.5.0</idgenVersion>
-        <htmlformentryVersion>3.7.0</htmlformentryVersion>
+        <htmlformentryVersion>3.8.0</htmlformentryVersion>
         <providermanagementVersion>2.10.0</providermanagementVersion>
         <reportingVersion>1.16.0</reportingVersion>
         <serializationxstreamVersion>0.2.14</serializationxstreamVersion>
