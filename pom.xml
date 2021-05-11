@@ -46,7 +46,7 @@
         <htmlformentryVersion>3.13.1</htmlformentryVersion>
         <providermanagementVersion>2.12.0</providermanagementVersion>
         <reportingVersion>1.21.0</reportingVersion>
-        <serializationxstreamVersion>0.2.14</serializationxstreamVersion>
+        <serializationxstreamVersion>0.2.15</serializationxstreamVersion>
         <calculationVersion>1.2.1</calculationVersion>
         <appframeworkVersion>2.16.0</appframeworkVersion>
         <metadatamappingVersion>1.3.5</metadatamappingVersion>
