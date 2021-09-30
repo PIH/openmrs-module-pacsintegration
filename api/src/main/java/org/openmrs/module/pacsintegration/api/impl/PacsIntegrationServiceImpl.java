@@ -47,6 +47,11 @@ public class PacsIntegrationServiceImpl extends BaseOpenmrsService implements Pa
     }
 
     @Override
+    public boolean isHL7ListenerRunning() {
+        return hl7Listener.isRunning();
+    }
+
+    @Override
     public void stopHL7Listener() {
         hl7Listener.stop();
     }

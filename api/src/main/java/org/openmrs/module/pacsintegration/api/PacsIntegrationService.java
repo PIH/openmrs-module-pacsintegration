@@ -41,6 +41,11 @@ public interface PacsIntegrationService extends OpenmrsService {
     public void initializeHL7Listener();
 
     /**
+     * @return true if the hl7 listener is running
+     */
+    public boolean isHL7ListenerRunning();
+
+    /**
      * Stops the HL7 listener
      */
     public void stopHL7Listener();

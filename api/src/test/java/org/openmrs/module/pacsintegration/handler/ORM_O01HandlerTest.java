@@ -41,8 +41,8 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -724,8 +724,8 @@ public class ORM_O01HandlerTest  {
         public boolean matches(Object o) {
             RadiologyStudy study = (RadiologyStudy) o;
 
-            assertThat(study.getDatePerformed(), greaterThan(lowerRange));
-            assertThat(study.getDatePerformed(), lessThan(upperRange));
+            assertThat(study.getDatePerformed(), greaterThanOrEqualTo(lowerRange));
+            assertThat(study.getDatePerformed(), lessThanOrEqualTo(upperRange));
 
             return true;
         }
