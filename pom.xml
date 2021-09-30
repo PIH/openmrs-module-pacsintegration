@@ -149,6 +149,12 @@
             <artifactId>event-api</artifactId>
             <version>${eventVersion}</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.ibm.icu</groupId>
+                    <artifactId>icu4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

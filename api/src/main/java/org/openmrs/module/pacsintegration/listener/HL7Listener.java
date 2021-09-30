@@ -43,6 +43,10 @@ public class HL7Listener {
 
     }
 
+    public boolean isRunning() {
+        return hl7Service != null && hl7Service.isRunning();
+    }
+
     public void stop() {
         if (hl7Service != null) {
             hl7Service.stop();
