@@ -41,7 +41,7 @@
         <radiologyappVersion>1.5.0</radiologyappVersion>
         <metadatasharingVersion>1.8.0</metadatasharingVersion>
         <eventVersion>2.5</eventVersion>
-        <uiframeworkVersion>3.22.0</uiframeworkVersion>
+        <uiframeworkVersion>3.22.1</uiframeworkVersion>
         <idgenVersion>4.7.0</idgenVersion>
         <htmlformentryVersion>3.13.1</htmlformentryVersion>
         <providermanagementVersion>2.13.0</providermanagementVersion>
