@@ -18,9 +18,8 @@ import org.openmrs.OpenmrsObject;
 import org.openmrs.Order;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.OrderService;
-import org.openmrs.api.context.Context;
+import org.openmrs.api.context.Daemon;
 import org.openmrs.event.Event;
-import org.openmrs.event.SubscribableEventListener;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.converter.OrderToPacsConverter;
 import org.openmrs.module.radiologyapp.RadiologyOrder;
@@ -30,10 +29,7 @@ import javax.jms.Message;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_PASSWORD;
-import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_USERNAME;
-
-public class OrderEventListener implements SubscribableEventListener {
+public class OrderEventListener extends PacsEventListener {
 
     private OrderService orderService;
 
@@ -44,32 +40,28 @@ public class OrderEventListener implements SubscribableEventListener {
     private OrderToPacsConverter converter;
 
     @Override
-	public void onMessage(Message message) {
-		Context.openSession();
-		try {
-            Context.authenticate(adminService.getGlobalProperty(GP_LISTENER_USERNAME), adminService.getGlobalProperty(GP_LISTENER_PASSWORD));
+	public void onMessage(final Message message) {
+		Daemon.runInDaemonThread(() -> {
+			try {
+				MapMessage mapMessage = (MapMessage) message;
+				String action = mapMessage.getString("action");
 
-			MapMessage mapMessage = (MapMessage) message;
-			String action = mapMessage.getString("action");
-			
-			if (Event.Action.CREATED.toString().equals(action)) {
-				String uuid = mapMessage.getString("uuid");
+				if (Event.Action.CREATED.toString().equals(action)) {
+					String uuid = mapMessage.getString("uuid");
 
-				Order order = orderService.getOrderByUuid(uuid);
-				if (order == null) {
-					throw new RuntimeException("Could not find the order this event tells us about! uuid=" + uuid);
+					Order order = orderService.getOrderByUuid(uuid);
+					if (order == null) {
+						throw new RuntimeException("Could not find the order this event tells us about! uuid=" + uuid);
+					}
+
+					pacsIntegrationService.sendMessageToPacs(converter.convertToPacsFormat((RadiologyOrder) order, "NW"));
 				}
-
-			    pacsIntegrationService.sendMessageToPacs(converter.convertToPacsFormat((RadiologyOrder) order, "NW"));
 			}
-		}
-		catch (Exception e) {
-			//TODO: do something better
-			throw new RuntimeException(e);
-		}
-		finally {
-			Context.closeSession();
-		}
+			catch (Exception e) {
+				//TODO: do something better
+				throw new RuntimeException(e);
+			}
+		}, daemonToken);
 	}
 	
 	@Override

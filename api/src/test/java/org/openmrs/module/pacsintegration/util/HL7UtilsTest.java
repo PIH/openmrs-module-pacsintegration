@@ -60,13 +60,10 @@ public class HL7UtilsTest {
         assertThat(parser.encode(ack), is(new IsExpectedErrorACKMessage()));
     }
 
-    public class IsExpectedACKMessage extends ArgumentMatcher<String> {
+    public class IsExpectedACKMessage implements ArgumentMatcher<String> {
 
         @Override
-        public boolean matches(Object o) {
-
-            String hl7Message = (String) o;
-
+        public boolean matches(String hl7Message) {
             assertThat(hl7Message, startsWith("MSH|^~\\&||openmrs_mirebalais|||"));
             // TODO: test that a valid date is passed
             assertThat(hl7Message, containsString("||ACK||P|2.3\r"));
@@ -76,13 +73,10 @@ public class HL7UtilsTest {
         }
     }
 
-    public class IsExpectedErrorACKMessage extends  ArgumentMatcher<String> {
+    public class IsExpectedErrorACKMessage implements ArgumentMatcher<String> {
 
         @Override
-        public boolean matches(Object o) {
-
-            String hl7Message = (String) o;
-
+        public boolean matches(String hl7Message) {
             assertThat(hl7Message, startsWith("MSH|^~\\&||openmrs_mirebalais|||"));
             // TODO: test that a valid date is passed
             assertThat(hl7Message, containsString("||ACK||P|2.3\r"));

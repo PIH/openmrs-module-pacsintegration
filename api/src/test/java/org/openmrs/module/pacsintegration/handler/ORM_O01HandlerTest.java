@@ -683,7 +683,7 @@ public class ORM_O01HandlerTest  {
         return parser.parse(message);
     }
 
-    public class IsExpectedRadiologyStudy extends ArgumentMatcher<RadiologyStudy> {
+    public class IsExpectedRadiologyStudy implements ArgumentMatcher<RadiologyStudy> {
 
         private RadiologyStudy expectedStudy;
 
@@ -692,9 +692,7 @@ public class ORM_O01HandlerTest  {
         }
 
         @Override
-        public boolean matches(Object o) {
-            RadiologyStudy study = (RadiologyStudy) o;
-
+        public boolean matches(RadiologyStudy study) {
             assertThat(study.getOrderNumber(), is(expectedStudy.getOrderNumber()));
             assertThat(study.getAssociatedRadiologyOrder(), is(expectedStudy.getAssociatedRadiologyOrder()));
             assertThat(study.getProcedure(), is(expectedStudy.getProcedure()));
@@ -709,7 +707,7 @@ public class ORM_O01HandlerTest  {
 
     }
 
-    public class HasDatePerformedBetween extends ArgumentMatcher<RadiologyStudy> {
+    public class HasDatePerformedBetween implements ArgumentMatcher<RadiologyStudy> {
 
         private Date lowerRange;
 
@@ -721,9 +719,7 @@ public class ORM_O01HandlerTest  {
         }
 
         @Override
-        public boolean matches(Object o) {
-            RadiologyStudy study = (RadiologyStudy) o;
-
+        public boolean matches(RadiologyStudy study) {
             assertThat(study.getDatePerformed(), greaterThanOrEqualTo(lowerRange));
             assertThat(study.getDatePerformed(), lessThanOrEqualTo(upperRange));
 

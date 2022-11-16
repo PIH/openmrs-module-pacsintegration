@@ -612,7 +612,7 @@ public class ORU_R01HandlerTest {
                 "Summary:  Normal chest radiographs.\r\n" ;
     }
 
-    public class IsExpectedRadiologyReport extends ArgumentMatcher<RadiologyReport> {
+    public class IsExpectedRadiologyReport implements ArgumentMatcher<RadiologyReport> {
 
         private RadiologyReport expectedReport;
 
@@ -621,9 +621,7 @@ public class ORU_R01HandlerTest {
         }
 
         @Override
-        public boolean matches(Object o) {
-            RadiologyReport report = (RadiologyReport) o;
-
+        public boolean matches(RadiologyReport report) {
             assertThat(report.getPatient(), is(expectedReport.getPatient()));
             assertThat(report.getOrderNumber(), is(expectedReport.getOrderNumber()));
             assertThat(report.getAssociatedRadiologyOrder(), is(expectedReport.getAssociatedRadiologyOrder()));
@@ -637,7 +635,7 @@ public class ORU_R01HandlerTest {
         }
     }
 
-    public class HasReportDateBetween extends ArgumentMatcher<RadiologyReport> {
+    public class HasReportDateBetween implements ArgumentMatcher<RadiologyReport> {
 
         private Date lowerRange;
 
@@ -649,9 +647,7 @@ public class ORU_R01HandlerTest {
         }
 
         @Override
-        public boolean matches(Object o) {
-            RadiologyReport report = (RadiologyReport) o;
-
+        public boolean matches(RadiologyReport report) {
             assertThat(report.getReportDate(), greaterThan(lowerRange));
             assertThat(report.getReportDate(), lessThan(upperRange));
 

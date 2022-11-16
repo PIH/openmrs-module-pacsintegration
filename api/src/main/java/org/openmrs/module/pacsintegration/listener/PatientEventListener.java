@@ -7,9 +7,8 @@ import org.openmrs.OpenmrsObject;
 import org.openmrs.Patient;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PatientService;
-import org.openmrs.api.context.Context;
+import org.openmrs.api.context.Daemon;
 import org.openmrs.event.Event;
-import org.openmrs.event.SubscribableEventListener;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.converter.PatientToPacsConverter;
 
@@ -21,12 +20,9 @@ import java.util.List;
 
 import static org.openmrs.event.Event.Action.CREATED;
 import static org.openmrs.event.Event.Action.UPDATED;
-import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_PASSWORD;
-import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_USERNAME;
-
 
 // not currently in use
-public class PatientEventListener implements SubscribableEventListener {
+public class PatientEventListener extends PacsEventListener {
 
     protected final Log log = LogFactory.getLog(this.getClass());
 
@@ -58,29 +54,26 @@ public class PatientEventListener implements SubscribableEventListener {
     }
 
     @Override
-    public void onMessage(Message message)  {
-        Context.openSession();
-        try {
-            Context.authenticate(admin.getGlobalProperty(GP_LISTENER_USERNAME), admin.getGlobalProperty(GP_LISTENER_PASSWORD));
-            MapMessage mapMessage = (MapMessage) message;
-            String action = mapMessage.getString("action");
-            String classname = mapMessage.getString("classname");
+    public void onMessage(final Message message)  {
+        Daemon.runInDaemonThread(() -> {
+            try {
+                MapMessage mapMessage = (MapMessage) message;
+                String action = mapMessage.getString("action");
+                String classname = mapMessage.getString("classname");
 
-            boolean isPatient = Patient.class.getName().equals(classname);
-            if (isPatient) {
-                String hl7Message = generateHL7Message(mapMessage, action);
-                if(hl7Message != null)
-                    pacsIntegrationService.sendMessageToPacs(hl7Message);
+                boolean isPatient = Patient.class.getName().equals(classname);
+                if (isPatient) {
+                    String hl7Message = generateHL7Message(mapMessage, action);
+                    if(hl7Message != null)
+                        pacsIntegrationService.sendMessageToPacs(hl7Message);
+                }
+
+            } catch (JMSException e) {
+                log.error("Unable to send ADT message to PACS for patient " + message, e);
+            } catch (HL7Exception e) {
+                log.error("Unable to send ADT message to PACS for patient " + message, e);
             }
-
-        } catch (JMSException e) {
-            log.error("Unable to send ADT message to PACS for patient " + message, e);
-        } catch (HL7Exception e) {
-            log.error("Unable to send ADT message to PACS for patient " + message, e);
-        }
-        finally {
-            Context.closeSession();
-        }
+        }, daemonToken);
     }
 
     private String generateHL7Message(MapMessage mapMessage, String action) throws JMSException, HL7Exception {

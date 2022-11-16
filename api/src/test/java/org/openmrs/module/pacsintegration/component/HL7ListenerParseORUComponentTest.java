@@ -23,7 +23,7 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.emrapi.EmrApiProperties;
-import org.openmrs.module.pacsintegration.NonTransactionalBaseModuleContextSensitiveTest;
+import org.openmrs.test.jupiter.NonTransactionalBaseModuleContextSensitiveTest;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.radiologyapp.RadiologyProperties;
 import org.springframework.beans.factory.annotation.Autowired;

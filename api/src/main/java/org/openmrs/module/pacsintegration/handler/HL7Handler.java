@@ -1,5 +1,9 @@
 package org.openmrs.module.pacsintegration.handler;
 
+import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.app.Application;
+import ca.uhn.hl7v2.app.ApplicationException;
+import ca.uhn.hl7v2.model.Message;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -14,6 +18,8 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.ProviderService;
+import org.openmrs.api.context.Daemon;
+import org.openmrs.module.DaemonToken;
 import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationException;
@@ -27,9 +33,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-abstract public class HL7Handler {
+abstract public class HL7Handler implements Application {
 
     protected final Log log = LogFactory.getLog(this.getClass());
+
+    private static DaemonToken daemonToken;
 
     protected PatientService patientService;
 
@@ -47,6 +55,21 @@ abstract public class HL7Handler {
 
     protected PacsIntegrationProperties pacsIntegrationProperties;
 
+    public static void setDaemonToken(DaemonToken daemonToken) {
+        HL7Handler.daemonToken = daemonToken;
+    }
+
+    @Override
+    public synchronized Message processMessage(Message message) throws HL7Exception {
+        HL7HandlerTask task = getHL7HandlerTask(message);
+        Daemon.runInDaemonThreadAndWait(task, daemonToken);
+        if (task.getHl7Exception() != null) {
+            throw task.getHl7Exception();
+        }
+        return task.getResultMessage();
+    }
+
+    abstract HL7HandlerTask getHL7HandlerTask(Message message);
 
     protected Patient getPatient(String patientIdentifier) {
         if (StringUtils.isBlank(patientIdentifier)) {
@@ -190,5 +213,22 @@ abstract public class HL7Handler {
 
     public void setProviderService(ProviderService providerService) {
         this.providerService = providerService;
+    }
+
+    /**
+     * Inner task class that subclasses need to implement
+     */
+    static abstract class HL7HandlerTask implements Runnable {
+
+        Message resultMessage;
+        HL7Exception hl7Exception;
+
+        public Message getResultMessage() {
+            return resultMessage;
+        }
+
+        public HL7Exception getHl7Exception() {
+            return hl7Exception;
+        }
     }
 }

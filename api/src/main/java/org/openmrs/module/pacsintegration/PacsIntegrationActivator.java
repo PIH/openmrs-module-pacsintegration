@@ -16,37 +16,27 @@ package org.openmrs.module.pacsintegration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.BaseModuleActivator;
+import org.openmrs.module.DaemonToken;
+import org.openmrs.module.DaemonTokenAware;
 import org.openmrs.module.ModuleActivator;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
+import org.openmrs.module.pacsintegration.handler.HL7Handler;
+import org.openmrs.module.pacsintegration.listener.PacsEventListener;
 
 /**
  * This class contains the logic that is run every time this module is either started or stopped.
  */
-public class PacsIntegrationActivator implements ModuleActivator {
+public class PacsIntegrationActivator extends BaseModuleActivator implements DaemonTokenAware {
 	
 	protected Log log = LogFactory.getLog(getClass());
-	
-	/**
-	 * @see ModuleActivator#willRefreshContext()
-	 */
-	public void willRefreshContext() {
-		log.info("Refreshing PACS Integration Module");
+
+	@Override
+	public void setDaemonToken(DaemonToken daemonToken) {
+		HL7Handler.setDaemonToken(daemonToken);
+		PacsEventListener.setDaemonToken(daemonToken);
 	}
-	
-	/**
-	 * @see ModuleActivator#contextRefreshed()
-	 */
-	public void contextRefreshed() {
-		log.info("PACS Integration Module refreshed");
-	}
-	
-	/**
-	 * @see ModuleActivator#willStart()
-	 */
-	public void willStart() {
-		log.info("Starting PACS Integration Module");
-	}
-	
+
 	/**
 	 * @see ModuleActivator#started()
 	 */

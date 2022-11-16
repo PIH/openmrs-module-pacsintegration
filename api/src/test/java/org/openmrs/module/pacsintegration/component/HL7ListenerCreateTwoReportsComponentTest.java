@@ -14,18 +14,18 @@
 
 package org.openmrs.module.pacsintegration.component;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.emrapi.EmrApiProperties;
-import org.openmrs.module.pacsintegration.NonTransactionalBaseModuleContextSensitiveTest;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.radiologyapp.RadiologyProperties;
+import org.openmrs.test.jupiter.NonTransactionalBaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.PrintStream;
@@ -66,7 +66,7 @@ public class HL7ListenerCreateTwoReportsComponentTest extends NonTransactionalBa
     @Autowired
     private RadiologyProperties radiologyProperties;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         executeDataSet(XML_METADATA_DATASET);
         executeDataSet(XML_MAPPINGS_DATASET);
@@ -74,7 +74,7 @@ public class HL7ListenerCreateTwoReportsComponentTest extends NonTransactionalBa
         Context.getService(PacsIntegrationService.class).initializeHL7Listener();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         deleteAllData();
     }

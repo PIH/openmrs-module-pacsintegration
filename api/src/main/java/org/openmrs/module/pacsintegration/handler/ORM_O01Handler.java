@@ -1,7 +1,6 @@
 package org.openmrs.module.pacsintegration.handler;
 
 import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.app.Application;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.Type;
 import ca.uhn.hl7v2.model.v23.datatype.CN;
@@ -12,7 +11,6 @@ import ca.uhn.hl7v2.model.v23.group.ORM_O01_ORDER_DETAIL;
 import ca.uhn.hl7v2.model.v23.message.ORM_O01;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Provider;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.pacsintegration.PacsIntegrationException;
 import org.openmrs.module.pacsintegration.util.HL7Utils;
 import org.openmrs.module.radiologyapp.RadiologyStudy;
@@ -20,71 +18,67 @@ import org.openmrs.module.radiologyapp.RadiologyStudy;
 import java.text.ParseException;
 import java.util.Date;
 
-import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_PASSWORD;
-import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_USERNAME;
-
-public class ORM_O01Handler extends HL7Handler implements Application {
+public class ORM_O01Handler extends HL7Handler {
 
     @Override
-    public synchronized Message processMessage(Message message) throws HL7Exception {
+    HL7HandlerTask getHL7HandlerTask(final Message message) {
+        return new HL7HandlerTask() {
+            @Override
+            public void run() {
+                try {
+                    ORM_O01 ormO01 = (ORM_O01) message;
+                    String messageControlID = ormO01.getMSH().getMessageControlID().getValue();
+                    String sendingFacility = null;
 
-        ORM_O01 ormO01 = (ORM_O01) message;
-        String messageControlID = ormO01.getMSH().getMessageControlID().getValue();
-        String sendingFacility = null;
+                    try {
+                        sendingFacility = getSendingFacility();
 
-        try {
-            Context.openSession();
-            Context.authenticate(adminService.getGlobalProperty(GP_LISTENER_USERNAME),
-                    adminService.getGlobalProperty(GP_LISTENER_PASSWORD));
+                        String eventType = getEventType(ormO01.getORDER().getORDER_DETAIL());
 
-            sendingFacility = getSendingFacility();
+                        // we are triggering the create of a RadiologyStudy on reception of a "Reviewed" event, which
+                        // means that the technologist has marked the study as reviewed, or a "Reported" event, which
+                        // means that the study has been reported on, or a "Needs Overread" event which means that an
+                        // overread from Boston is requested;
+                        // we only create an study once, so if multiple REVIEWED/REPORTED/NEEDS OVERREAD
+                        // events are received (likely) it won't create a dup or throw and error
 
-            String eventType = getEventType(ormO01.getORDER().getORDER_DETAIL());
+                        if (StringUtils.isNotBlank(eventType) &&
+                                (eventType.equalsIgnoreCase("REVIEWED") || eventType.equalsIgnoreCase("REPORTED")
+                                        || eventType.equalsIgnoreCase("NEEDSOVERREAD"))) {
 
-            // we are triggering the create of a RadiologyStudy on reception of a "Reviewed" event, which
-            // means that the technologist has marked the study as reviewed, or a "Reported" event, which
-            // means that the study has been reported on, or a "Needs Overread" event which means that an
-            // overread from Boston is requested;
-            // we only create an study once, so if multiple REVIEWED/REPORTED/NEEDS OVERREAD
-            // events are received (likely) it won't create a dup or throw and error
+                            String orderNumber = ormO01.getORDER().getORDER_DETAIL().getOBR().getFillerOrderNumber().getEntityIdentifier().getValue();
 
-            if (StringUtils.isNotBlank(eventType) &&
-                    (eventType.equalsIgnoreCase("REVIEWED") || eventType.equalsIgnoreCase("REPORTED")
-                    || eventType.equalsIgnoreCase("NEEDSOVERREAD"))) {
+                            // only create this study if it doesn't already exist
+                            if (radiologyService.getRadiologyStudyByOrderNumber(orderNumber) == null) {
 
-                String orderNumber = ormO01.getORDER().getORDER_DETAIL().getOBR().getFillerOrderNumber().getEntityIdentifier().getValue();
+                                String patientIdentifier = ormO01.getPATIENT().getPID().getPatientIDInternalID(0).getID().getValue();
 
-                // only create this study if it doesn't already exist
-                if (radiologyService.getRadiologyStudyByOrderNumber(orderNumber) == null) {
+                                RadiologyStudy radiologyStudy = new RadiologyStudy();
 
-                    String patientIdentifier = ormO01.getPATIENT().getPID().getPatientIDInternalID(0).getID().getValue();
+                                radiologyStudy.setPatient(getPatient(patientIdentifier));
+                                radiologyStudy.setOrderNumber(orderNumber);
+                                radiologyStudy.setAssociatedRadiologyOrder(getRadiologyOrder(radiologyStudy.getOrderNumber(), radiologyStudy.getPatient()));
+                                radiologyStudy.setProcedure(getProcedure(ormO01.getORDER().getORDER_DETAIL().getOBR().getUniversalServiceIdentifier().getIdentifier().getValue()));
+                                radiologyStudy.setTechnician(getTechnologist(ormO01.getORDER().getORDER_DETAIL()));
+                                radiologyStudy.setDatePerformed(syncTimeWithCurrentServerTime(getDatePerformed(ormO01.getORDER().getORDER_DETAIL())));
+                                radiologyStudy.setImagesAvailable(areImagesAvailable(ormO01.getORDER().getORDER_DETAIL()));
+                                radiologyStudy.setStudyLocation(getLocationByName(ormO01.getMSH().getSendingFacility().getNamespaceID().getValue()));
 
-                    RadiologyStudy radiologyStudy = new RadiologyStudy();
+                                radiologyService.saveRadiologyStudy(radiologyStudy);
+                            }
+                        }
+                    } catch (Exception e) {
+                        log.error("Unable to parse incoming ORM_OO1 message", e);
+                        resultMessage = HL7Utils.generateErrorACK(messageControlID, sendingFacility, e.getMessage());
+                    }
 
-                    radiologyStudy.setPatient(getPatient(patientIdentifier));
-                    radiologyStudy.setOrderNumber(orderNumber);
-                    radiologyStudy.setAssociatedRadiologyOrder(getRadiologyOrder(radiologyStudy.getOrderNumber(), radiologyStudy.getPatient()));
-                    radiologyStudy.setProcedure(getProcedure(ormO01.getORDER().getORDER_DETAIL().getOBR().getUniversalServiceIdentifier().getIdentifier().getValue()));
-                    radiologyStudy.setTechnician(getTechnologist(ormO01.getORDER().getORDER_DETAIL()));
-                    radiologyStudy.setDatePerformed(syncTimeWithCurrentServerTime(getDatePerformed(ormO01.getORDER().getORDER_DETAIL())));
-                    radiologyStudy.setImagesAvailable(areImagesAvailable(ormO01.getORDER().getORDER_DETAIL()));
-                    radiologyStudy.setStudyLocation(getLocationByName(ormO01.getMSH().getSendingFacility().getNamespaceID().getValue()));
-
-                    radiologyService.saveRadiologyStudy(radiologyStudy);
+                    resultMessage = HL7Utils.generateACK(ormO01.getMSH().getMessageControlID().getValue(), sendingFacility);
+                }
+                catch (HL7Exception hl7e) {
+                    hl7Exception = hl7e;
                 }
             }
-        }
-        catch (Exception e) {
-            log.error("Unable to parse incoming ORM_OO1 message", e);
-            return HL7Utils.generateErrorACK(messageControlID, sendingFacility,
-                    e.getMessage());
-        }
-        finally {
-            Context.closeSession();
-        }
-
-
-        return HL7Utils.generateACK(ormO01.getMSH().getMessageControlID().getValue(), sendingFacility);
+        };
     }
 
     @Override

@@ -26,20 +26,20 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.pacsintegration.NonTransactionalBaseModuleContextSensitiveTest;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.listener.OrderEventListener;
 import org.openmrs.module.radiologyapp.RadiologyOrder;
 import org.openmrs.module.radiologyapp.RadiologyService;
+import org.openmrs.test.jupiter.NonTransactionalBaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
@@ -76,7 +76,6 @@ public class OrderToPacsComponentTest extends NonTransactionalBaseModuleContextS
 	 * 
 	 * @see org.openmrs.test.BaseContextSensitiveTest#getRuntimeProperties()
 	 */
-	
 	@Before
 	public void setupDatabase() throws Exception {
 
@@ -128,7 +127,7 @@ public class OrderToPacsComponentTest extends NonTransactionalBaseModuleContextS
         encounter.setEncounterType(Context.getEncounterService().getEncounterType(1003));
         encounterService.saveEncounter(encounter);
 
-        Mockito.verify(pacsIntegrationService, timeout(10000).never()).sendMessageToPacs(any(String.class));
+        Mockito.verify(pacsIntegrationService, timeout(10000).times(0)).sendMessageToPacs(any(String.class));
     }
 
     @Test
@@ -155,13 +154,10 @@ public class OrderToPacsComponentTest extends NonTransactionalBaseModuleContextS
 
     }
 
-    public class IsExpectedHL7Message extends ArgumentMatcher<String> {
+    public class IsExpectedHL7Message implements ArgumentMatcher<String> {
 
         @Override
-        public boolean matches(Object o) {
-
-            String hl7Message = (String) o;
-
+        public boolean matches(String hl7Message) {
             assertThat(hl7Message, startsWith("MSH|^~\\&||Mirebalais|||"));
             // TODO: test that a valid date is passed
             assertThat(hl7Message, containsString("||ORM^O01||P|2.3\r"));
