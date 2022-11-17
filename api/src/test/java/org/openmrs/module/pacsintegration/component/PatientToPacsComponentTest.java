@@ -1,8 +1,8 @@
 package org.openmrs.module.pacsintegration.component;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -12,10 +12,11 @@ import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonName;
 import org.openmrs.api.PatientService;
+import org.openmrs.api.context.Context;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.converter.PatientToPacsConverter;
 import org.openmrs.module.pacsintegration.listener.PatientEventListener;
-import org.openmrs.test.BaseModuleContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.text.ParseException;
@@ -26,7 +27,7 @@ import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@Ignore     // currently ignoring this test since we aren't supporting sending ADT messages at this point
+@Disabled     // currently ignoring this test since we aren't supporting sending ADT messages at this point
 public class PatientToPacsComponentTest extends BaseModuleContextSensitiveTest {
 
     protected static final String XML_METADATA_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset-metadata.xml";
@@ -43,12 +44,15 @@ public class PatientToPacsComponentTest extends BaseModuleContextSensitiveTest {
     @Mock
     private PatientToPacsConverter pacsConverter;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
         executeDataSet(XML_METADATA_DATASET);
         executeDataSet(XML_MAPPINGS_DATASET);
         executeDataSet(XML_DATASET);
+        this.getConnection().commit();
+        this.updateSearchIndex();
+        Context.clearSession();
     }
 
 

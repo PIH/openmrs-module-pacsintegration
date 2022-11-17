@@ -35,20 +35,20 @@
     </modules>
 
     <properties>
-        <openMRSVersion>1.11.9</openMRSVersion>
+        <openMRSVersion>2.5.7</openMRSVersion>
         <emrVersion>2.2.0</emrVersion>
         <emrapiVersion>1.33.0</emrapiVersion>
-        <radiologyappVersion>1.5.0</radiologyappVersion>
+        <radiologyappVersion>1.6.0-SNAPSHOT</radiologyappVersion>
         <metadatasharingVersion>1.8.0</metadatasharingVersion>
-        <eventVersion>2.5</eventVersion>
+        <eventVersion>2.10.0</eventVersion>
         <uiframeworkVersion>3.22.1</uiframeworkVersion>
         <idgenVersion>4.8.0</idgenVersion>
-        <htmlformentryVersion>3.13.1</htmlformentryVersion>
+        <htmlformentryVersion>5.0.0</htmlformentryVersion>
         <providermanagementVersion>2.13.0</providermanagementVersion>
         <reportingVersion>1.25.0</reportingVersion>
         <serializationxstreamVersion>0.2.15</serializationxstreamVersion>
         <calculationVersion>1.3.0</calculationVersion>
-        <appframeworkVersion>2.16.0</appframeworkVersion>
+        <appframeworkVersion>2.17.0-SNAPSHOT</appframeworkVersion>
         <metadatamappingVersion>1.5.0</metadatamappingVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -110,14 +110,22 @@
 
         <dependency>
             <groupId>org.openmrs.module</groupId>
-            <artifactId>emrapi-api-1.11</artifactId>
+            <artifactId>emrapi-api</artifactId>
+            <version>${emrapiVersion}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>emrapi-api-1.12</artifactId>
             <version>${emrapiVersion}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.openmrs.module</groupId>
-            <artifactId>emrapi-api-pre2.2</artifactId>
+            <artifactId>emrapi-api-2.2</artifactId>
             <version>${emrapiVersion}</version>
             <scope>provided</scope>
         </dependency>
@@ -127,21 +135,6 @@
             <artifactId>radiologyapp-api</artifactId>
             <version>${radiologyappVersion}</version>
             <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.openmrs.module</groupId>
-            <artifactId>emr-api</artifactId>
-            <version>${emrVersion}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.openmrs.module</groupId>
-            <artifactId>emr-api</artifactId>
-            <version>${emrVersion}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -158,20 +151,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.openmrs</groupId>
-            <artifactId>event-api-1.x</artifactId>
-            <version>${eventVersion}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.openmrs</groupId>
-            <artifactId>event-api-2.x</artifactId>
-            <version>${eventVersion}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.openmrs.module</groupId>
             <artifactId>providermanagement-api</artifactId>
             <version>${providermanagementVersion}</version>
@@ -181,20 +160,6 @@
         <dependency>
             <groupId>org.openmrs.module</groupId>
             <artifactId>serialization.xstream-api</artifactId>
-            <version>${serializationxstreamVersion}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.openmrs.module</groupId>
-            <artifactId>serialization.xstream-api-1.9</artifactId>
-            <version>${serializationxstreamVersion}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.openmrs.module</groupId>
-            <artifactId>serialization.xstream-api-1.10</artifactId>
             <version>${serializationxstreamVersion}</version>
             <scope>provided</scope>
         </dependency>
@@ -238,14 +203,6 @@
 
         <dependency>
             <groupId>org.openmrs.module</groupId>
-            <artifactId>htmlformentry-api-1.10</artifactId>
-            <version>${htmlformentryVersion}</version>
-            <scope>test</scope>
-        </dependency>
-
-
-        <dependency>
-            <groupId>org.openmrs.module</groupId>
             <artifactId>reporting-api</artifactId>
             <version>${reportingVersion}</version>
             <scope>test</scope>
@@ -269,6 +226,20 @@
             <groupId>org.openmrs.module</groupId>
             <artifactId>appframework-api</artifactId>
             <version>${appframeworkVersion}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- This is needed for appframework testing -->
+        <dependency>
+            <groupId>javax.el</groupId>
+            <artifactId>javax.el-api</artifactId>
+            <version>3.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.el</artifactId>
+            <version>3.0.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -300,8 +271,8 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <configuration>
-                        <target>1.6</target>
-                        <source>1.6</source>
+                        <target>1.8</target>
+                        <source>1.8</source>
                         <encoding>UTF-8</encoding>
                     </configuration>
                 </plugin>
@@ -315,14 +286,16 @@
                     <artifactId>maven-dependency-plugin</artifactId>
                     <version>2.4</version>
                 </plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.5</version>
-					<configuration>
-						<argLine>-Xmx512m -XX:MaxPermSize=512m -Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
-					</configuration>
-				</plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.0.0-M5</version>
+                    <configuration>
+                        <includes>
+                            <include>**/*Test.java</include>
+                        </includes>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
 

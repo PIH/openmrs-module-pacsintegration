@@ -1,22 +1,23 @@
 package org.openmrs.module.pacsintegration.converter;
 
 import ca.uhn.hl7v2.HL7Exception;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.PersonName;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.PatientService;
+import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -28,11 +29,12 @@ public class PatientToPacsConverterTest {
 
     private PatientIdentifierType patientIdentifierType = new PatientIdentifierType();
 
-    @Before
+    @BeforeEach
     public void setup() {
         PatientService patientService = mock(PatientService.class);
         AdministrationService administrationService = mock(AdministrationService.class);
         when(patientService.getPatientIdentifierTypeByUuid(anyString())).thenReturn(patientIdentifierType);
+        when(administrationService.getGlobalProperty(PacsIntegrationConstants.GP_PATIENT_IDENTIFIER_TYPE_UUID)).thenReturn(patientIdentifierType.getUuid());
 
         converter = new PatientToPacsConverter();
         converter.setPatientService(patientService);

@@ -16,8 +16,8 @@ package org.openmrs.module.pacsintegration.component;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
 import org.openmrs.Encounter;
@@ -26,29 +26,35 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.pacsintegration.NonTransactionalBaseModuleContextSensitiveTest;
+import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.listener.OrderEventListener;
+import org.openmrs.module.pacsintegration.runner.ContextTaskRunner;
+import org.openmrs.module.pacsintegration.test.TransactionalTestService;
 import org.openmrs.module.radiologyapp.RadiologyOrder;
 import org.openmrs.module.radiologyapp.RadiologyService;
+import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.timeout;
 
-public class OrderToPacsComponentTest extends NonTransactionalBaseModuleContextSensitiveTest {
+public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 
     @Autowired
     private EncounterService encounterService;
+
+    @Autowired
+    private TransactionalTestService transactionalTestService;
 
     @Autowired
     private LocationService locationService;
@@ -69,26 +75,30 @@ public class OrderToPacsComponentTest extends NonTransactionalBaseModuleContextS
     protected static final String XML_MAPPINGS_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset-mappings.xml";
     protected static final String XML_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset.xml";
 
-
-    /**
-	 * See http://listarchives.openmrs.org/Limitations-of-H2-for-unit-tests-td7560958.html . This
-	 * avoids: org.h2.jdbc.JdbcSQLException: Timeout trying to lock table "ORDERS"; SQL statement:
-	 * 
-	 * @see org.openmrs.test.BaseContextSensitiveTest#getRuntimeProperties()
-	 */
-	
-	@Before
+	@BeforeEach
 	public void setupDatabase() throws Exception {
 
         pacsIntegrationService = mock(PacsIntegrationService.class);
         radiologyService = mock(RadiologyService.class);
         orderEventListener.setPacsIntegrationService(pacsIntegrationService);
+        orderEventListener.setTaskRunner(runnable -> {
+            try {
+                Context.openSession();
+                Context.authenticate(new UsernamePasswordCredentials("admin", "test"));
+                runnable.run();
+            }
+            finally {
+                Context.closeSession();
+            }
+        });
 
         executeDataSet(XML_METADATA_DATASET);
         executeDataSet(XML_MAPPINGS_DATASET);
         executeDataSet(XML_DATASET);
+        this.getConnection().commit();
+        this.updateSearchIndex();
+        Context.clearSession();
     }
-
 
     @Test
     public void testSavingOrderWithEncounterShouldTriggerOutgoingMessage() throws Exception {
@@ -105,10 +115,10 @@ public class OrderToPacsComponentTest extends NonTransactionalBaseModuleContextS
         encounter.setEncounterDatetime(new Date());
         encounter.addOrder(order);
         encounter.setEncounterType(Context.getEncounterService().getEncounterType(1003));
-        encounterService.saveEncounter(encounter);
+
+        transactionalTestService.saveEncounter(encounter);
 
         Mockito.verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs(any(String.class));
-
     }
 
     @Test
@@ -128,7 +138,7 @@ public class OrderToPacsComponentTest extends NonTransactionalBaseModuleContextS
         encounter.setEncounterType(Context.getEncounterService().getEncounterType(1003));
         encounterService.saveEncounter(encounter);
 
-        Mockito.verify(pacsIntegrationService, timeout(10000).never()).sendMessageToPacs(any(String.class));
+        Mockito.verify(pacsIntegrationService, timeout(10000).times(0)).sendMessageToPacs(any(String.class));
     }
 
     @Test
@@ -152,16 +162,12 @@ public class OrderToPacsComponentTest extends NonTransactionalBaseModuleContextS
         encounterService.saveEncounter(encounter);
 
         Mockito.verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs(argThat(new IsExpectedHL7Message()));
-
     }
 
-    public class IsExpectedHL7Message extends ArgumentMatcher<String> {
+    public class IsExpectedHL7Message implements ArgumentMatcher<String> {
 
         @Override
-        public boolean matches(Object o) {
-
-            String hl7Message = (String) o;
-
+        public boolean matches(String hl7Message) {
             assertThat(hl7Message, startsWith("MSH|^~\\&||Mirebalais|||"));
             // TODO: test that a valid date is passed
             assertThat(hl7Message, containsString("||ORM^O01||P|2.3\r"));

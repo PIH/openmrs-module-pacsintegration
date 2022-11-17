@@ -13,9 +13,8 @@
  */
 package org.openmrs.module.pacsintegration.converter;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptMapType;
@@ -23,6 +22,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSource;
 import org.openmrs.Encounter;
+import org.openmrs.EncounterProvider;
 import org.openmrs.EncounterRole;
 import org.openmrs.Location;
 import org.openmrs.LocationAttribute;
@@ -34,37 +34,31 @@ import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
 import org.openmrs.PersonName;
 import org.openmrs.Provider;
-import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
 import org.openmrs.module.radiologyapp.RadiologyOrder;
 import org.openmrs.module.radiologyapp.RadiologyProperties;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.UUID;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(Context.class)
 public class OrderToPacsConverterTest {
 
     private OrderToPacsConverter converter;
@@ -89,7 +83,7 @@ public class OrderToPacsConverterTest {
 
     // TODO: test some error cases
 
-    @Before
+    @BeforeEach
     public void setup() {
         ConceptMapType sameAsConceptMapType = new ConceptMapType();
         sameAsConceptMapType.setName("SAME-AS");
@@ -169,9 +163,6 @@ public class OrderToPacsConverterTest {
         locationCode.setAttributeType(locationCodeAttributeType);
         examLocation.setAttribute(locationCode);
 
-        User authenticatedUser = new User();
-
-        mockStatic(Context.class);
         PatientService patientService = mock(PatientService.class);
         AdministrationService administrationService = mock(AdministrationService.class);
         ConceptService conceptService = mock(ConceptService.class);
@@ -180,12 +171,12 @@ public class OrderToPacsConverterTest {
         EmrApiProperties emrProperties = mock(EmrApiProperties.class);
         PacsIntegrationProperties pacsIntegrationProperties = mock(PacsIntegrationProperties.class);
 
-        when(Context.getAuthenticatedUser()).thenReturn(authenticatedUser);
         when(patientService.getPatientIdentifierTypeByUuid(anyString())).thenReturn(patientIdentifierType);
 
         when(administrationService.getGlobalProperty(PacsIntegrationConstants.GP_SENDING_FACILITY)).thenReturn("openmrs_mirebalais");
         when(administrationService.getGlobalProperty(PacsIntegrationConstants.GP_PROCEDURE_CODE_CONCEPT_SOURCE_UUID)).thenReturn(procedureCodeConceptSource.getUuid());
         when(administrationService.getGlobalProperty(PacsIntegrationConstants.GP_LOCATION_CODE_ATTRIBUTE_TYPE_UUID)).thenReturn(locationCodeAttributeType.getUuid());
+        when(administrationService.getGlobalProperty(PacsIntegrationConstants.GP_PATIENT_IDENTIFIER_TYPE_UUID)).thenReturn(patientIdentifierType.getUuid());
 
         when(conceptService.getConceptMapTypeByUuid(PacsIntegrationConstants.SAME_AS_CONCEPT_MAP_TYPE_UUID)).thenReturn(sameAsConceptMapType);
         when(pacsIntegrationProperties.getProcedureCodesConceptSource()).thenReturn(procedureCodeConceptSource);
@@ -213,8 +204,7 @@ public class OrderToPacsConverterTest {
         RadiologyOrder order = mock(RadiologyOrder.class);
         UUID uuid = UUID.randomUUID();
         Patient patient = createPatient();
-        Encounter encounter = createEncounter();
-        encounter.addProvider(clinicialEncounterRole, createProvider());
+        Encounter encounter = createEncounterWithProvider();
 
         when(order.getOrderNumber()).thenReturn(uuid.toString());
         when(order.getDateActivated()).thenReturn((new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2012")));
@@ -242,8 +232,7 @@ public class OrderToPacsConverterTest {
         RadiologyOrder order = mock(RadiologyOrder.class);
         UUID uuid = UUID.randomUUID();
         Patient patient = createPatient();
-        Encounter encounter = createEncounter();
-        encounter.addProvider(clinicialEncounterRole, createProvider());
+        Encounter encounter = createEncounterWithProvider();
 
         when(order.getOrderNumber()).thenReturn(uuid.toString());
         when(order.getDateActivated()).thenReturn((new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2012")));
@@ -272,8 +261,7 @@ public class OrderToPacsConverterTest {
         RadiologyOrder order = mock(RadiologyOrder.class);
         UUID uuid = UUID.randomUUID();
         Patient patient = createPatient();
-        Encounter encounter = createEncounter();
-        encounter.addProvider(clinicialEncounterRole, createProvider());
+        Encounter encounter = createEncounterWithProvider();
 
         when(order.getOrderNumber()).thenReturn(uuid.toString());
         when(order.getDateActivated()).thenReturn((new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2012")));
@@ -328,8 +316,7 @@ public class OrderToPacsConverterTest {
         RadiologyOrder order = mock(RadiologyOrder.class);
         UUID uuid = UUID.randomUUID();
         Patient patient = createPatientWithLongName();
-        Encounter encounter = createEncounter();
-        encounter.addProvider(clinicialEncounterRole, createProvider());
+        Encounter encounter = createEncounterWithProvider();
 
         when(order.getOrderNumber()).thenReturn(uuid.toString());
         when(order.getDateActivated()).thenReturn((new SimpleDateFormat("MM-dd-yyyy").parse("08-08-2012")));
@@ -423,4 +410,14 @@ public class OrderToPacsConverterTest {
         return new Encounter();
     }
 
+    private Encounter createEncounterWithProvider() {
+        Encounter encounter = createEncounter();
+        encounter.setEncounterProviders(new HashSet<>());
+        EncounterProvider encounterProvider = new EncounterProvider();
+        encounterProvider.setEncounter(encounter);
+        encounterProvider.setEncounterRole(clinicialEncounterRole);
+        encounterProvider.setProvider(createProvider());
+        encounter.getEncounterProviders().add(encounterProvider);
+        return encounter;
+    }
 }

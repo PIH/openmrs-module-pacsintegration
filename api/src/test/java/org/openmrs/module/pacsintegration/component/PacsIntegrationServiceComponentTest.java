@@ -13,20 +13,20 @@
  */
 package org.openmrs.module.pacsintegration.component;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openmrs.api.context.Context;
+import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
+import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Before;
-import org.junit.Test;
-import org.openmrs.api.context.Context;
-import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
-import org.openmrs.test.BaseModuleContextSensitiveTest;
-import org.springframework.beans.factory.annotation.Autowired;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Tests {@link PacsIntegrationService}}.
@@ -41,11 +41,14 @@ public class PacsIntegrationServiceComponentTest extends BaseModuleContextSensit
 	protected static final String XML_MAPPINGS_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset-mappings.xml";
 	protected static final String XML_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset.xml";
 
-	@Before
+	@BeforeEach
 	public void setupDatabase() throws Exception {
 		executeDataSet(XML_METADATA_DATASET);
 		executeDataSet(XML_MAPPINGS_DATASET);
 		executeDataSet(XML_DATASET);
+		this.getConnection().commit();
+		this.updateSearchIndex();
+		Context.clearSession();
 	}
 	
 	@Test

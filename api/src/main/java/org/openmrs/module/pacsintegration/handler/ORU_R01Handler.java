@@ -1,7 +1,6 @@
 package org.openmrs.module.pacsintegration.handler;
 
 import ca.uhn.hl7v2.HL7Exception;
-import ca.uhn.hl7v2.app.Application;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.v23.group.ORU_R01_OBSERVATION;
 import ca.uhn.hl7v2.model.v23.group.ORU_R01_ORDER_OBSERVATION;
@@ -9,67 +8,61 @@ import ca.uhn.hl7v2.model.v23.message.ORU_R01;
 import org.apache.commons.lang3.StringUtils;
 import org.openmrs.Concept;
 import org.openmrs.Provider;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.pacsintegration.util.HL7Utils;
 import org.openmrs.module.radiologyapp.RadiologyReport;
 import org.openmrs.util.OpenmrsUtil;
 
 import java.util.List;
 
-import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_PASSWORD;
-import static org.openmrs.module.pacsintegration.PacsIntegrationConstants.GP_LISTENER_USERNAME;
-
-public class ORU_R01Handler extends HL7Handler implements Application {
-
-    public ORU_R01Handler() {
-    }
+public class ORU_R01Handler extends HL7Handler {
 
     @Override
-    public synchronized Message processMessage(Message message) throws HL7Exception {
+    HL7MessageTask getHL7MessageTask(final Message message) {
+        return new HL7MessageTask() {
+            @Override
+            public void run() {
+                try {
+                    ORU_R01 oruR01 = (ORU_R01) message;
+                    String messageControlID = oruR01.getMSH().getMessageControlID().getValue();
+                    String sendingFacility = null;
 
-        ORU_R01 oruR01 = (ORU_R01) message;
-        String messageControlID = oruR01.getMSH().getMessageControlID().getValue();
-        String sendingFacility = null;
+                    try {
+                        sendingFacility = getSendingFacility();
 
-        try {
-            Context.openSession();
-            Context.authenticate(adminService.getGlobalProperty(GP_LISTENER_USERNAME),
-                    adminService.getGlobalProperty(GP_LISTENER_PASSWORD));
+                        String patientIdentifier = oruR01.getRESPONSE().getPATIENT().getPID().getPatientIDInternalID(0).getID().getValue();
 
-            sendingFacility = getSendingFacility();
+                        RadiologyReport report = new RadiologyReport();
 
-            String patientIdentifier = oruR01.getRESPONSE().getPATIENT().getPID().getPatientIDInternalID(0).getID().getValue();
+                        report.setOrderNumber(oruR01.getRESPONSE().getORDER_OBSERVATION().getOBR().getFillerOrderNumber().getEntityIdentifier().getValue());
+                        report.setPatient(getPatient(patientIdentifier));
+                        report.setReportDate(syncTimeWithCurrentServerTime(HL7Utils.getHl7DateFormat().parse(oruR01.getRESPONSE().getORDER_OBSERVATION().getOBR()
+                                .getObservationDateTime().getTimeOfAnEvent().getValue())));
+                        report.setAssociatedRadiologyOrder(getRadiologyOrder(report.getOrderNumber(), report.getPatient()));
+                        report.setProcedure(getProcedure(oruR01.getRESPONSE().getORDER_OBSERVATION().getOBR().getUniversalServiceIdentifier().getIdentifier().getValue()));
+                        report.setPrincipalResultsInterpreter(getResultsInterpreter(oruR01.getRESPONSE().getORDER_OBSERVATION().getOBR().getPrincipalResultInterpreter().getOPName().getIDNumber().getValue()));
+                        report.setReportType(getReportType(oruR01.getRESPONSE().getORDER_OBSERVATION().getOBR().getResultStatus().getValue()));
+                        report.setReportLocation(getLocationByName(oruR01.getMSH().getSendingFacility().getNamespaceID().getValue()));
+                        report.setReportBody(getReportBody(oruR01.getRESPONSE().getORDER_OBSERVATION()));
 
-            RadiologyReport report = new RadiologyReport();
-
-            report.setOrderNumber(oruR01.getRESPONSE().getORDER_OBSERVATION().getOBR().getFillerOrderNumber().getEntityIdentifier().getValue());
-            report.setPatient(getPatient(patientIdentifier));
-            report.setReportDate(syncTimeWithCurrentServerTime(HL7Utils.getHl7DateFormat().parse(oruR01.getRESPONSE().getORDER_OBSERVATION().getOBR()
-                    .getObservationDateTime().getTimeOfAnEvent().getValue())));
-            report.setAssociatedRadiologyOrder(getRadiologyOrder(report.getOrderNumber(), report.getPatient()));
-            report.setProcedure(getProcedure(oruR01.getRESPONSE().getORDER_OBSERVATION().getOBR().getUniversalServiceIdentifier().getIdentifier().getValue()));
-            report.setPrincipalResultsInterpreter(getResultsInterpreter(oruR01.getRESPONSE().getORDER_OBSERVATION().getOBR().getPrincipalResultInterpreter().getOPName().getIDNumber().getValue()));
-            report.setReportType(getReportType(oruR01.getRESPONSE().getORDER_OBSERVATION().getOBR().getResultStatus().getValue()));
-            report.setReportLocation(getLocationByName(oruR01.getMSH().getSendingFacility().getNamespaceID().getValue()));
-            report.setReportBody(getReportBody(oruR01.getRESPONSE().getORDER_OBSERVATION()));
-
-            if (!isDuplicate(report)) {
-                radiologyService.saveRadiologyReport(report);
+                        if (!isDuplicate(report)) {
+                            radiologyService.saveRadiologyReport(report);
+                        }
+                        else {
+                            log.warn("Duplicate report for order number " + report.getOrderNumber() + ", not saving");
+                        }
+                        setResultMessage(HL7Utils.generateACK(oruR01.getMSH().getMessageControlID().getValue(), sendingFacility));
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
+                        log.error("Unable to parse incoming ORU_RO1 message", e);
+                        setResultMessage(HL7Utils.generateErrorACK(messageControlID, sendingFacility, e.getMessage()));
+                    }
+                }
+                catch (HL7Exception hl7e) {
+                    setHl7Exception(hl7e);
+                }
             }
-            else {
-                log.warn("Duplicate report for order number " + report.getOrderNumber() + ", not saving");
-            }
-        }
-        catch (Exception e) {
-            log.error("Unable to parse incoming ORU_RO1 message", e);
-            return HL7Utils.generateErrorACK(messageControlID, sendingFacility,
-                e.getMessage());
-        }
-        finally {
-            Context.closeSession();
-       }
-
-        return HL7Utils.generateACK(oruR01.getMSH().getMessageControlID().getValue(), sendingFacility);
+        };
     }
 
     @Override

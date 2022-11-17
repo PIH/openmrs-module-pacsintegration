@@ -14,18 +14,18 @@
 
 package org.openmrs.module.pacsintegration.component;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Encounter;
 import org.openmrs.Patient;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.emrapi.EmrApiProperties;
-import org.openmrs.module.pacsintegration.NonTransactionalBaseModuleContextSensitiveTest;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.radiologyapp.RadiologyProperties;
+import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.PrintStream;
@@ -36,7 +36,7 @@ import java.util.List;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-public class HL7ListenerCreateTwoReportsComponentTest extends NonTransactionalBaseModuleContextSensitiveTest {
+public class HL7ListenerCreateTwoReportsComponentTest extends BaseModuleContextSensitiveTest {
 
     /*
      After upgrading to run against 1.11.x I'm running into a problem here, either:
@@ -66,15 +66,18 @@ public class HL7ListenerCreateTwoReportsComponentTest extends NonTransactionalBa
     @Autowired
     private RadiologyProperties radiologyProperties;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         executeDataSet(XML_METADATA_DATASET);
         executeDataSet(XML_MAPPINGS_DATASET);
         executeDataSet(XML_DATASET);
+        this.getConnection().commit();
+        this.updateSearchIndex();
+        Context.clearSession();
         Context.getService(PacsIntegrationService.class).initializeHL7Listener();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         deleteAllData();
     }

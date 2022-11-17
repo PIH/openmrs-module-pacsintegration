@@ -29,6 +29,9 @@
         </property>
     </bean>
 
+    <bean id="pacsTaskRunner" class="org.openmrs.module.pacsintegration.runner.PacsUserContextTaskRunner">
+        <property name="adminService"><ref bean="adminService"/></property>
+    </bean>
 
     <!-- register event listeners -->
 
@@ -39,11 +42,11 @@
         <property name="pacsIntegrationService">
             <ref bean="pacsIntegrationService"/>
         </property>
-        <property name="adminService">
-            <ref bean="adminService"/>
-        </property>
         <property name="converter">
             <ref bean="orderToPacsConverter"/>
+        </property>
+        <property name="taskRunner">
+            <ref bean="pacsTaskRunner"/>
         </property>
     </bean>
 
@@ -86,6 +89,9 @@
                             <property name="emrApiProperties">
                                 <ref bean="emrApiProperties"/>
                             </property>
+                            <property name="taskRunner">
+                                <ref bean="pacsTaskRunner"/>
+                            </property>
                         </bean>
                     </entry>
                     <entry key="ORU_R01">
@@ -113,6 +119,9 @@
                             </property>
                             <property name="emrApiProperties">
                                 <ref bean="emrApiProperties"/>
+                            </property>
+                            <property name="taskRunner">
+                                <ref bean="pacsTaskRunner"/>
                             </property>
                         </bean>
                     </entry>
