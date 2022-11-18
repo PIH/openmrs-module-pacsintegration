@@ -163,10 +163,10 @@ public class IncomingMessageListenerTest extends BaseModuleContextSensitiveTest 
      * This test task running bypasses all the actual logic in the given HL7Task, and just confirms that the correct
      * task recieved the correct message
      */
-    class TestTaskRunner implements ContextTaskRunner {
+    static class TestTaskRunner implements ContextTaskRunner {
 
         private IncomingMessageTask task;
-        private String identifier;
+        private final String identifier;
 
         public TestTaskRunner(String identifier) {
             this.identifier = identifier;

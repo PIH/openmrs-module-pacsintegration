@@ -11,16 +11,15 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.pacsintegration.component;
+package org.openmrs.module.pacsintegration.api;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.List;
 
@@ -34,9 +33,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class PacsIntegrationServiceComponentTest extends BaseModuleContextSensitiveTest {
 
     @Autowired
-    private PacsIntegrationService pacsIntegrationService;
+    PacsIntegrationService pacsIntegrationService;
 
-	protected final Log log = LogFactory.getLog(getClass());
+	@Qualifier("adminService")
+	@Autowired
+	AdministrationService administrationService;
+
 	protected static final String XML_METADATA_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset-metadata.xml";
 	protected static final String XML_MAPPINGS_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset-mappings.xml";
 	protected static final String XML_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset.xml";
@@ -57,16 +59,16 @@ public class PacsIntegrationServiceComponentTest extends BaseModuleContextSensit
 	}
 	
 	@Test
-	public void testSendingOrderMessageShouldWriteEntryToOutboundQueue() throws Exception {
+	public void testSendingOrderMessageShouldWriteEntryToOutboundQueue() {
 		// send the message
         String message = "TEST MESSAGE";
         pacsIntegrationService.sendMessageToPacs(message);
 		
 		// confirm that it has been stored in the outbound queue
-		List<List<Object>> results = Context.getAdministrationService().executeSQL(
-                "SELECT message FROM pacsintegration_outbound_queue ORDER BY date_created DESC", true);
+		List<List<Object>> results = administrationService.executeSQL(
+				"SELECT message FROM pacsintegration_outbound_queue ORDER BY date_created DESC", true
+		);
 		String messageInQueue = (String) results.get(0).get(0);
         assertThat(message, is(messageInQueue));
 	}
-	
 }

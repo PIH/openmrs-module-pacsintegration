@@ -70,7 +70,7 @@
     <concept_name concept_id="1003" name="Radiology Procedure" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="1003" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="9bc5693a-f558-4fff-8177-145dfe119ca7"/>
     <concept_description concept_description_id="1003" concept_id="1003" locale="en" description="Radiology Procedure" creator="1" date_created="2004-08-12 00:00:00.0" uuid="5f4d710b-d333-7777-b449-6e0ea3ededd0"/>
 
-    <concept concept_id="1004" retired="false" datatype_id="2" class_id="7" is_set="false" creator="1" date_created="2008-08-15 15:52:17.0" version="" uuid="92accc7c-78c9-47bd-a841-0de0817027d4"/>
+    <concept concept_id="1004" retired="false" datatype_id="3" class_id="7" is_set="false" creator="1" date_created="2008-08-15 15:52:17.0" version="" uuid="92accc7c-78c9-47bd-a841-0de0817027d4"/>
     <concept_name concept_id="1004" name="Accession Number" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="1003" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="9bc5693a-f558-4fff-8177-145dfe119ca7"/>
     <concept_description concept_description_id="1004" concept_id="1004" locale="en" description="Accession Number" creator="1" date_created="2004-08-12 00:00:00.0" uuid="5f4d710b-d333-40b7-b559-6e0ea3ededd0"/>
 
@@ -97,7 +97,7 @@
     <concept_name concept_id="1007" name="Radiology Report Type" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="1007" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="9bc5693a-f558-4fff-8137-145dfe329ca7"/>
     <concept_description concept_description_id="1007" concept_id="1007" locale="en" description="Radiology Report Type" creator="1" date_created="2004-08-12 00:00:00.0" uuid="5f4d710b-d333-7777-b449-6e0ea33hedd0"/>
 
-    <concept concept_id="1008" retired="false" datatype_id="2" class_id="7" is_set="false" creator="1" date_created="2008-08-15 15:52:17.0" version="" uuid="92accc7c-78c9-48bd-a841-0de0817027d4"/>
+    <concept concept_id="1008" retired="false" datatype_id="3" class_id="7" is_set="false" creator="1" date_created="2008-08-15 15:52:17.0" version="" uuid="92accc7c-78c9-48bd-a841-0de0817027d4"/>
     <concept_name concept_id="1008" name="Radiology Report Body" locale="en" creator="1" date_created="2004-08-12 00:00:00.0" concept_name_id="1008" concept_name_type="FULLY_SPECIFIED" locale_preferred="1" voided="false" uuid="9bc5693a-f558-4fff-8165-145dfe119ca7"/>
     <concept_description concept_description_id="1008" concept_id="1008" locale="en" description="Radiology Report Body" creator="1" date_created="2004-08-12 00:00:00.0" uuid="5f4d710b-d333-40b7-b559-6e0ea3edegd0"/>
 

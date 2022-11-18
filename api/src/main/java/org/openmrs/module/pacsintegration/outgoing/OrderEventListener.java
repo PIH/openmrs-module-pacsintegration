@@ -43,27 +43,29 @@ public class OrderEventListener implements SubscribableEventListener {
 	}
 
     @Override
-	public void onMessage(final Message message) {
-		taskRunner.run(() -> {
-			try {
-				MapMessage mapMessage = (MapMessage) message;
-				String action = mapMessage.getString("action");
+	public void onMessage(Message message) {
+		taskRunner.run(new OutgoingMessageTask(message) {
+			@Override
+			public void run() {
+				try {
+					MapMessage mapMessage = (MapMessage) message;
+					String action = mapMessage.getString("action");
 
-				if (Event.Action.CREATED.toString().equals(action)) {
-					String uuid = mapMessage.getString("uuid");
+					if (Event.Action.CREATED.toString().equals(action)) {
+						String uuid = mapMessage.getString("uuid");
 
-					Order order = orderService.getOrderByUuid(uuid);
-					if (order == null) {
-						throw new RuntimeException("Could not find the order this event tells us about! uuid=" + uuid);
+						Order order = orderService.getOrderByUuid(uuid);
+						if (order == null) {
+							throw new RuntimeException("Could not find the order this event tells us about! uuid=" + uuid);
+						}
+
+						String pacsMessage = converter.convertToPacsFormat((RadiologyOrder) order, "NW");
+						pacsIntegrationService.sendMessageToPacs(pacsMessage);
 					}
-
-					String pacsMessage = converter.convertToPacsFormat((RadiologyOrder) order, "NW");
-					pacsIntegrationService.sendMessageToPacs(pacsMessage);
+				} catch (Exception e) {
+					//TODO: do something better
+					throw new RuntimeException(e);
 				}
-			}
-			catch (Exception e) {
-				//TODO: do something better
-				throw new RuntimeException(e);
 			}
 		});
 	}
