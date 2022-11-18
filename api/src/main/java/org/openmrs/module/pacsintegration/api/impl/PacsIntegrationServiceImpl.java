@@ -19,7 +19,7 @@ import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.pacsintegration.OutboundQueue;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.api.db.PacsIntegrationDAO;
-import org.openmrs.module.pacsintegration.listener.HL7Listener;
+import org.openmrs.module.pacsintegration.incoming.IncomingMessageListener;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -32,7 +32,7 @@ public class PacsIntegrationServiceImpl extends BaseOpenmrsService implements Pa
 
 	private PacsIntegrationDAO dao;
 
-    private HL7Listener hl7Listener;
+    private IncomingMessageListener hl7Listener;
 	
 	@Override
     @Transactional
@@ -70,11 +70,11 @@ public class PacsIntegrationServiceImpl extends BaseOpenmrsService implements Pa
         return dao;
     }
 
-    public HL7Listener getHl7Listener() {
+    public IncomingMessageListener getHl7Listener() {
         return hl7Listener;
     }
 
-    public void setHl7Listener(HL7Listener hl7Listener) {
+    public void setHl7Listener(IncomingMessageListener hl7Listener) {
         this.hl7Listener = hl7Listener;
     }
 }

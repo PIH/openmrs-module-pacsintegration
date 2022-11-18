@@ -1,4 +1,4 @@
-package org.openmrs.module.pacsintegration.handler;
+package org.openmrs.module.pacsintegration.incoming;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.ApplicationException;

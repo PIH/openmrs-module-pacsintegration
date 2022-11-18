@@ -1,4 +1,4 @@
-package org.openmrs.module.pacsintegration.handler;
+package org.openmrs.module.pacsintegration.incoming;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.Application;
@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-abstract public class HL7Handler implements Application {
+abstract public class IncomingMessageHandler implements Application {
 
     protected final Log log = LogFactory.getLog(this.getClass());
 
@@ -53,7 +53,7 @@ abstract public class HL7Handler implements Application {
 
     @Override
     public synchronized Message processMessage(Message message) throws HL7Exception {
-        HL7Task task = getHL7Task(message);
+        IncomingMessageTask task = getHL7Task(message);
         taskRunner.run(task);
         if (task.getHl7Exception() != null) {
             throw task.getHl7Exception();
@@ -61,7 +61,7 @@ abstract public class HL7Handler implements Application {
         return task.getResultMessage();
     }
 
-    abstract HL7Task getHL7Task(Message message);
+    abstract IncomingMessageTask getHL7Task(Message message);
 
     protected Patient getPatient(String patientIdentifier) {
         if (StringUtils.isBlank(patientIdentifier)) {

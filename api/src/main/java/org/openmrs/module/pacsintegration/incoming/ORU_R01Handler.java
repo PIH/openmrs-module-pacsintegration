@@ -1,4 +1,4 @@
-package org.openmrs.module.pacsintegration.handler;
+package org.openmrs.module.pacsintegration.incoming;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
@@ -14,11 +14,11 @@ import org.openmrs.util.OpenmrsUtil;
 
 import java.util.List;
 
-public class ORU_R01Handler extends HL7Handler {
+public class ORU_R01Handler extends IncomingMessageHandler {
 
     @Override
-    HL7Task getHL7Task(final Message message) {
-        return new HL7Task() {
+    IncomingMessageTask getHL7Task(final Message message) {
+        return new IncomingMessageTask() {
             @Override
             public void run() {
                 try {

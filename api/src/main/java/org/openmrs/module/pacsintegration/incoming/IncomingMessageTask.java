@@ -1,4 +1,4 @@
-package org.openmrs.module.pacsintegration.handler;
+package org.openmrs.module.pacsintegration.incoming;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.Message;
@@ -8,7 +8,7 @@ import ca.uhn.hl7v2.model.Message;
  * produce a particular result message.  The incoming message, result message, and any exception during processing
  * should be stored in the provided instance variables for inspection by consumers
  */
-public abstract class HL7Task implements Runnable {
+public abstract class IncomingMessageTask implements Runnable {
 
     private Message incomingMessage;
     private Message resultMessage;

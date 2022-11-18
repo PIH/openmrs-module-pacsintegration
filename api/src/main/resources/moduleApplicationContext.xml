@@ -5,7 +5,7 @@
   		    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
     <!-- configure the OrderToPacs converter bean-->
-    <bean id="orderToPacsConverter" class="org.openmrs.module.pacsintegration.converter.OrderToPacsConverter">
+    <bean id="orderToPacsConverter" class="org.openmrs.module.pacsintegration.outgoing.OrderToPacsConverter">
         <property name="patientService">
             <ref bean="patientService"/>
         </property>
@@ -35,7 +35,7 @@
 
     <!-- register event listeners -->
 
-    <bean id="orderEventListener" class="org.openmrs.module.pacsintegration.listener.OrderEventListener">
+    <bean id="orderEventListener" class="org.openmrs.module.pacsintegration.outgoing.OrderEventListener">
         <property name="orderService">
             <ref bean="orderService"/>
         </property>
@@ -56,7 +56,7 @@
         </property>
     </bean>
 
-    <bean id="ormO01Handler" class="org.openmrs.module.pacsintegration.handler.ORM_O01Handler">
+    <bean id="ormO01Handler" class="org.openmrs.module.pacsintegration.incoming.ORM_O01Handler">
         <property name="adminService">
             <ref bean="adminService"/>
         </property>
@@ -86,7 +86,7 @@
         </property>
     </bean>
 
-    <bean id="oruR01Handler" class="org.openmrs.module.pacsintegration.handler.ORU_R01Handler">
+    <bean id="oruR01Handler" class="org.openmrs.module.pacsintegration.incoming.ORU_R01Handler">
         <property name="adminService">
             <ref bean="adminService"/>
         </property>
@@ -117,7 +117,7 @@
     </bean>
 
     <!-- configure the listener that listens for HL7 messages -->
-    <bean id="hl7listener" class="org.openmrs.module.pacsintegration.listener.HL7Listener">
+    <bean id="hl7listener" class="org.openmrs.module.pacsintegration.incoming.IncomingMessageListener">
         <property name="pacsIntegrationProperties">
             <ref bean="pacsIntegrationProperties"/>
         </property>

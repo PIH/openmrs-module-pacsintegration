@@ -28,9 +28,7 @@ import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.UsernamePasswordCredentials;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
-import org.openmrs.module.pacsintegration.listener.OrderEventListener;
-import org.openmrs.module.pacsintegration.runner.ContextTaskRunner;
-import org.openmrs.module.pacsintegration.test.TransactionalTestService;
+import org.openmrs.module.pacsintegration.outgoing.OrderEventListener;
 import org.openmrs.module.radiologyapp.RadiologyOrder;
 import org.openmrs.module.radiologyapp.RadiologyService;
 import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
@@ -52,9 +50,6 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 
     @Autowired
     private EncounterService encounterService;
-
-    @Autowired
-    private TransactionalTestService transactionalTestService;
 
     @Autowired
     private LocationService locationService;
@@ -116,7 +111,7 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
         encounter.addOrder(order);
         encounter.setEncounterType(Context.getEncounterService().getEncounterType(1003));
 
-        transactionalTestService.saveEncounter(encounter);
+        encounterService.saveEncounter(encounter);
 
         Mockito.verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs(any(String.class));
     }

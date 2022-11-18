@@ -12,7 +12,7 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package org.openmrs.module.pacsintegration.listener;
+package org.openmrs.module.pacsintegration.outgoing;
 
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Order;
@@ -20,7 +20,6 @@ import org.openmrs.api.OrderService;
 import org.openmrs.event.Event;
 import org.openmrs.event.SubscribableEventListener;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
-import org.openmrs.module.pacsintegration.converter.OrderToPacsConverter;
 import org.openmrs.module.pacsintegration.runner.ContextTaskRunner;
 import org.openmrs.module.radiologyapp.RadiologyOrder;
 

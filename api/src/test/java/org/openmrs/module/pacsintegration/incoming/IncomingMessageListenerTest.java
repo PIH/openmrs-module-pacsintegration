@@ -12,7 +12,7 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package org.openmrs.module.pacsintegration.listener;
+package org.openmrs.module.pacsintegration.incoming;
 
 import ca.uhn.hl7v2.app.Application;
 import org.apache.commons.io.IOUtils;
@@ -21,9 +21,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
-import org.openmrs.module.pacsintegration.handler.HL7Task;
-import org.openmrs.module.pacsintegration.handler.ORM_O01Handler;
-import org.openmrs.module.pacsintegration.handler.ORU_R01Handler;
 import org.openmrs.module.pacsintegration.runner.ContextTaskRunner;
 import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,14 +32,14 @@ import java.net.Socket;
  * delivered to it successfully and routed to the appropriate handler.  It does not test that the handlers
  * handle the messages successfully - that testing is done in the tests for the handlers themselves.
  */
-public class HL7ListenerTest extends BaseModuleContextSensitiveTest {
+public class IncomingMessageListenerTest extends BaseModuleContextSensitiveTest {
 
     protected static final String XML_METADATA_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset-metadata.xml";
     protected static final String XML_MAPPINGS_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset-mappings.xml";
     protected static final String XML_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset.xml";
 
     @Autowired
-    HL7Listener hl7Listener;
+    IncomingMessageListener hl7Listener;
 
     @Autowired
     ORM_O01Handler orm_o01Handler;
@@ -168,7 +165,7 @@ public class HL7ListenerTest extends BaseModuleContextSensitiveTest {
      */
     class TestTaskRunner implements ContextTaskRunner {
 
-        private HL7Task task;
+        private IncomingMessageTask task;
         private String identifier;
 
         public TestTaskRunner(String identifier) {
@@ -177,12 +174,12 @@ public class HL7ListenerTest extends BaseModuleContextSensitiveTest {
 
         @Override
         public void run(Runnable runnable) {
-            if (runnable instanceof HL7Task) {
-                task = (HL7Task) runnable;
+            if (runnable instanceof IncomingMessageTask) {
+                task = (IncomingMessageTask) runnable;
             }
         }
 
-        public HL7Task getTask() {
+        public IncomingMessageTask getTask() {
             return task;
         }
 

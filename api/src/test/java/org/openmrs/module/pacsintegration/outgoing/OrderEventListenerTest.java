@@ -12,7 +12,7 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package org.openmrs.module.pacsintegration.listener;
+package org.openmrs.module.pacsintegration.outgoing;
 
 import ca.uhn.hl7v2.app.Application;
 import org.apache.commons.io.IOUtils;
@@ -23,8 +23,9 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
-import org.openmrs.module.pacsintegration.handler.ORM_O01Handler;
-import org.openmrs.module.pacsintegration.handler.ORU_R01Handler;
+import org.openmrs.module.pacsintegration.incoming.IncomingMessageListener;
+import org.openmrs.module.pacsintegration.incoming.ORM_O01Handler;
+import org.openmrs.module.pacsintegration.incoming.ORU_R01Handler;
 import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -46,7 +47,7 @@ public class OrderEventListenerTest extends BaseModuleContextSensitiveTest {
     protected static final String XML_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset.xml";
 
     @Autowired
-    HL7Listener hl7Listener;
+    IncomingMessageListener hl7Listener;
 
     @Autowired
     ORM_O01Handler orm_o01Handler;
