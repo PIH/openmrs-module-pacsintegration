@@ -17,11 +17,12 @@ import java.util.List;
 public class ORU_R01Handler extends HL7Handler {
 
     @Override
-    HL7MessageTask getHL7MessageTask(final Message message) {
-        return new HL7MessageTask() {
+    HL7Task getHL7Task(final Message message) {
+        return new HL7Task() {
             @Override
             public void run() {
                 try {
+                    setIncomingMessage(message);
                     ORU_R01 oruR01 = (ORU_R01) message;
                     String messageControlID = oruR01.getMSH().getMessageControlID().getValue();
                     String sendingFacility = null;

@@ -11,7 +11,6 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptSource;
 import org.openmrs.Location;
 import org.openmrs.Patient;
-import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
@@ -28,8 +27,6 @@ import org.openmrs.module.radiologyapp.RadiologyService;
 
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 abstract public class HL7Handler implements Application {
@@ -56,7 +53,7 @@ abstract public class HL7Handler implements Application {
 
     @Override
     public synchronized Message processMessage(Message message) throws HL7Exception {
-        HL7MessageTask task = getHL7MessageTask(message);
+        HL7Task task = getHL7Task(message);
         taskRunner.run(task);
         if (task.getHl7Exception() != null) {
             throw task.getHl7Exception();
@@ -64,7 +61,7 @@ abstract public class HL7Handler implements Application {
         return task.getResultMessage();
     }
 
-    abstract HL7MessageTask getHL7MessageTask(Message message);
+    abstract HL7Task getHL7Task(Message message);
 
     protected Patient getPatient(String patientIdentifier) {
         if (StringUtils.isBlank(patientIdentifier)) {
@@ -191,27 +188,5 @@ abstract public class HL7Handler implements Application {
 
     public void setTaskRunner(ContextTaskRunner taskRunner) {
         this.taskRunner = taskRunner;
-    }
-
-    static abstract class HL7MessageTask implements Runnable {
-
-        private Message resultMessage;
-        private HL7Exception hl7Exception;
-
-        public Message getResultMessage() {
-            return resultMessage;
-        }
-
-        public void setResultMessage(Message resultMessage) {
-            this.resultMessage = resultMessage;
-        }
-
-        public HL7Exception getHl7Exception() {
-            return hl7Exception;
-        }
-
-        public void setHl7Exception(HL7Exception hl7Exception) {
-            this.hl7Exception = hl7Exception;
-        }
     }
 }

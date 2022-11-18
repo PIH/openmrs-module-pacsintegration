@@ -21,11 +21,12 @@ import java.util.Date;
 public class ORM_O01Handler extends HL7Handler {
 
     @Override
-    HL7MessageTask getHL7MessageTask(final Message message) {
-        return new HL7MessageTask() {
+    HL7Task getHL7Task(final Message message) {
+        return new HL7Task() {
             @Override
             public void run() {
                 try {
+                    setIncomingMessage(message);
                     ORM_O01 ormO01 = (ORM_O01) message;
                     String messageControlID = ormO01.getMSH().getMessageControlID().getValue();
                     String sendingFacility = null;

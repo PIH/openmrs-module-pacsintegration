@@ -18,8 +18,10 @@ import org.openmrs.OpenmrsObject;
 import org.openmrs.Order;
 import org.openmrs.api.OrderService;
 import org.openmrs.event.Event;
+import org.openmrs.event.SubscribableEventListener;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.converter.OrderToPacsConverter;
+import org.openmrs.module.pacsintegration.runner.ContextTaskRunner;
 import org.openmrs.module.radiologyapp.RadiologyOrder;
 
 import javax.jms.MapMessage;
@@ -27,13 +29,19 @@ import javax.jms.Message;
 import java.util.Arrays;
 import java.util.List;
 
-public class OrderEventListener extends PacsEventListener {
+public class OrderEventListener implements SubscribableEventListener {
 
     private OrderService orderService;
 
     private PacsIntegrationService pacsIntegrationService;
 
     private OrderToPacsConverter converter;
+
+	protected ContextTaskRunner taskRunner;
+
+	public void setTaskRunner(ContextTaskRunner taskRunner) {
+		this.taskRunner = taskRunner;
+	}
 
     @Override
 	public void onMessage(final Message message) {
