@@ -21,7 +21,7 @@ import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationException;
 import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
-import org.openmrs.module.pacsintegration.runner.ContextTaskRunner;
+import org.openmrs.module.pacsintegration.runner.TaskRunner;
 import org.openmrs.module.radiologyapp.RadiologyOrder;
 import org.openmrs.module.radiologyapp.RadiologyService;
 
@@ -49,7 +49,7 @@ abstract public class IncomingMessageHandler implements Application {
 
     protected PacsIntegrationProperties pacsIntegrationProperties;
 
-    protected ContextTaskRunner taskRunner;
+    protected TaskRunner taskRunner;
 
     @Override
     public synchronized Message processMessage(Message message) throws HL7Exception {
@@ -186,7 +186,7 @@ abstract public class IncomingMessageHandler implements Application {
         this.providerService = providerService;
     }
 
-    public void setTaskRunner(ContextTaskRunner taskRunner) {
+    public void setTaskRunner(TaskRunner taskRunner) {
         this.taskRunner = taskRunner;
     }
 }

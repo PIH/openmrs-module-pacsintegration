@@ -28,7 +28,7 @@ import org.openmrs.api.context.Context;
 import org.openmrs.event.Event;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
-import org.openmrs.module.pacsintegration.runner.ContextTaskRunner;
+import org.openmrs.module.pacsintegration.runner.TaskRunner;
 import org.openmrs.module.pacsintegration.test.TransactionalTestService;
 import org.openmrs.module.radiologyapp.RadiologyOrder;
 import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
@@ -190,7 +190,7 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
      * This test task running bypasses all the actual logic in the given HL7Task, and just confirms that the correct
      * task recieved the correct message
      */
-    static class TestTaskRunner implements ContextTaskRunner {
+    static class TestTaskRunner implements TaskRunner {
 
         private OutgoingMessageTask task;
 

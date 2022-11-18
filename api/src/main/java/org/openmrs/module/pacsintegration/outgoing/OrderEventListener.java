@@ -20,7 +20,7 @@ import org.openmrs.api.OrderService;
 import org.openmrs.event.Event;
 import org.openmrs.event.SubscribableEventListener;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
-import org.openmrs.module.pacsintegration.runner.ContextTaskRunner;
+import org.openmrs.module.pacsintegration.runner.TaskRunner;
 import org.openmrs.module.radiologyapp.RadiologyOrder;
 
 import javax.jms.MapMessage;
@@ -36,9 +36,9 @@ public class OrderEventListener implements SubscribableEventListener {
 
     private OrderToPacsConverter converter;
 
-	protected ContextTaskRunner taskRunner;
+	protected TaskRunner taskRunner;
 
-	public void setTaskRunner(ContextTaskRunner taskRunner) {
+	public void setTaskRunner(TaskRunner taskRunner) {
 		this.taskRunner = taskRunner;
 	}
 
