@@ -98,23 +98,6 @@
         </description>
     </globalProperty>
 
-
-    <globalProperty>
-        <property>pacsintegration.listenerUsername</property>
-        <defaultValue>admin</defaultValue>
-        <description>
-            Username the listener uses for authentication
-        </description>
-    </globalProperty>
-
-    <globalProperty>
-        <property>pacsintegration.listenerPassword</property>
-        <defaultValue>test</defaultValue>
-        <description>
-            Password the listener users for authentication
-        </description>
-    </globalProperty>
-
     <globalProperty>
         <property>pacsintegration.locationCodeAttributeTypeUuid</property>
         <defaultValue></defaultValue>

@@ -2,10 +2,6 @@
 <dataset>
     <global_property property="pacsintegration.radiologyOrderTypeUuid"
                      property_value="84ce45a8-5e7c-48f7-a581-bb1d17d63a62" uuid="7abcc666-7777-45e1-8c99-2b4f0c4f888a"/>
-    <global_property property="pacsintegration.listenerUsername" property_value="admin"
-                     uuid="7abcc666-7557-45e1-8c99-2b4f0c4f888a"/>
-    <global_property property="pacsintegration.listenerPassword" property_value="test"
-                     uuid="7abcc666-7227-45e1-8c99-2b4f0c4f888a"/>
     <global_property property="pacsintegration.patientIdentifierTypeUuid" property_value="1a339fe9-38bc-4ab3-b180-320988c0b968"
                      uuid="7abcc666-7227-4581-8c99-2b4f0c4f888a"/>
     <global_property property="pacsintegration.sendingFacility" property_value="Mirebalais"
