@@ -12,43 +12,49 @@
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
 
-package org.openmrs.module.pacsintegration.component;
+package org.openmrs.module.pacsintegration.outgoing;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.ArgumentMatcher;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Encounter;
+import org.openmrs.Order;
 import org.openmrs.TestOrder;
 import org.openmrs.api.EncounterService;
 import org.openmrs.api.LocationService;
+import org.openmrs.api.OrderService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.pacsintegration.NonTransactionalBaseModuleContextSensitiveTest;
+import org.openmrs.event.Event;
+import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
-import org.openmrs.module.pacsintegration.listener.OrderEventListener;
+import org.openmrs.module.pacsintegration.runner.ContextTaskRunner;
+import org.openmrs.module.pacsintegration.test.TransactionalTestService;
 import org.openmrs.module.radiologyapp.RadiologyOrder;
-import org.openmrs.module.radiologyapp.RadiologyService;
+import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.jms.MapMessage;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.timeout;
 
-public class OrderToPacsComponentTest extends NonTransactionalBaseModuleContextSensitiveTest {
+public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 
     @Autowired
     private EncounterService encounterService;
+
+    @Autowired
+    private OrderService orderService;
+
+    @Autowired
+    private TransactionalTestService transactionalTestService;
 
     @Autowired
     private LocationService locationService;
@@ -59,40 +65,34 @@ public class OrderToPacsComponentTest extends NonTransactionalBaseModuleContextS
     @Autowired
     private OrderEventListener orderEventListener;
 
-    private RadiologyService radiologyService;
+    @Autowired
+    private OrderToPacsConverter converter;
 
     private PacsIntegrationService pacsIntegrationService;
 
-	protected final Log log = LogFactory.getLog(getClass());
+    private TestTaskRunner testTaskRunner;
 
     protected static final String XML_METADATA_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset-metadata.xml";
     protected static final String XML_MAPPINGS_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset-mappings.xml";
     protected static final String XML_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset.xml";
 
-
-    /**
-	 * See http://listarchives.openmrs.org/Limitations-of-H2-for-unit-tests-td7560958.html . This
-	 * avoids: org.h2.jdbc.JdbcSQLException: Timeout trying to lock table "ORDERS"; SQL statement:
-	 * 
-	 * @see org.openmrs.test.BaseContextSensitiveTest#getRuntimeProperties()
-	 */
-	
-	@Before
+	@BeforeEach
 	public void setupDatabase() throws Exception {
-
+        testTaskRunner = new TestTaskRunner();
         pacsIntegrationService = mock(PacsIntegrationService.class);
-        radiologyService = mock(RadiologyService.class);
         orderEventListener.setPacsIntegrationService(pacsIntegrationService);
+        orderEventListener.setTaskRunner(testTaskRunner);
 
         executeDataSet(XML_METADATA_DATASET);
         executeDataSet(XML_MAPPINGS_DATASET);
         executeDataSet(XML_DATASET);
+        this.getConnection().commit();
+        this.updateSearchIndex();
+        Context.clearSession();
     }
-
 
     @Test
     public void testSavingOrderWithEncounterShouldTriggerOutgoingMessage() throws Exception {
-
         RadiologyOrder order = new RadiologyOrder();
         order.setOrderType(Context.getOrderService().getOrderType(1001));
         order.setPatient(Context.getPatientService().getPatient(7));
@@ -105,10 +105,17 @@ public class OrderToPacsComponentTest extends NonTransactionalBaseModuleContextS
         encounter.setEncounterDatetime(new Date());
         encounter.addOrder(order);
         encounter.setEncounterType(Context.getEncounterService().getEncounterType(1003));
-        encounterService.saveEncounter(encounter);
+        transactionalTestService.saveEncounter(encounter);
 
-        Mockito.verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs(any(String.class));
+        Thread.sleep(2000);
 
+        OutgoingMessageTask task = testTaskRunner.getTask();
+        Assertions.assertNotNull(task);
+        Assertions.assertNotNull(task.getIncomingMessage());
+        Assertions.assertInstanceOf(MapMessage.class, task.getIncomingMessage());
+        MapMessage mapMessage = (MapMessage) task.getIncomingMessage();
+        assertThat(mapMessage.getString("action"), equalTo(Event.Action.CREATED.toString()));
+        assertThat(mapMessage.getString("uuid"), equalTo(order.getUuid()));
     }
 
     @Test
@@ -126,14 +133,17 @@ public class OrderToPacsComponentTest extends NonTransactionalBaseModuleContextS
         encounter.setEncounterDatetime(new Date());
         encounter.addOrder(order);
         encounter.setEncounterType(Context.getEncounterService().getEncounterType(1003));
-        encounterService.saveEncounter(encounter);
+        transactionalTestService.saveEncounter(encounter);
 
-        Mockito.verify(pacsIntegrationService, timeout(10000).never()).sendMessageToPacs(any(String.class));
+        Thread.sleep(2000);
+
+        OutgoingMessageTask task = testTaskRunner.getTask();
+        Assertions.assertNull(task);
     }
 
     @Test
     public void testPlacingRadiologyOrderShouldGenerateProperMessage() throws Exception {
-
+        Context.getAdministrationService().setGlobalProperty(PacsIntegrationConstants.GP_DEFAULT_LOCALE, "en_GB");
         RadiologyOrder order = new RadiologyOrder();
         order.setOrderType(Context.getOrderService().getOrderType(1001));
         order.setPatient(Context.getPatientService().getPatient(7));
@@ -149,32 +159,50 @@ public class OrderToPacsComponentTest extends NonTransactionalBaseModuleContextS
         encounter.addOrder(order);
         encounter.setEncounterType(Context.getEncounterService().getEncounterType(1003));
         encounter.addProvider(encounterService.getEncounterRole(1003), providerService.getProvider(1));
-        encounterService.saveEncounter(encounter);
+        transactionalTestService.saveEncounter(encounter);
 
-        Mockito.verify(pacsIntegrationService, timeout(5000)).sendMessageToPacs(argThat(new IsExpectedHL7Message()));
+        Thread.sleep(2000);
 
+        OutgoingMessageTask task = testTaskRunner.getTask();
+        Assertions.assertNotNull(task);
+        Assertions.assertNotNull(task.getIncomingMessage());
+        Assertions.assertInstanceOf(MapMessage.class, task.getIncomingMessage());
+        MapMessage mapMessage = (MapMessage) task.getIncomingMessage();
+        assertThat(mapMessage.getString("action"), equalTo(Event.Action.CREATED.toString()));
+        assertThat(mapMessage.getString("uuid"), equalTo(order.getUuid()));
+
+        Order orderFromUuid = orderService.getOrderByUuid(mapMessage.getString("uuid"));
+        Assertions.assertNotNull(orderFromUuid);
+        String hl7Message = converter.convertToPacsFormat(order, "NW");
+        assertThat(hl7Message, startsWith("MSH|^~\\&||Mirebalais|||"));
+        // TODO: test that a valid date is passed
+        assertThat(hl7Message, containsString("||ORM^O01||P|2.3\r"));
+        assertThat(hl7Message, containsString("PID|||6TS-4||Chebaskwony^Collet||19760825000000|F\r"));
+        assertThat(hl7Message, containsString("PV1|||1FED2^^^^^^^^Unknown Location|||||Test^User^Super\r"));
+        assertThat(hl7Message, containsString("ORC|NW\r"));
+        // we need to break out the last two lines because the order number (ORD-1) varies based on when test is executed
+        // due to the fact that the tests are non-transactional and therefore don't roll back
+        assertThat(hl7Message, containsString("OBR|||ORD-"));
+        assertThat(hl7Message, endsWith("|127689^FOOD ASSISTANCE||||||||||||||||||||||||||||||||20120808000000\r"));
     }
 
-    public class IsExpectedHL7Message extends ArgumentMatcher<String> {
+    /**
+     * This test task running bypasses all the actual logic in the given HL7Task, and just confirms that the correct
+     * task recieved the correct message
+     */
+    static class TestTaskRunner implements ContextTaskRunner {
+
+        private OutgoingMessageTask task;
 
         @Override
-        public boolean matches(Object o) {
+        public void run(Runnable runnable) {
+            if (runnable instanceof OutgoingMessageTask) {
+                task = (OutgoingMessageTask) runnable;
+            }
+        }
 
-            String hl7Message = (String) o;
-
-            assertThat(hl7Message, startsWith("MSH|^~\\&||Mirebalais|||"));
-            // TODO: test that a valid date is passed
-            assertThat(hl7Message, containsString("||ORM^O01||P|2.3\r"));
-            assertThat(hl7Message, containsString("PID|||6TS-4||Chebaskwony^Collet||19760825000000|F\r"));
-            assertThat(hl7Message, containsString("PV1|||1FED2^^^^^^^^Unknown Location|||||Test^User^Super\r"));
-            assertThat(hl7Message, containsString("ORC|NW\r"));
-            // we need to break out the last two lines because the order number (ORD-1) varies based on when test is executed
-            // due to the fact that the tests are non-transactional and therefore don't roll back
-            assertThat(hl7Message, containsString("OBR|||ORD-"));
-            assertThat(hl7Message, endsWith("|127689^FOOD ASSISTANCE||||||||||||||||||||||||||||||||20120808000000\r"));
-
-            return true;
+        public OutgoingMessageTask getTask() {
+            return task;
         }
     }
-
 }

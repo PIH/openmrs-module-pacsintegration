@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.module.pacsintegration.converter;
+package org.openmrs.module.pacsintegration.outgoing;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.v23.message.ORM_O01;
@@ -37,12 +37,13 @@ import org.openmrs.api.ConceptService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.module.emrapi.EmrApiProperties;
-import org.openmrs.module.radiologyapp.RadiologyConstants;
-import org.openmrs.module.radiologyapp.RadiologyOrder;
-import org.openmrs.module.radiologyapp.RadiologyProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
 import org.openmrs.module.pacsintegration.util.HL7Utils;
+import org.openmrs.module.radiologyapp.RadiologyConstants;
+import org.openmrs.module.radiologyapp.RadiologyOrder;
+import org.openmrs.module.radiologyapp.RadiologyProperties;
+import org.openmrs.util.LocaleUtility;
 
 import java.util.Date;
 import java.util.List;
@@ -119,8 +120,7 @@ public class OrderToPacsConverter {
         obr.getFillerOrderNumber().getEntityIdentifier().setValue(order.getOrderNumber());
         obr.getUniversalServiceIdentifier().getIdentifier().setValue(getProcedureCode(order));
 
-        obr.getUniversalServiceIdentifier().getText()
-                .setValue(StringUtils.substring(order.getConcept().getFullySpecifiedName(getDefaultLocale()).getName(), 0, PacsIntegrationConstants.MAX_LENGTH_PROCEDURE_TYPE_DESCRIPTION));
+        obr.getUniversalServiceIdentifier().getText().setValue(StringUtils.substring(order.getConcept().getFullySpecifiedName(getDefaultLocale()).getName(), 0, PacsIntegrationConstants.MAX_LENGTH_PROCEDURE_TYPE_DESCRIPTION));
 
         // note that we are just sending modality here, not the device location
         obr.getPlacerField2().setValue(getModalityCode(order));
@@ -229,7 +229,7 @@ public class OrderToPacsConverter {
             defaultLocale = "en";
         }
 
-        return new Locale(defaultLocale);
+        return LocaleUtility.fromSpecification(defaultLocale);
     }
 
     private ConceptMapType getSameAsConceptMapType()  {

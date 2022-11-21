@@ -1,13 +1,16 @@
-package org.openmrs.module.pacsintegration.handler;
+package org.openmrs.module.pacsintegration.incoming;
 
+import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.app.Application;
+import ca.uhn.hl7v2.model.Message;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 import org.openmrs.Concept;
+import org.openmrs.ConceptSource;
 import org.openmrs.Location;
 import org.openmrs.Patient;
-import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
@@ -18,16 +21,15 @@ import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationException;
 import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
+import org.openmrs.module.pacsintegration.runner.ContextTaskRunner;
 import org.openmrs.module.radiologyapp.RadiologyOrder;
 import org.openmrs.module.radiologyapp.RadiologyService;
 
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
-abstract public class HL7Handler {
+abstract public class IncomingMessageHandler implements Application {
 
     protected final Log log = LogFactory.getLog(this.getClass());
 
@@ -47,26 +49,27 @@ abstract public class HL7Handler {
 
     protected PacsIntegrationProperties pacsIntegrationProperties;
 
+    protected ContextTaskRunner taskRunner;
+
+    @Override
+    public synchronized Message processMessage(Message message) throws HL7Exception {
+        IncomingMessageTask task = getHL7Task(message);
+        taskRunner.run(task);
+        if (task.getHl7Exception() != null) {
+            throw task.getHl7Exception();
+        }
+        return task.getResultMessage();
+    }
+
+    abstract IncomingMessageTask getHL7Task(Message message);
 
     protected Patient getPatient(String patientIdentifier) {
         if (StringUtils.isBlank(patientIdentifier)) {
             throw new PacsIntegrationException("Cannot import message. No patient identifier specified.");
         }
 
-        // we can remove casting to a linked list once we can remove the hack listed below (need linked list to do a i.remove())
-        List<Patient> patientList = new LinkedList<Patient>(patientService.getPatients(null, patientIdentifier,
-                Collections.singletonList(emrApiProperties.getPrimaryIdentifierType()), true));
-
-        // hack to work around https://tickets.pih-emr.org/browse/UHM-3346
-        if (patientList != null) {
-            Iterator<Patient> i = patientList.iterator();
-            while (i.hasNext()) {
-                Patient patient = i.next();
-                if (!hasMatchingIdentifier(patient, patientIdentifier, emrApiProperties.getPrimaryIdentifierType())) {
-                    i.remove();
-                }
-            }
-        }
+        PatientIdentifierType primaryType = emrApiProperties.getPrimaryIdentifierType();
+        List<Patient> patientList = patientService.getPatients(null, patientIdentifier, Collections.singletonList(primaryType), true);
 
         if (patientList == null || patientList.size() == 0) {
             throw new PacsIntegrationException("Cannot import message. No patient with identifier " + patientIdentifier);
@@ -78,18 +81,6 @@ abstract public class HL7Handler {
 
         return patientList.get(0);
     }
-
-
-    // method used for hack to work around https://tickets.pih-emr.org/browse/UHM-3346
-    private Boolean hasMatchingIdentifier(Patient patient, String patientIdentifier, PatientIdentifierType patientIdentifierType) {
-        for (PatientIdentifier identifier : patient.getActiveIdentifiers()) {
-            if (identifier.getIdentifierType().equals(patientIdentifierType) &&
-                    identifier.getIdentifier().equalsIgnoreCase(patientIdentifier)) {
-                return true;
-            }
-        }
-        return false;
-    };
 
     protected RadiologyOrder getRadiologyOrder(String orderNumber, Patient patient) {
 
@@ -112,8 +103,11 @@ abstract public class HL7Handler {
     }
 
     protected Concept getProcedure(String procedureCode) {
-        Concept procedure = conceptService.getConceptByMapping(procedureCode, pacsIntegrationProperties.getProcedureCodesConceptSource().getName());
-
+        Concept procedure = null;
+        if (StringUtils.isNotBlank(procedureCode)) {
+            ConceptSource source = pacsIntegrationProperties.getProcedureCodesConceptSource();
+            procedure = conceptService.getConceptByMapping(procedureCode, source.getName());
+        }
         if (procedure == null) {
             log.error("Unknown or missing procedure code specified in Radiology Report. Will still attempt to import report.");
         }
@@ -190,5 +184,9 @@ abstract public class HL7Handler {
 
     public void setProviderService(ProviderService providerService) {
         this.providerService = providerService;
+    }
+
+    public void setTaskRunner(ContextTaskRunner taskRunner) {
+        this.taskRunner = taskRunner;
     }
 }

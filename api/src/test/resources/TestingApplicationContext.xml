@@ -18,7 +18,40 @@
         <property name="mappingJarLocations">
             <ref bean="mappingJarResources"/>
         </property>
+        <property name="packagesToScan">
+            <list>
+                <value>org.openmrs</value>
+            </list>
+        </property>
         <!--  default properties must be set in the hibernate.default.properties -->
+    </bean>
+
+    <bean id="transactionalTestService" class="org.openmrs.module.pacsintegration.test.TransactionalTestServiceImpl">
+        <property name="encounterService">
+            <ref bean="encounterService"/>
+        </property>
+    </bean>
+
+    <bean parent="serviceContext">
+        <property name="moduleService">
+            <list>
+                <value>org.openmrs.module.pacsintegration.test.TransactionalTestService</value>
+                <bean class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+                    <property name="transactionManager">
+                        <ref bean="transactionManager"/>
+                    </property>
+                    <property name="target">
+                        <ref bean="transactionalTestService"/>
+                    </property>
+                    <property name="preInterceptors">
+                        <ref bean="serviceInterceptors"/>
+                    </property>
+                    <property name="transactionAttributeSource">
+                        <ref bean="transactionAttributeSource"/>
+                    </property>
+                </bean>
+            </list>
+        </property>
     </bean>
 
 </beans>

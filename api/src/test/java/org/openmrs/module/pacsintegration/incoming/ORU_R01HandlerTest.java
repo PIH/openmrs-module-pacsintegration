@@ -1,4 +1,4 @@
-package org.openmrs.module.pacsintegration.handler;
+package org.openmrs.module.pacsintegration.incoming;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.ApplicationException;
@@ -8,10 +8,9 @@ import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.parser.PipeParser;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
 import org.openmrs.Concept;
 import org.openmrs.ConceptSource;
@@ -20,21 +19,17 @@ import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Provider;
-import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.LocationService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.ProviderService;
-import org.openmrs.api.context.Context;
 import org.openmrs.module.emrapi.EmrApiProperties;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
 import org.openmrs.module.radiologyapp.RadiologyOrder;
 import org.openmrs.module.radiologyapp.RadiologyReport;
 import org.openmrs.module.radiologyapp.RadiologyService;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,18 +37,15 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(Context.class)
 public class ORU_R01HandlerTest {
 
     private ORU_R01Handler handler;
@@ -82,7 +74,7 @@ public class ORU_R01HandlerTest {
 
     private Patient patient;
 
-    @Before
+    @BeforeEach
     public void setup() {
 
         adminService = mock(AdministrationService.class);
@@ -103,10 +95,6 @@ public class ORU_R01HandlerTest {
         when(pacsIntegrationProperties.getProcedureCodesConceptSource()).thenReturn(loinc);
         when(pacsIntegrationProperties.getReportTypeFinalConcept()).thenReturn(reportTypeFinal);
 
-        User authenticatedUser = new User();
-        mockStatic(Context.class);
-        when(Context.getAuthenticatedUser()).thenReturn(authenticatedUser);
-
         handler = new ORU_R01Handler();
         handler.setAdminService(adminService);
         handler.setPatientService(patientService);
@@ -116,6 +104,7 @@ public class ORU_R01HandlerTest {
         handler.setLocationService(locationService);
         handler.setEmrApiProperties(emrApiProperties);
         handler.setPacsIntegrationProperties(pacsIntegrationProperties);
+        handler.setTaskRunner(runnable -> runnable.run());
 
         // sample patient for tests
         patient = new Patient(1);
@@ -288,8 +277,7 @@ public class ORU_R01HandlerTest {
         Concept procedure = new Concept();
         Location reportLocation = new Location();
 
-        when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true))
-                .thenReturn(Arrays.asList(patient, anotherPatient));
+        when(patientService.getPatients(null, "GG2F98", Collections.singletonList(primaryIdentifierType), true)).thenReturn(Arrays.asList(patient));
         when(radiologyService.getRadiologyOrderByOrderNumber("0000001297")).thenReturn(radiologyOrder);
         when(conceptService.getConceptByMapping("36554-4", "LOINC")).thenReturn(procedure);
         when(providerService.getProviderByIdentifier("M123")).thenReturn(principalResultsInterpreter);
@@ -507,7 +495,7 @@ public class ORU_R01HandlerTest {
 
 
     @Test
-    @Ignore // This is currently failing in Bamboo frequently but intermittently.  TODO: Fix
+    @Disabled // This is currently failing in Bamboo frequently but intermittently.  TODO: Fix
     // to handle time synchronization issues that may exist between PACS and OpenMRS
     public void shouldNotFailIfDatetimeInFutureByLessThanFifteenMinutes() throws HL7Exception, ApplicationException {
 
@@ -612,7 +600,7 @@ public class ORU_R01HandlerTest {
                 "Summary:  Normal chest radiographs.\r\n" ;
     }
 
-    public class IsExpectedRadiologyReport extends ArgumentMatcher<RadiologyReport> {
+    public class IsExpectedRadiologyReport implements ArgumentMatcher<RadiologyReport> {
 
         private RadiologyReport expectedReport;
 
@@ -621,9 +609,7 @@ public class ORU_R01HandlerTest {
         }
 
         @Override
-        public boolean matches(Object o) {
-            RadiologyReport report = (RadiologyReport) o;
-
+        public boolean matches(RadiologyReport report) {
             assertThat(report.getPatient(), is(expectedReport.getPatient()));
             assertThat(report.getOrderNumber(), is(expectedReport.getOrderNumber()));
             assertThat(report.getAssociatedRadiologyOrder(), is(expectedReport.getAssociatedRadiologyOrder()));
@@ -637,7 +623,7 @@ public class ORU_R01HandlerTest {
         }
     }
 
-    public class HasReportDateBetween extends ArgumentMatcher<RadiologyReport> {
+    public class HasReportDateBetween implements ArgumentMatcher<RadiologyReport> {
 
         private Date lowerRange;
 
@@ -649,9 +635,7 @@ public class ORU_R01HandlerTest {
         }
 
         @Override
-        public boolean matches(Object o) {
-            RadiologyReport report = (RadiologyReport) o;
-
+        public boolean matches(RadiologyReport report) {
             assertThat(report.getReportDate(), greaterThan(lowerRange));
             assertThat(report.getReportDate(), lessThan(upperRange));
 

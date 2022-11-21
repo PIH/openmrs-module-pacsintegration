@@ -19,15 +19,14 @@ import ca.uhn.hl7v2.model.v23.message.ACK;
 import ca.uhn.hl7v2.model.v23.message.ORU_R01;
 import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.parser.PipeParser;
-import org.junit.Test;
-import org.mockito.ArgumentMatcher;
+import org.junit.jupiter.api.Test;
 
 import java.util.Calendar;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
 public class HL7UtilsTest {
 
@@ -51,44 +50,20 @@ public class HL7UtilsTest {
     @Test
     public void shouldGenerateACK() throws HL7Exception {
         ACK ack = HL7Utils.generateACK("123", "openmrs_mirebalais");
-        assertThat(parser.encode(ack), is(new IsExpectedACKMessage()));
+        String hl7Message = parser.encode(ack);
+        assertThat(hl7Message, startsWith("MSH|^~\\&||openmrs_mirebalais|||"));
+        // TODO: test that a valid date is passed
+        assertThat(hl7Message, containsString("||ACK||P|2.3\r"));
+        assertThat(hl7Message, containsString("MSA|AA|123\r"));
     }
 
     @Test
     public void shouldGenerateErrorACK() throws HL7Exception {
         ACK ack = HL7Utils.generateErrorACK("123", "openmrs_mirebalais", "Something went wrong");
-        assertThat(parser.encode(ack), is(new IsExpectedErrorACKMessage()));
-    }
-
-    public class IsExpectedACKMessage extends ArgumentMatcher<String> {
-
-        @Override
-        public boolean matches(Object o) {
-
-            String hl7Message = (String) o;
-
-            assertThat(hl7Message, startsWith("MSH|^~\\&||openmrs_mirebalais|||"));
-            // TODO: test that a valid date is passed
-            assertThat(hl7Message, containsString("||ACK||P|2.3\r"));
-            assertThat(hl7Message, containsString("MSA|AA|123\r"));
-
-            return true;
-        }
-    }
-
-    public class IsExpectedErrorACKMessage extends  ArgumentMatcher<String> {
-
-        @Override
-        public boolean matches(Object o) {
-
-            String hl7Message = (String) o;
-
-            assertThat(hl7Message, startsWith("MSH|^~\\&||openmrs_mirebalais|||"));
-            // TODO: test that a valid date is passed
-            assertThat(hl7Message, containsString("||ACK||P|2.3\r"));
-            assertThat(hl7Message, containsString("MSA|AR|123|Something went wrong\r"));
-
-            return true;
-        }
+        String hl7Message = parser.encode(ack);
+        assertThat(hl7Message, startsWith("MSH|^~\\&||openmrs_mirebalais|||"));
+        // TODO: test that a valid date is passed
+        assertThat(hl7Message, containsString("||ACK||P|2.3\r"));
+        assertThat(hl7Message, containsString("MSA|AR|123|Something went wrong\r"));
     }
 }
