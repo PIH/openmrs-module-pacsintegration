@@ -29,9 +29,7 @@
         </property>
     </bean>
 
-    <bean id="pacsTaskRunner" class="org.openmrs.module.pacsintegration.runner.PacsUserContextTaskRunner">
-        <property name="adminService"><ref bean="adminService"/></property>
-    </bean>
+    <bean id="pacsTaskRunner" class="org.openmrs.module.pacsintegration.runner.DaemonTaskRunner" />
 
     <!-- register event listeners -->
 

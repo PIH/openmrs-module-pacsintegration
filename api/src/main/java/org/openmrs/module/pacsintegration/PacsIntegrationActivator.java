@@ -16,47 +16,35 @@ package org.openmrs.module.pacsintegration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.BaseModuleActivator;
+import org.openmrs.module.DaemonToken;
+import org.openmrs.module.DaemonTokenAware;
 import org.openmrs.module.ModuleActivator;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
+import org.openmrs.module.pacsintegration.runner.DaemonTaskRunner;
 
 /**
  * This class contains the logic that is run every time this module is either started or stopped.
  */
-public class PacsIntegrationActivator implements ModuleActivator {
+public class PacsIntegrationActivator extends BaseModuleActivator implements DaemonTokenAware {
 	
 	protected Log log = LogFactory.getLog(getClass());
-	
-	/**
-	 * @see ModuleActivator#willRefreshContext()
-	 */
-	public void willRefreshContext() {
-		log.info("Refreshing PACS Integration Module");
+
+	@Override
+	public void setDaemonToken(DaemonToken daemonToken) {
+		DaemonTaskRunner.setDaemonToken(daemonToken);
 	}
-	
-	/**
-	 * @see ModuleActivator#contextRefreshed()
-	 */
-	public void contextRefreshed() {
-		log.info("PACS Integration Module refreshed");
-	}
-	
-	/**
-	 * @see ModuleActivator#willStart()
-	 */
-	public void willStart() {
-		log.info("Starting PACS Integration Module");
-	}
-	
+
 	/**
 	 * @see ModuleActivator#started()
+	 * We do not start the HL7 Listener automatically here, this is done by downstream modules if desired
 	 */
 	public void started() {
 		log.info("PACS Integration Module started");
-		// we are now starting this via the PIH Core module activator so that we can determine whether to start or not based on configuratio
-		//Context.getService(PacsIntegrationService.class).initializeHL7Listener();
 	}
 	
 	/**
+	 * We do make sure the HL7 Listener is stopped if the module is stopped
 	 * @see ModuleActivator#willStop()
 	 */
 	public void willStop() {

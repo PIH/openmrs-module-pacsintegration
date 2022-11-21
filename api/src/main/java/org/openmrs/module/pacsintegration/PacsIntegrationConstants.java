@@ -16,8 +16,6 @@ package org.openmrs.module.pacsintegration;
 public class PacsIntegrationConstants {
 
     public static final String GP_PATIENT_IDENTIFIER_TYPE_UUID = "pacsintegration.patientIdentifierTypeUuid";
-    public static final String GP_LISTENER_USERNAME = "pacsintegration.listenerUsername";
-    public static final String GP_LISTENER_PASSWORD = "pacsintegration.listenerPassword";
     public static final String GP_SENDING_FACILITY = "pacsintegration.sendingFacility";
     public static final String GP_PROCEDURE_CODE_CONCEPT_SOURCE_UUID = "pacsintegration.procedureCodeConceptSourceUuid";
     public static final String GP_DEFAULT_LOCALE = "pacsintegration.defaultLocale";
