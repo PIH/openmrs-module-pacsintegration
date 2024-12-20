@@ -82,6 +82,8 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
         pacsIntegrationService = mock(PacsIntegrationService.class);
         orderEventListener.setPacsIntegrationService(pacsIntegrationService);
         orderEventListener.setTaskRunner(testTaskRunner);
+        Event event = new Event();
+        event.setSubscription(orderEventListener);
 
         executeDataSet(XML_METADATA_DATASET);
         executeDataSet(XML_MAPPINGS_DATASET);
