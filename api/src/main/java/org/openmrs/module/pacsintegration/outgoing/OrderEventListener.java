@@ -16,6 +16,7 @@ package org.openmrs.module.pacsintegration.outgoing;
 
 import org.openmrs.OpenmrsObject;
 import org.openmrs.Order;
+import org.openmrs.annotation.Handler;
 import org.openmrs.api.OrderService;
 import org.openmrs.event.Event;
 import org.openmrs.event.SubscribableEventListener;
@@ -28,6 +29,7 @@ import javax.jms.Message;
 import java.util.Arrays;
 import java.util.List;
 
+@Handler
 public class OrderEventListener implements SubscribableEventListener {
 
     private OrderService orderService;

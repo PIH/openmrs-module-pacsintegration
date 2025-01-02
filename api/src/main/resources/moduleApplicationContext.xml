@@ -48,12 +48,6 @@
         </property>
     </bean>
 
-    <bean class="org.openmrs.event.Event">
-        <property name="subscription">
-            <ref bean="orderEventListener" />
-        </property>
-    </bean>
-
     <bean id="ormO01Handler" class="org.openmrs.module.pacsintegration.incoming.ORM_O01Handler">
         <property name="adminService">
             <ref bean="adminService"/>
