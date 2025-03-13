@@ -1,0 +1,37 @@
+services:
+  mc:
+    image: nextgenhealthcare/connect:4.5.2
+    platform: linux/amd64
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - DATABASE=mysql
+      - DATABASE_URL=jdbc:mysql://db:3306/mirthdb
+      - DATABASE_MAX_CONNECTIONS=20
+      - DATABASE_USERNAME=${MYSQL_USER}
+      - DATABASE_PASSWORD=${MYSQL_PASSWORD}
+      - DATABASE_MAX_RETRY=2
+      - DATABASE_RETRY_WAIT=10000
+      - KEYSTORE_STOREPASS=docker_storepass
+      - KEYSTORE_KEYPASS=docker_keypass
+      - VMOPTIONS=-Xmx512m
+    volumes:
+      - ./data/volumes/appdata:/opt/connect/appdata
+      - ./data/volumes/logs:/opt/connect/logs
+    ports:
+      - 8090:8080/tcp
+      - 8443:8443/tcp
+    depends_on:
+      - db
+  db:
+    image: mysql:5.7.44
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=mirthdb
+    expose:
+      - 3306
+    ports:
+      - 3309:3306
+
