@@ -31,8 +31,8 @@ To install the channels, you will need to import the three channels from the `mi
 - Click on the "Channels" tab
 - Click on the "Import Channel" button and pick a channel to import
 - Repeat for all three channels
-
-Note that there some environmental variables/secrets that must be set.  For now, we will either manually set them in the channel xml files before import (make sure not to commit them to source control):
+https://docs.nextgen.com/bundle/Mirth_User_Guide_41/page/connect/connect/topics/c_Configuration_MapConfiguration_Map_connect_ug.html
+Note that there some environmental variables/secrets that must be set.  For now, we will either manually set them in the channel xml files before import (make sure not to commit them to source control) or manually update them via the Mirth Connect Administrator after import.
 - openmrs_mysql_username: mysql username that Mirth will use to connect to the OpenMRS database
 - openmrs_mysql_password: mysql password that Mirth will use to connect to the OpenMRS database
 - mirth_inbound_port: port that Mirth will listen on for incoming messages; this should match the value set in .env file for MIRTH_INBOUND_PORT
