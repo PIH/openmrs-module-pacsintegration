@@ -9,7 +9,7 @@ Steps:
 
 - Copy the `docker-compose-mirth.yml` and `.env` files to the directory on your machine where you want to install Mirth.
 - From this directory, create the directories `data/volumes/appdata`, `data/volumes/logs`, and `data/volumes/db` so they can be properly mapped into the container.
-- Edit the `.env` file to set the MySQL username and password, as well as the mirth inbound port. (Note that these passwords are only used internally within this Docker network, so only need to be set here, though you will need them if you want to connect to the Mirth MySQL database remotely for any reason.)
+- Edit the `.env` file to set the MySQL username and password, as well as the mirth inbound port. (Note that the username/password is only used internally within this Docker network, so only need to be set here, though you will need them if you want to connect to the Mirth MySQL database remotely for any reason.)
 - Run `docker-compose -f docker-compose-mirth.yml up` to start the Mirth and MySQL containers.
 
 ## Connecting to Mirth using the Mirth Connect Client
