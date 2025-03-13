@@ -2,6 +2,7 @@ services:
   mc:
     image: nextgenhealthcare/connect:4.5.2
     platform: linux/amd64
+    restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
@@ -21,15 +22,19 @@ services:
     ports:
       - 8090:8080/tcp
       - 8443:8443/tcp
+      - ${MIRTH_INBOUND_PORT}:${MIRTH_INBOUND_PORT}
     depends_on:
       - db
   db:
     image: mysql:5.7.44
+    restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_DATABASE=mirthdb
+    volumes:
+        - ./data/volumes/db:/var/lib/mysql
     expose:
       - 3306
     ports:
