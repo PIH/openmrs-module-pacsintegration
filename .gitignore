@@ -15,3 +15,4 @@
 *.iml
 *.DS_Store
 /activemq-data
+/mirth/docker/data
