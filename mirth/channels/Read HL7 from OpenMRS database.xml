@@ -51,7 +51,7 @@
         <queueBufferSize>1000</queueBufferSize>
       </sourceConnectorProperties>
       <driver>com.mysql.jdbc.Driver</driver>
-      <url>jdbc:mysql://host.docker.internal:3306/mirebalais?autoReconnect=true&amp;sessionVariables=storage_engine=InnoDB&amp;useUnicode=true&amp;characterEncoding=UTF-8</url>
+      <url>jdbc:mysql://host.docker.internal:3306/${openmrs_db_name}?autoReconnect=true&amp;sessionVariables=storage_engine=InnoDB&amp;useUnicode=true&amp;characterEncoding=UTF-8</url>
       <username>${openmrs_mysql_username}</username>
       <password>${openmrs_mysql_password)</password>
       <select>SELECT outbound_queue_id, message FROM pacsintegration_outbound_queue

@@ -39,6 +39,7 @@ https://docs.nextgen.com/bundle/Mirth_User_Guide_41/page/connect/connect/topics/
 Note that there some environmental variables/secrets that must be set.  For now, we will either manually set them in the channel xml files before import (make sure not to commit them to source control) or manually update them via the Mirth Connect Administrator after import.
 - openmrs_mysql_username: mysql username that Mirth will use to connect to the OpenMRS database
 - openmrs_mysql_password: mysql password that Mirth will use to connect to the OpenMRS database
+- openmrs_db_name: name of the OpenMRS DB
 - mirth_inbound_port: port that Mirth will listen on for incoming messages; this should match the value set in .env file for MIRTH_INBOUND_PORT
 - openmrs_inbound_port: port that OpenMRS is listening on for incoming messages; this should match "pacsintegration.hl7ListenerPort" global property in OpenMRS
 - pacs_url: the url of the PACS server to connect to
