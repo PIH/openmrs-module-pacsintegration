@@ -1,5 +1,5 @@
 services:
-  mc:
+  mirthconnect:
     image: nextgenhealthcare/connect:4.5.2
     platform: linux/amd64
     restart: always
@@ -7,7 +7,7 @@ services:
       - "host.docker.internal:host-gateway"
     environment:
       - DATABASE=mysql
-      - DATABASE_URL=jdbc:mysql://db:3306/mirthdb
+      - DATABASE_URL=jdbc:mysql://mirthconnect-mysql:3306/mirthdb
       - DATABASE_MAX_CONNECTIONS=20
       - DATABASE_USERNAME=${MYSQL_USER}
       - DATABASE_PASSWORD=${MYSQL_PASSWORD}
@@ -17,15 +17,15 @@ services:
       - KEYSTORE_KEYPASS=docker_keypass
       - VMOPTIONS=-Xmx512m
     volumes:
-      - ./data/volumes/appdata:/opt/connect/appdata
-      - ./data/volumes/logs:/opt/connect/logs
+      - ${DOCKER_DATA_DIRECTORY}/mirthconnect/appdata:/opt/connect/appdata
+      - ${DOCKER_DATA_DIRECTORY}/mirthconnect/logs:/opt/connect/logs
     ports:
       - 8090:8080/tcp
       - 8443:8443/tcp
       - ${MIRTH_INBOUND_PORT}:${MIRTH_INBOUND_PORT}
     depends_on:
-      - db
-  db:
+      - mirthconnect-mysql
+  mirthconnect-mysql:
     image: mysql:5.7.44
     restart: always
     environment:
@@ -34,7 +34,7 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_DATABASE=mirthdb
     volumes:
-        - ./data/volumes/db:/var/lib/mysql
+        - ${DOCKER_DATA_DIRECTORY}/mirthconnect/mysql:/var/lib/mysql
     expose:
       - 3306
     ports:
