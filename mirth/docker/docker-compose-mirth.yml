@@ -7,7 +7,7 @@ services:
       - "host.docker.internal:host-gateway"
     environment:
       - DATABASE=mysql
-      - DATABASE_URL=jdbc:mysql://mirthconnect-mysql:3306/mirthdb
+      - DATABASE_URL=jdbc:mysql://mysql:3306/mirthdb
       - DATABASE_MAX_CONNECTIONS=20
       - DATABASE_USERNAME=${MYSQL_USER}
       - DATABASE_PASSWORD=${MYSQL_PASSWORD}
@@ -16,6 +16,7 @@ services:
       - KEYSTORE_STOREPASS=docker_storepass
       - KEYSTORE_KEYPASS=docker_keypass
       - VMOPTIONS=-Xmx512m
+      - DELAY=10
     volumes:
       - ${DOCKER_DATA_DIRECTORY}/mirthconnect/appdata:/opt/connect/appdata
       - ${DOCKER_DATA_DIRECTORY}/mirthconnect/logs:/opt/connect/logs
@@ -24,9 +25,10 @@ services:
       - 8443:8443/tcp
       - ${MIRTH_INBOUND_PORT}:${MIRTH_INBOUND_PORT}
     depends_on:
-      - mirthconnect-mysql
-  mirthconnect-mysql:
+      - mysql
+  mysql:
     image: mysql:5.7.44
+    user: "${MYSQL_UID}:${MYSQL_GID}"
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
@@ -37,6 +39,4 @@ services:
         - ${DOCKER_DATA_DIRECTORY}/mirthconnect/mysql:/var/lib/mysql
     expose:
       - 3306
-    ports:
-      - 3309:3306
 

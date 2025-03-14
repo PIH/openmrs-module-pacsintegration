@@ -6,15 +6,30 @@
 To install Mirth, with it's backing database, you can use the docker-compose file in this directory.  This will create a Mirth container and a MySQL container.  
 
 Steps:
-
+- Create mysql user (if it does't already exist):
+  - `sudo useradd mysql`
+- Determine the uid and gid for the above user
+  - `sudo id mysql`
 - Copy the `docker-compose-mirth.yml` and `.env` files to the directory on your machine where you want to install Mirth.
-- Edit the `.env` file to set the MySQL username and password, as well as the mirth inbound port and the directory to use for docker data. (Note that the username/password is only used internally within this Docker network, so only need to be set here, though you will need them if you want to connect to the Mirth MySQL database remotely for any reason.)
-- From this directory, create the directories `${DOCKER_DATA_DIRECTORY}/mirthconnect/appdata`, `${DOCKER_DATA_DIRECTORY}/mirthconnect/logs`, and `${DOCKER_DATA_DIRECTORY}/mirthconnect/mysql` so they can be properly mapped into the container.
-- Run `docker compose -f docker-compose-mirth.yml up` to start the Mirth and MySQL containers.
-- If you see error messages (likely) about the Mirth container being unable to create files in the "appdata" and "logs" directories:
-  - In another terminal, run "docker exec -it docker-mirthconnect-1 id" and note the PID associated with the Mirth user
-  - Change the owner of these two directories to that user:  `sudo chown {PID} ${DOCKER_DATA_DIRECTORY}/mirthconnect/appdata ${DOCKER_DATA_DIRECTORY}/mirthconnect/logs`
-  - Start and stop the containers
+- Edit the `.env` file:
+  - To set the MySQL username and password (Note that the username/password is only used internally within this Docker network, so only need to be set here, though you will need them if you want to connect to the Mirth MySQL database remotely for any reason.)
+  - Set the inbound port that Mirth will be listening on
+  - Set the DOCKER_DATA_DIR to the directory used for docker data on this machine
+  - Set the UID/GID for the mysql user (see above)
+- Create the following directories and assign the owner of the mysql directory to the MySQL users respectively
+  - sudo mkdir ${DOCKER_DATA_DIR}/mirthconnect
+  - sudo mkdir ${DOCKER_DATA_DIR}/mirthconnect/appdata
+  - sudo mkdir ${DOCKER_DATA_DIR}/mirthconnect/logs
+  - sudo mkdir ${DOCKER_DATA_DIR}/mirthconnect/mysql
+  - sudo chown mysql:mysql ${DOCKER_DATA_DIR}/mirthconnect/mysql
+- Run `sudo docker compose -f docker-compose-mirth.yml up` to start the Mirth and MySQL containers.
+- The containers should start, but the Mirth container will not start properly because of permissions issues.  To fix, do the following:
+  - In another terminal, run `docker exec -it mirthconnect-mirthconnect-1 id` and note the uid and gid of the mirth user/ubuntu group
+  - Stop the containers (Ctrl-C in the first terminal window)
+  - Set the ownership of the two directories mirth accesses to this uid/gid (likely 1000:1000)
+    - sudo chown 1000:1000 ${DOCKER_DATA_DIR}/mirthconnect/appdata
+    - sudo chown 1000:1000 ${DOCKER_DATA_DIR}/mirthconnect/logs
+
 
 ## Connecting to Mirth using the Mirth Connect Client
 
@@ -45,4 +60,7 @@ Note that there some environmental variables/secrets that must be set.  For now,
 - pacs_url: the url of the PACS server to connect to
 - pacs_inbound_port: the port where the PACS server is listening for inbound messages from Mirth
 
+For the mirth connection, you will want create a mysql user with permissions on the pacsintegration database
+- From mysql: `grant all on openmrs.pacsintegration_outbound_queue to '${openmrs_mysql_username}'@'172.%.%.%' identified by '${openmrs_mysql_password}'
+-- Note that this assumes you are using the default Docker IP range of '172.%.%.%'
 Once you have installed the channels, click "Redeploy Channel" to deploy the channels.
