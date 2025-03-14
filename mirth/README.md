@@ -6,11 +6,11 @@
 To install Mirth, with it's backing database, you can use the docker-compose file in this directory.  This will create a Mirth container and a MySQL container.  
 
 Steps:
-- Create mysql user (if it does't already exist):
+- Create mysql user (if it does't already exist)
   - `sudo useradd mysql`
 - Determine the uid and gid for the above user
   - `sudo id mysql`
-- Copy the `docker-compose-mirth.yml` and `.env` files to the directory on your machine where you want to install Mirth.
+- Copy the `docker-compose-mirth.yml` and `.env` files to the directory on your machine where you want to install Mirth
 - Edit the `.env` file:
   - To set the MySQL username and password (Note that the username/password is only used internally within this Docker network, so only need to be set here, though you will need them if you want to connect to the Mirth MySQL database remotely for any reason.)
   - Set the inbound port that Mirth will be listening on
@@ -62,5 +62,5 @@ Note that there some environmental variables/secrets that must be set.  For now,
 
 For the mirth connection, you will want create a mysql user with permissions on the pacsintegration database
 - From mysql: `grant all on openmrs.pacsintegration_outbound_queue to '${openmrs_mysql_username}'@'172.%.%.%' identified by '${openmrs_mysql_password}'
--- Note that this assumes you are using the default Docker IP range of '172.%.%.%'
+- Note that this assumes you are using the default Docker IP range of '172.%.%.%'
 Once you have installed the channels, click "Redeploy Channel" to deploy the channels.
