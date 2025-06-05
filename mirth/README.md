@@ -39,8 +39,7 @@ To interact with the Mirth Client, you need to run the Mirth Connect Administrat
 - (If v1.4.2 if is no longer the most recent version, feel free to try testing with the latest release, but if that doesn’t work, you should be able to find it here: https://mirthdownloadarchive.s3.amazonaws.com/mcal-downloads.html)
 - Open a terminal window and execute export GDK_SCALE=2 (to increase font size to be readable)
 - From that terminal, Run the launcher by executing the “launcher” file (ie ./launcher) 
-- Instead of using the bundled version of Java, select “Custom”, and point to a local Java JDK for Java 11 or higher (this is only necessary to increase the font size to be readable)
-- Set the URL to 'https://localhost:8443/' if installed locally, otherwise substitute "localhost" with the domain name of the server you installed Mirth on, and click "Launch".
+- - Set the URL to 'https://localhost:8443/' if installed locally, otherwise substitute "localhost" with the domain name of the server you installed Mirth on, and click "Launch".
 - A new window should open, and you will be prompted to login. The default username and password are both "admin".
 - If you are installing for the first time, it will prompt you to create a new password.  If installing anywhere but locally, please make sure to either use the password in Bit Warden or to save the new password in Bit Warden.
 
