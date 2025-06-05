@@ -21,9 +21,6 @@
         <require_module version="${eventVersion}">
             org.openmrs.event
         </require_module>
-        <require_module version="${emrVersion}">
-            org.openmrs.module.emr
-        </require_module>
         <require_module version="${radiologyappVersion}">
             org.openmrs.module.radiologyapp
         </require_module>
