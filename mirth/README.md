@@ -45,6 +45,12 @@ To interact with the Mirth Client, you need to run the Mirth Connect Administrat
 
 ## Installing the channels
 
+There are three channels that need to be loaded into Mirth:
+
+- Read HL7 from OpenMRS database: connects to the OpenMRS database pacsintegration_outbound_queue table to read new outbound order (ORM) messages generated when orders are placed
+- Send HL7 to PACS Boston: takes the HL7 messages generated from the "Read HL7 from OpenMRS database" and sends them to the PACS sevrer in Boston
+- Receive HL7 from PACS Boston: receives HL7 ORM messages (status update messages) and ORU messages (report messages) send by PACS Boston and forwards them on to OpenMRS
+
 To install the channels, you will need to import the three channels from the `mirth/channels` directory in this repository.  The channels are stored in XML files, and can be imported into Mirth using the Mirth Connect Administrator:
 - Click on the "Channels" tab
 - Click on the "Import Channel" button and pick a channel to import
@@ -54,12 +60,13 @@ Note that there some environmental variables/secrets that must be set.  For now,
 - openmrs_mysql_username: mysql username that Mirth will use to connect to the OpenMRS database
 - openmrs_mysql_password: mysql password that Mirth will use to connect to the OpenMRS database
 - openmrs_db_name: name of the OpenMRS DB
-- mirth_inbound_port: port that Mirth will listen on for incoming messages; this should match the value set in .env file for MIRTH_INBOUND_PORT
+- mirth_inbound_port: port that Mirth listens on for incoming messages from PACS Boston; this should match the value set in .env file for MIRTH_INBOUND_PORT
 - openmrs_inbound_port: port that OpenMRS is listening on for incoming messages; this should match "pacsintegration.hl7ListenerPort" global property in OpenMRS
 - pacs_url: the url of the PACS server to connect to
-- pacs_inbound_port: the port where the PACS server is listening for inbound messages from Mirth
+- pacs_inbound_port: the port on which the PACS server is Boston listening for inbound messages from Mirth
 
-For the mirth connection, you will want create a mysql user with permissions on the pacsintegration database
+For the "Read HL7 from OpenMRS Database" channel, you will need to create a mysql user with permissions on the pacsintegration database table
 - From mysql: `grant all on openmrs.pacsintegration_outbound_queue to '${openmrs_mysql_username}'@'172.%.%.%' identified by '${openmrs_mysql_password}'
 - Note that this assumes you are using the default Docker IP range of '172.%.%.%'
+
 Once you have installed the channels, click "Redeploy Channel" to deploy the channels.
