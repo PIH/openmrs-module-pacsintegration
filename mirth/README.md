@@ -13,7 +13,7 @@ Steps:
 - Copy the `docker-compose-mirth.yml` and `.env` files to the directory on your machine where you want to install Mirth
 - Edit the `.env` file:
   - To set the MySQL username and password (Note that the username/password is only used internally within this Docker network, so only need to be set here, though you will need them if you want to connect to the Mirth MySQL database remotely for any reason.)
-  - Set the inbound port that Mirth will be listening on
+  - Set the inbound port that you want Mirth to listen on
   - Set the DOCKER_DATA_DIR to the directory used for docker data on this machine
   - Set the UID/GID for the mysql user (see above)
 - Create the following directories and assign the owner of the mysql directory to the MySQL users respectively
@@ -42,6 +42,7 @@ To interact with the Mirth Client, you need to run the Mirth Connect Administrat
 - - Set the URL to 'https://localhost:8443/' if installed locally, otherwise substitute "localhost" with the domain name of the server you installed Mirth on, and click "Launch".
 - A new window should open, and you will be prompted to login. The default username and password are both "admin".
 - If you are installing for the first time, it will prompt you to create a new password.  If installing anywhere but locally, please make sure to either use the password in Bit Warden or to save the new password in Bit Warden.
+- NOTE: I've run into some cases where the app has hung and/or logging in hasn't worked.  Rebooting my machine generally resolved these issues.  Obviously not a long-term solution but an fyi for making short-term progress.
 
 ## Installing the channels
 
@@ -49,7 +50,7 @@ There are three channels that need to be loaded into Mirth:
 
 - Read HL7 from OpenMRS database: connects to the OpenMRS database pacsintegration_outbound_queue table to read new outbound order (ORM) messages generated when orders are placed
 - Send HL7 to PACS Boston: takes the HL7 messages generated from the "Read HL7 from OpenMRS database" and sends them to the PACS sevrer in Boston
-- Receive HL7 from PACS Boston: receives HL7 ORM messages (status update messages) and ORU messages (report messages) send by PACS Boston and forwards them on to OpenMRS
+- Receive HL7 from PACS Boston: receives HL7 ORM messages (status update messages) and ORU messages (report messages) sent by PACS Boston and forwards them on to OpenMRS
 
 To install the channels, you will need to import the three channels from the `mirth/channels` directory in this repository.  The channels are stored in XML files, and can be imported into Mirth using the Mirth Connect Administrator:
 - Click on the "Channels" tab
