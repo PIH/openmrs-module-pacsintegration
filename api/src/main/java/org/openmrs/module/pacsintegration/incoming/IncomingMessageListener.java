@@ -16,24 +16,33 @@ package org.openmrs.module.pacsintegration.incoming;
 
 import ca.uhn.hl7v2.app.HL7Service;
 import ca.uhn.hl7v2.app.SimpleServer;
+import lombok.Getter;
+import lombok.Setter;
 import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import java.util.Map;
+import java.util.List;
 
+@Component("hl7listener")
 public class IncomingMessageListener {
 
     private HL7Service hl7Service;
 
+    @Setter
+    @Autowired
     private PacsIntegrationProperties pacsIntegrationProperties;
 
-    private Map<String, IncomingMessageHandler> handlers;
+    @Setter @Getter
+    @Autowired
+    List<IncomingMessageHandler> handlers;
 
     public void initialize() {
         hl7Service = new SimpleServer(pacsIntegrationProperties.getHL7ListenerPort());
-        for (Map.Entry<String, IncomingMessageHandler>  entry : handlers.entrySet()) {
-            String messageType = entry.getKey().split("_")[0];
-            String triggerEvent = entry.getKey().split("_").length > 1 ? entry.getKey().split("_") [1] : null;
-            hl7Service.registerApplication(messageType, triggerEvent, entry.getValue());
+        if (handlers != null) {
+            for (IncomingMessageHandler handler : handlers) {
+                hl7Service.registerApplication(handler.getMessageType(), handler.getTriggerEvent(), handler);
+            }
         }
         hl7Service.start();
     }
@@ -46,21 +55,5 @@ public class IncomingMessageListener {
         if (hl7Service != null) {
             hl7Service.stop();
         }
-    }
-
-    public void setHl7Service(HL7Service hl7Service) {
-        this.hl7Service = hl7Service;
-    }
-
-    public void setPacsIntegrationProperties(PacsIntegrationProperties pacsIntegrationProperties) {
-        this.pacsIntegrationProperties = pacsIntegrationProperties;
-    }
-
-    public Map<String, IncomingMessageHandler> getHandlers() {
-        return handlers;
-    }
-
-    public void setHandlers(Map<String, IncomingMessageHandler> handlers) {
-        this.handlers = handlers;
     }
 }

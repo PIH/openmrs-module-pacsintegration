@@ -14,13 +14,11 @@
 
 package org.openmrs.module.pacsintegration.incoming;
 
-import ca.uhn.hl7v2.app.Application;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.runner.TaskRunner;
 import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,7 +86,7 @@ public class IncomingMessageListenerTest extends BaseModuleContextSensitiveTest 
         Context.clearSession();
 
         if (!hl7Listener.isRunning()) {
-            Context.getService(PacsIntegrationService.class).initializeHL7Listener();
+            hl7Listener.initialize();
         }
         Thread.sleep(2000);
 
@@ -109,22 +107,8 @@ public class IncomingMessageListenerTest extends BaseModuleContextSensitiveTest 
     @Test
     public void shouldHaveHandlersForKnownMessages() {
         Assertions.assertEquals(2, hl7Listener.getHandlers().size());
-        Assertions.assertTrue(hl7Listener.getHandlers().containsKey("ORM_O01"));
-        Assertions.assertTrue(hl7Listener.getHandlers().containsKey("ORU_R01"));
-    }
-
-    @Test
-    public void shouldHaveRegisteredORM_O01Hander() {
-        Application handler = hl7Listener.getHandlers().get("ORM_O01");
-        Assertions.assertNotNull(handler);
-        Assertions.assertEquals(handler.getClass(), ORM_O01Handler.class);
-    }
-
-    @Test
-    public void shouldHaveRegisteredORU_R01Handler() {
-        Application handler = hl7Listener.getHandlers().get("ORU_R01");
-        Assertions.assertNotNull(handler);
-        Assertions.assertEquals(handler.getClass(), ORU_R01Handler.class);
+        Assertions.assertTrue(hl7Listener.getHandlers().contains(orm_o01Handler));
+        Assertions.assertTrue(hl7Listener.getHandlers().contains(oru_r01Handler));
     }
 
     /**

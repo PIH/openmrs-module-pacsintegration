@@ -3,6 +3,7 @@ package org.openmrs.module.pacsintegration.incoming;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.app.Application;
 import ca.uhn.hl7v2.model.Message;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,6 +25,8 @@ import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
 import org.openmrs.module.pacsintegration.runner.TaskRunner;
 import org.openmrs.module.radiologyapp.RadiologyOrder;
 import org.openmrs.module.radiologyapp.RadiologyService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.Collections;
 import java.util.Date;
@@ -33,23 +36,46 @@ abstract public class IncomingMessageHandler implements Application {
 
     protected final Log log = LogFactory.getLog(this.getClass());
 
+    @Setter
+    @Autowired
     protected PatientService patientService;
 
+    @Setter
+    @Autowired
     protected ConceptService conceptService;
 
+    @Setter
+    @Autowired
+    @Qualifier("adminService")
     protected AdministrationService adminService;
 
+    @Setter
+    @Autowired
     protected RadiologyService radiologyService;
 
+    @Setter
+    @Autowired
     protected LocationService locationService;
 
+    @Setter
+    @Autowired
     protected ProviderService providerService;
 
+    @Setter
+    @Autowired
     protected EmrApiProperties emrApiProperties;
 
+    @Setter
+    @Autowired
     protected PacsIntegrationProperties pacsIntegrationProperties;
 
+    @Setter
+    @Autowired
     protected TaskRunner taskRunner;
+
+    public abstract String getMessageType();
+
+    public abstract String getTriggerEvent();
 
     @Override
     public synchronized Message processMessage(Message message) throws HL7Exception {
@@ -147,46 +173,5 @@ abstract public class IncomingMessageHandler implements Application {
                 throw new IllegalArgumentException("Date cannot be more than 75 minutes in the future.");
             }
         }
-    }
-
-
-    /**
-     * Setters
-     */
-
-    public void setPatientService(PatientService patientService) {
-        this.patientService = patientService;
-    }
-
-    public void setConceptService(ConceptService conceptService) {
-        this.conceptService = conceptService;
-    }
-
-    public void setAdminService(AdministrationService adminService) {
-        this.adminService = adminService;
-    }
-
-    public void setRadiologyService(RadiologyService radiologyService) {
-        this.radiologyService = radiologyService;
-    }
-
-    public void setLocationService(LocationService locationService) {
-        this.locationService = locationService;
-    }
-
-    public void setEmrApiProperties(EmrApiProperties emrApiProperties) {
-        this.emrApiProperties = emrApiProperties;
-    }
-
-    public void setPacsIntegrationProperties(PacsIntegrationProperties pacsIntegrationProperties) {
-        this.pacsIntegrationProperties = pacsIntegrationProperties;
-    }
-
-    public void setProviderService(ProviderService providerService) {
-        this.providerService = providerService;
-    }
-
-    public void setTaskRunner(TaskRunner taskRunner) {
-        this.taskRunner = taskRunner;
     }
 }

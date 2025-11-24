@@ -33,21 +33,7 @@ public interface PacsIntegrationService extends OpenmrsService {
 	/**
 	 * Adds a message to the outgoing queue for PACS
 	 */
-	public void sendMessageToPacs(String message);
+	void sendMessageToPacs(String message);
 
-    /**
-     * Initializes the HL7 listener
-     */
-    public void initializeHL7Listener();
-
-    /**
-     * @return true if the hl7 listener is running
-     */
-    public boolean isHL7ListenerRunning();
-
-    /**
-     * Stops the HL7 listener
-     */
-    public void stopHL7Listener();
 }
 

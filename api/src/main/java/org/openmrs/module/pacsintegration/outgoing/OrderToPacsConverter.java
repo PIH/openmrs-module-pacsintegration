@@ -22,6 +22,7 @@ import ca.uhn.hl7v2.model.v23.segment.PID;
 import ca.uhn.hl7v2.model.v23.segment.PV1;
 import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.parser.PipeParser;
+import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptMapType;
@@ -44,28 +45,47 @@ import org.openmrs.module.radiologyapp.RadiologyConstants;
 import org.openmrs.module.radiologyapp.RadiologyOrder;
 import org.openmrs.module.radiologyapp.RadiologyProperties;
 import org.openmrs.util.LocaleUtility;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+@Component("orderToPacsConverter")
 public class OrderToPacsConverter {
 
-    private Parser parser = new PipeParser();
+    private final Parser parser = new PipeParser();
 
+    @Setter
+    @Autowired
     private PatientService patientService;
 
+    @Setter
+    @Autowired
+    @Qualifier("adminService")
     private AdministrationService adminService;
 
+    @Setter
+    @Autowired
     private ConceptService conceptService;
 
+    @Setter
+    @Autowired
     private LocationService locationService;
 
+    @Setter
+    @Autowired
     private EmrApiProperties emrApiProperties;
 
+    @Setter
+    @Autowired
     private RadiologyProperties radiologyProperties;
 
+    @Setter
+    @Autowired
     private PacsIntegrationProperties pacsIntegrationProperties;
 
     public String convertToPacsFormat(RadiologyOrder order, String orderControl) throws HL7Exception {
@@ -234,33 +254,5 @@ public class OrderToPacsConverter {
 
     private ConceptMapType getSameAsConceptMapType()  {
         return conceptService.getConceptMapTypeByUuid(PacsIntegrationConstants.SAME_AS_CONCEPT_MAP_TYPE_UUID);
-    }
-
-    public void setPatientService(PatientService patientService) {
-        this.patientService = patientService;
-    }
-
-    public void setAdminService(AdministrationService adminService) {
-        this.adminService = adminService;
-    }
-
-    public void setConceptService(ConceptService conceptService) {
-        this.conceptService = conceptService;
-    }
-
-    public void setLocationService(LocationService locationService) {
-        this.locationService = locationService;
-    }
-
-    public void setRadiologyProperties(RadiologyProperties radiologyProperties) {
-        this.radiologyProperties = radiologyProperties;
-    }
-
-    public void setEmrApiProperties(EmrApiProperties emrApiProperties) {
-        this.emrApiProperties = emrApiProperties;
-    }
-
-    public void setPacsIntegrationProperties(PacsIntegrationProperties pacsIntegrationProperties) {
-        this.pacsIntegrationProperties = pacsIntegrationProperties;
     }
 }

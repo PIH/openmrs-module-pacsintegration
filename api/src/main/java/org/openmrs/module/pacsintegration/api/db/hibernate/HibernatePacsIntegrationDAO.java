@@ -13,8 +13,7 @@
  */
 package org.openmrs.module.pacsintegration.api.db.hibernate;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.Setter;
 import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.module.pacsintegration.OutboundQueue;
 import org.openmrs.module.pacsintegration.api.db.PacsIntegrationDAO;
@@ -24,24 +23,9 @@ import org.openmrs.module.pacsintegration.api.db.PacsIntegrationDAO;
  * {@link org.openmrs.module.pacsintegration.api.db.PacsIntegrationDAO}.
  */
 public class HibernatePacsIntegrationDAO implements PacsIntegrationDAO {
-	
-	protected final Log log = LogFactory.getLog(this.getClass());
-	
+
+	@Setter
 	private DbSessionFactory sessionFactory;
-	
-	/**
-	 * @param sessionFactory the sessionFactory to set
-	 */
-	public void setSessionFactory(DbSessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
-	}
-	
-	/**
-	 * @return the sessionFactory
-	 */
-	public DbSessionFactory getSessionFactory() {
-		return sessionFactory;
-	}
 
     @Override
 	public void saveOutboundQueue(OutboundQueue outboundQueue) {
