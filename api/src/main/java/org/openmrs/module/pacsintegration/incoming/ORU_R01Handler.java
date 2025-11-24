@@ -11,10 +11,22 @@ import org.openmrs.Provider;
 import org.openmrs.module.pacsintegration.util.HL7Utils;
 import org.openmrs.module.radiologyapp.RadiologyReport;
 import org.openmrs.util.OpenmrsUtil;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component("oruR01Handler")
 public class ORU_R01Handler extends IncomingMessageHandler {
+
+    @Override
+    public String getMessageType() {
+        return "ORU";
+    }
+
+    @Override
+    public String getTriggerEvent() {
+        return "R01";
+    }
 
     @Override
     IncomingMessageTask getHL7Task(final Message message) {

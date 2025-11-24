@@ -66,7 +66,7 @@ public class ORM_O01ComponentTest extends BaseModuleContextSensitiveTest {
         this.getConnection().commit();
         this.updateSearchIndex();
         Context.clearSession();
-        Context.getService(PacsIntegrationService.class).initializeHL7Listener();
+        Context.getRegisteredComponent("hl7listener", IncomingMessageListener.class).initialize();
         ormO01Handler.setTaskRunner(runnable -> runnable.run());
     }
 

@@ -20,7 +20,7 @@ import org.openmrs.module.BaseModuleActivator;
 import org.openmrs.module.DaemonToken;
 import org.openmrs.module.DaemonTokenAware;
 import org.openmrs.module.ModuleActivator;
-import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
+import org.openmrs.module.pacsintegration.incoming.IncomingMessageListener;
 import org.openmrs.module.pacsintegration.runner.DaemonTaskRunner;
 
 /**
@@ -49,7 +49,7 @@ public class PacsIntegrationActivator extends BaseModuleActivator implements Dae
 	 */
 	public void willStop() {
 		log.info("Stopping PACS Integration Module");
-        Context.getService(PacsIntegrationService.class).stopHL7Listener();
+		Context.getRegisteredComponent("hl7listener", IncomingMessageListener.class).stop();
 	}
 	
 	/**

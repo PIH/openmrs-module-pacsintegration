@@ -14,11 +14,23 @@ import org.openmrs.Provider;
 import org.openmrs.module.pacsintegration.PacsIntegrationException;
 import org.openmrs.module.pacsintegration.util.HL7Utils;
 import org.openmrs.module.radiologyapp.RadiologyStudy;
+import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.util.Date;
 
+@Component("ormO01Handler")
 public class ORM_O01Handler extends IncomingMessageHandler {
+
+    @Override
+    public String getMessageType() {
+        return "ORM";
+    }
+
+    @Override
+    public String getTriggerEvent() {
+        return "O01";
+    }
 
     @Override
     IncomingMessageTask getHL7Task(final Message message) {

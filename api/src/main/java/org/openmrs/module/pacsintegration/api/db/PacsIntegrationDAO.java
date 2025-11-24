@@ -20,6 +20,6 @@ import org.openmrs.module.pacsintegration.OutboundQueue;
  */
 public interface PacsIntegrationDAO {
 	
-	public void saveOutboundQueue(OutboundQueue outboundQueue);
+	void saveOutboundQueue(OutboundQueue outboundQueue);
 	
 }

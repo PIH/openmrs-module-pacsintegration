@@ -24,7 +24,6 @@ import org.openmrs.api.EncounterService;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.emrapi.EmrApiProperties;
-import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.radiologyapp.RadiologyProperties;
 import org.openmrs.parameter.EncounterSearchCriteriaBuilder;
 import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
@@ -66,7 +65,7 @@ public class ORU_R01ComponentTest extends BaseModuleContextSensitiveTest {
         this.getConnection().commit();
         this.updateSearchIndex();
         Context.clearSession();
-        Context.getService(PacsIntegrationService.class).initializeHL7Listener();
+        Context.getRegisteredComponent("hl7listener", IncomingMessageListener.class).initialize();
         oruR01Handler.setTaskRunner(runnable -> runnable.run());
     }
 

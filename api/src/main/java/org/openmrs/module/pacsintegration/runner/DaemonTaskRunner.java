@@ -2,7 +2,9 @@ package org.openmrs.module.pacsintegration.runner;
 
 import org.openmrs.api.context.Daemon;
 import org.openmrs.module.DaemonToken;
+import org.springframework.stereotype.Component;
 
+@Component("pacsTaskRunner")
 public class DaemonTaskRunner implements TaskRunner {
 
     private static DaemonToken daemonToken;
