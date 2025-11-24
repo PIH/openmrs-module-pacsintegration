@@ -14,7 +14,6 @@
 
 package org.openmrs.module.pacsintegration.incoming;
 
-import ca.uhn.hl7v2.app.Application;
 import ca.uhn.hl7v2.app.HL7Service;
 import ca.uhn.hl7v2.app.SimpleServer;
 import org.openmrs.module.pacsintegration.PacsIntegrationProperties;
@@ -49,16 +48,8 @@ public class IncomingMessageListener {
         }
     }
 
-    public HL7Service getHl7Service() {
-        return hl7Service;
-    }
-
     public void setHl7Service(HL7Service hl7Service) {
         this.hl7Service = hl7Service;
-    }
-
-    public PacsIntegrationProperties getPacsIntegrationProperties() {
-        return pacsIntegrationProperties;
     }
 
     public void setPacsIntegrationProperties(PacsIntegrationProperties pacsIntegrationProperties) {

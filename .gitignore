@@ -16,3 +16,5 @@
 *.DS_Store
 /activemq-data
 /mirth/docker/data
+
+id_file
