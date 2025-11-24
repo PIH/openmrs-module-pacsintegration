@@ -21,6 +21,7 @@ import org.openmrs.module.DaemonToken;
 import org.openmrs.module.DaemonTokenAware;
 import org.openmrs.module.ModuleActivator;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
+import org.openmrs.module.pacsintegration.outgoing.OrderEventListener;
 import org.openmrs.module.pacsintegration.runner.DaemonTaskRunner;
 
 /**
@@ -40,6 +41,7 @@ public class PacsIntegrationActivator extends BaseModuleActivator implements Dae
 	 * We do not start the HL7 Listener automatically here, this is done by downstream modules if desired
 	 */
 	public void started() {
+		getRadiologyOrderEventListener().setup();
 		log.info("PACS Integration Module started");
 	}
 	
@@ -49,6 +51,7 @@ public class PacsIntegrationActivator extends BaseModuleActivator implements Dae
 	 */
 	public void willStop() {
 		log.info("Stopping PACS Integration Module");
+		getRadiologyOrderEventListener().teardown();
         Context.getService(PacsIntegrationService.class).stopHL7Listener();
 	}
 	
@@ -58,5 +61,8 @@ public class PacsIntegrationActivator extends BaseModuleActivator implements Dae
 	public void stopped() {
 		log.info("PACS Integration Module stopped");
 	}
-	
+
+	public static OrderEventListener getRadiologyOrderEventListener() {
+		return Context.getRegisteredComponents(OrderEventListener.class).get(0);
+	}
 }

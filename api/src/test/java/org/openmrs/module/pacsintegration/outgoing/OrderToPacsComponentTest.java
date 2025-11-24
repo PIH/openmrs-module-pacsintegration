@@ -14,6 +14,7 @@
 
 package org.openmrs.module.pacsintegration.outgoing;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,7 @@ import org.openmrs.api.OrderService;
 import org.openmrs.api.ProviderService;
 import org.openmrs.api.context.Context;
 import org.openmrs.event.Event;
+import org.openmrs.module.pacsintegration.PacsIntegrationActivator;
 import org.openmrs.module.pacsintegration.PacsIntegrationConstants;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.runner.TaskRunner;
@@ -72,6 +74,8 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
 
     private TestTaskRunner testTaskRunner;
 
+    PacsIntegrationActivator activator = new PacsIntegrationActivator();
+
     protected static final String XML_METADATA_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset-metadata.xml";
     protected static final String XML_MAPPINGS_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset-mappings.xml";
     protected static final String XML_DATASET = "org/openmrs/module/pacsintegration/include/pacsIntegrationTestDataset.xml";
@@ -82,8 +86,7 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
         pacsIntegrationService = mock(PacsIntegrationService.class);
         orderEventListener.setPacsIntegrationService(pacsIntegrationService);
         orderEventListener.setTaskRunner(testTaskRunner);
-        Event event = new Event();
-        event.setSubscription(orderEventListener);
+        activator.started();
 
         executeDataSet(XML_METADATA_DATASET);
         executeDataSet(XML_MAPPINGS_DATASET);
@@ -91,6 +94,11 @@ public class OrderToPacsComponentTest extends BaseModuleContextSensitiveTest {
         this.getConnection().commit();
         this.updateSearchIndex();
         Context.clearSession();
+    }
+
+    @AfterEach
+    public void cleanup() {
+        activator.willStop();
     }
 
     @Test
