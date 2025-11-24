@@ -14,23 +14,33 @@
 
 package org.openmrs.module.pacsintegration.outgoing;
 
-import org.openmrs.OpenmrsObject;
+import org.apache.commons.lang3.time.StopWatch;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.Order;
-import org.openmrs.annotation.Handler;
 import org.openmrs.api.OrderService;
 import org.openmrs.event.Event;
-import org.openmrs.event.SubscribableEventListener;
+import org.openmrs.event.EventListener;
 import org.openmrs.module.pacsintegration.api.PacsIntegrationService;
 import org.openmrs.module.pacsintegration.runner.TaskRunner;
 import org.openmrs.module.radiologyapp.RadiologyOrder;
+import org.springframework.stereotype.Component;
 
 import javax.jms.MapMessage;
 import javax.jms.Message;
-import java.util.Arrays;
-import java.util.List;
 
-@Handler
-public class OrderEventListener implements SubscribableEventListener {
+import static org.openmrs.event.Event.Action.CREATED;
+import static org.openmrs.event.Event.Action.PURGED;
+import static org.openmrs.event.Event.Action.UNVOIDED;
+import static org.openmrs.event.Event.Action.UPDATED;
+import static org.openmrs.event.Event.Action.VOIDED;
+
+@Component
+public class OrderEventListener implements EventListener {
+
+	protected final Log log = LogFactory.getLog(getClass());
+
+	public static Event.Action[] ACTIONS = {CREATED, UPDATED, VOIDED, UNVOIDED, PURGED};
 
     private OrderService orderService;
 
@@ -39,6 +49,8 @@ public class OrderEventListener implements SubscribableEventListener {
     private OrderToPacsConverter converter;
 
 	protected TaskRunner taskRunner;
+
+	private boolean subscribed = false;
 
 	public void setTaskRunner(TaskRunner taskRunner) {
 		this.taskRunner = taskRunner;
@@ -71,19 +83,29 @@ public class OrderEventListener implements SubscribableEventListener {
 			}
 		});
 	}
-	
-	@Override
-	public List<Class<? extends OpenmrsObject>> subscribeToObjects() {
-		// admittedly a very strange way to use a convenience method, but java
-		// compilation wouldn't occur without this extra line
-		Object classes = Arrays.asList(RadiologyOrder.class);
-		return (List<Class<? extends OpenmrsObject>>) classes;
+
+	public void setup() {
+		StopWatch sw = new StopWatch();
+		log.warn("Subscribing to Radiology Order events");
+		sw.start();
+		for (Event.Action action : ACTIONS) {
+			Event.subscribe(RadiologyOrder.class, action.name(), this);
+			sw.split();
+			log.warn("Subscribed to " + action + " in: " +  sw.toSplitString());
+		}
+		sw.stop();
+		log.warn("Subscribed to Radiology Order events in " +  sw);
+		subscribed = true;
 	}
-	
-	@Override
-	public List<String> subscribeToActions() {
-		return Arrays.asList(Event.Action.CREATED.name(), Event.Action.UPDATED.name(), Event.Action.VOIDED.name(),
-		    Event.Action.PURGED.name(), Event.Action.UNVOIDED.name());
+
+	public void teardown() {
+		if (subscribed) {
+			log.warn("Unsubscribing to Radiology Order events");
+			for (Event.Action action : ACTIONS) {
+				Event.unsubscribe(RadiologyOrder.class, action, this);
+			}
+		}
+		subscribed = false;
 	}
 
     public void setConverter(OrderToPacsConverter converter) {
