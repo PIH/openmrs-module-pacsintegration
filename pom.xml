@@ -23,11 +23,11 @@
 
 
     <scm>
-        <connection>scm:git:git@github.com:PIH/openmrs-module-pacsintegration.git</connection>
-        <developerConnection>scm:git:git@github.com:PIH/openmrs-module-pacsintegration.git</developerConnection>
-        <url>scm:git:git@github.com:PIH/openmrs-module-pacsintegration.git</url>
+        <connection>scm:git:https://github.com/PIH/openmrs-module-pacsintegration.git</connection>
+        <developerConnection>scm:git:https://github.com/PIH/openmrs-module-pacsintegration.git</developerConnection>
+        <url>https://github.com/PIH/openmrs-module-pacsintegration</url>
         <tag>HEAD</tag>
-  </scm>
+    </scm>
 
     <modules>
         <module>api</module>
@@ -357,7 +357,7 @@
             <url>https://openmrs.jfrog.io/artifactory/modules-pih/</url>
         </repository>
         <snapshotRepository>
-            <id>openmrs-repo-modules-pih-snapshots</id>
+            <id>openmrs-repo-modules-pih</id>
             <name>OpenMRS Snapshots</name>
             <url>https://openmrs.jfrog.io/artifactory/modules-pih-snapshots</url>
         </snapshotRepository>
